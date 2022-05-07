@@ -1,2 +1,4 @@
 *.swf
 /obj/
+.DS_Store
+*.swc_dir
