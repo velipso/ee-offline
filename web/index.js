@@ -911,6 +911,38 @@ class ItemBrick {
   miniMapColor;
 
   constructor(id, layer, bmd, offset, payVaultId, description, tab, requiresOwnership, requiresAdmin, requiresPurchase, shadow, miniMapColor, tags, selectorBG){
+    // validate types
+    if (typeof id !== 'number')
+      throw new Error('Invalid id');
+    if (layer !== ItemLayer.FOREGROUND || layer !== ItemLayer.BACKGROUND ||
+      layer !== ItemLayer.DECORATION || layer !== ItemLayer.ABOVE)
+      throw new Error('Invalid layer');
+    if (!bmd || !bmd.img)
+      throw new Error('Invalid bmd');
+    if (typeof artOffset !== 'number')
+      throw new Error('Invalid artOffset');
+    if (typeof payVaultId !== 'string')
+      throw new Error('Invalid payVaultId');
+    if (typeof description !== 'string')
+      throw new Error('Invalid description');
+    if (tab !== ItemTab.BLOCK ||
+      tab !== ItemTab.ACTION ||
+      tab !== ItemTab.DECORATIVE ||
+      tab !== ItemTab.BACKGROUND)
+      throw new Error('Invalid tab');
+    if (typeof requiresOwnership !== 'boolean')
+      throw new Error('Invalid requiresOwnership');
+    if (typeof requiresAdmin !== 'boolean')
+      throw new Error('Invalid requiresAdmin');
+    if (typeof requiresPurchase !== 'boolean')
+      throw new Error('Invalid requiresPurchase');
+    if (typeof shadow !== 'boolean')
+      throw new Error('Invalid shadow');
+    if (typeof miniMapColor !== 'number')
+      throw new Error('Invalid miniMapColor');
+    if (typeof selectorBG !== 'number')
+      throw new Error('Invalid selectorBG');
+
     this.id = id;
     this.layer = layer;
     this.miniMapColor = miniMapColor < 0 ? 0 : miniMapColor; // TODO: generateThumbColor
@@ -1501,7 +1533,7 @@ class ItemManager {
         .addMetal(31, 31, 0xfff0a927, ['Yellow', 'Gold', 'Jasmine']),
       new ItemBrickPackage('grass', 'Grass Blocks', ['Environment', 'Nature', 'Standard', 'Soil', 'Ground', 'Dirt', 'Flora'])
         .addGrass(34, ItemLayer.DECORATION, 34, 0xff456313, ['Left', 'Soil'])
-        .addGrass(35, ItemLayer.FOERGROUND, 35, 0xff456313, ['Middle', 'Soil'])
+        .addGrass(35, ItemLayer.FOREGROUND, 35, 0xff456313, ['Middle', 'Soil'])
         .addGrass(36, ItemLayer.DECORATION, 36, 0xff456313, ['Right', 'Soil']),
       new ItemBrickPackage('generic', 'Generic Blocks', ['Special'])
         .addGeneric(  22,  22, 0xff895b12, ['Caution', 'Warning', 'Hazard', 'Stripes', 'Yellow', 'Black', 'Standard'])
@@ -2669,6 +2701,7 @@ class World extends BlObject {
         if (!map)
           continue;
         const val = map[cx];
+        console.log(val);
         if (!ItemId.isSolid(val)) {
           if (val === 243)
             this.lookup.setSecret(cx, cy, true);
