@@ -91,6 +91,15 @@ class FlashByteArray {
   }
 }
 
+function rectIntersects(rect, x, y, w, h){
+  return !(
+    rect.x + rect.w < x ||
+    x + w < rect.x ||
+    rect.y + rect.h < y ||
+    y + h < rect.y
+  );
+}
+
 //
 // Config
 //
@@ -959,22 +968,8 @@ class ItemBrickPackage {
     requiresPurchase,
     selectorBG
   ){
-    this.bricks.push(new ItemBrick(
-      id,
-      layer,
-      base,
-      artOffset,
-      payVaultId,
-      description,
-      tab,
-      requiresOwnership,
-      requiresAdmin,
-      requiresPurchase,
-      shadow,
-      miniMapColor,
-      tags,
-      selectorBG
-    ));
+    this.bricks.push(new ItemBrick(id, layer, base, artOffset, payVaultId, description, tab,
+      requiresOwnership, requiresAdmin, requiresPurchase, shadow, miniMapColor, tags, selectorBG));
     return this;
   }
 
@@ -989,22 +984,8 @@ class ItemBrickPackage {
     const requiresAdmin = false;
     const requiresPurchase = false;
     const selectorBG = 0;
-    return this.createAndAddBrick(
-      id,
-      layer,
-      base,
-      payVaultId,
-      description,
-      tab,
-      requiresOwnership,
-      shadow,
-      artOffset,
-      miniMapColor,
-      tags,
-      requiresAdmin,
-      requiresPurchase,
-      selectorBG
-    );
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
   }
 
   addBeta(id, artOffset, miniMapColor, tags){
@@ -1018,22 +999,8 @@ class ItemBrickPackage {
     const requiresAdmin = false;
     const requiresPurchase = false;
     const selectorBG = 0;
-    return this.createAndAddBrick(
-      id,
-      layer,
-      base,
-      payVaultId,
-      description,
-      tab,
-      requiresOwnership,
-      shadow,
-      artOffset,
-      miniMapColor,
-      tags,
-      requiresAdmin,
-      requiresPurchase,
-      selectorBG
-    );
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
   }
 
   addBrick(id, artOffset, miniMapColor, tags){
@@ -1047,22 +1014,8 @@ class ItemBrickPackage {
     const requiresAdmin = false;
     const requiresPurchase = false;
     const selectorBG = 0;
-    return this.createAndAddBrick(
-      id,
-      layer,
-      base,
-      payVaultId,
-      description,
-      tab,
-      requiresOwnership,
-      shadow,
-      artOffset,
-      miniMapColor,
-      tags,
-      requiresAdmin,
-      requiresPurchase,
-      selectorBG
-    );
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
   }
 
   addMetal(id, artOffset, miniMapColor, tags){
@@ -1076,22 +1029,108 @@ class ItemBrickPackage {
     const requiresAdmin = false;
     const requiresPurchase = false;
     const selectorBG = 0;
-    return this.createAndAddBrick(
-      id,
-      layer,
-      base,
-      payVaultId,
-      description,
-      tab,
-      requiresOwnership,
-      shadow,
-      artOffset,
-      miniMapColor,
-      tags,
-      requiresAdmin,
-      requiresPurchase,
-      selectorBG
-    );
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addGrass(id, layer, artOffset, miniMapColor, tags){
+    const base = ItemManager.blocksBMD;
+    const payVaultId = '';
+    const description = '';
+    const tab = ItemTab.BLOCK;
+    const requiresOwnership = false;
+    const shadow = true;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addGeneric(id, artOffset, miniMapColor, tags){
+    const layer = ItemLayer.DECORATION;
+    const base = ItemManager.blocksBMD;
+    const payVaultId = '';
+    const description = '';
+    const tab = ItemTab.BLOCK;
+    const requiresOwnership = false;
+    const shadow = true;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addFactory(id, artOffset, miniMapColor, tags){
+    const layer = ItemLayer.FOREGROUND;
+    const base = ItemManager.blocksBMD;
+    const payVaultId = '';
+    const description = '';
+    const tab = ItemTab.BLOCK;
+    const requiresOwnership = false;
+    const shadow = true;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addSecret(id, layer, base, description, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = '';
+    const tab = ItemTab.BLOCK;
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addGlass(id, artOffset, miniMapColor, tags){
+    const layer = ItemLayer.FOREGROUND;
+    const base = ItemManager.blocksBMD;
+    const payVaultId = '';
+    const description = '';
+    const tab = ItemTab.BLOCK;
+    const requiresOwnership = false;
+    const shadow = true;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addMineral(id, artOffset, miniMapColor, tags){
+    const layer = ItemLayer.FOREGROUND;
+    const base = ItemManager.blocksBMD;
+    const payVaultId = 'brickminiral';
+    const description = '';
+    const tab = ItemTab.BLOCK;
+    const requiresOwnership = false;
+    const shadow = true;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addXmas2011(id, artOffset, miniMapColor, tags){
+    const layer = ItemLayer.FOREGROUND;
+    const base = ItemManager.blocksBMD;
+    const payVaultId = 'brickxmas2011';
+    const description = '';
+    const tab = ItemTab.BLOCK;
+    const requiresOwnership = false;
+    const shadow = true;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
   }
 
   addGravity(id, layer, base, artOffset, miniMapColor, tags){
@@ -1103,22 +1142,23 @@ class ItemBrickPackage {
     const requiresAdmin = false;
     const requiresPurchase = false;
     const selectorBG = 0;
-    return this.createAndAddBrick(
-      id,
-      layer,
-      base,
-      payVaultId,
-      description,
-      tab,
-      requiresOwnership,
-      shadow,
-      artOffset,
-      miniMapColor,
-      tags,
-      requiresAdmin,
-      requiresPurchase,
-      selectorBG
-    );
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addKey(id, artOffset, miniMapColor, tags){
+    const layer = ItemLayer.DECORATION;
+    const base = ItemManager.blocksBMD;
+    const payVaultId = '';
+    const description = 'hit to activate key doors and gates for everyone for 6 seconds';
+    const tab = ItemTab.ACTION;
+    const requiresOwnership = false;
+    const shadow = true;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
   }
 }
 
@@ -1459,13 +1499,50 @@ class ItemManager {
         .addMetal(29, 29, 0xffa1a3a5, ['Silver', 'White', 'Iron', 'Platinum'])
         .addMetal(30, 30, 0xffdf7a41, ['Orange', 'Bronze', 'Amber'])
         .addMetal(31, 31, 0xfff0a927, ['Yellow', 'Gold', 'Jasmine']),
-      // TODO: grass
-      // TODO: generic
-      // TODO: factory
-      // TODO: secrets
-      // TODO: glass
-      // TODO: minerals
-      // TODO: chrismas 2011
+      new ItemBrickPackage('grass', 'Grass Blocks', ['Environment', 'Nature', 'Standard', 'Soil', 'Ground', 'Dirt', 'Flora'])
+        .addGrass(34, ItemLayer.DECORATION, 34, 0xff456313, ['Left', 'Soil'])
+        .addGrass(35, ItemLayer.FOERGROUND, 35, 0xff456313, ['Middle', 'Soil'])
+        .addGrass(36, ItemLayer.DECORATION, 36, 0xff456313, ['Right', 'Soil']),
+      new ItemBrickPackage('generic', 'Generic Blocks', ['Special'])
+        .addGeneric(  22,  22, 0xff895b12, ['Caution', 'Warning', 'Hazard', 'Stripes', 'Yellow', 'Black', 'Standard'])
+        .addGeneric(1057, 235,         -1, ['Neutral', 'Yellow', 'Body', 'No face'])
+        .addGeneric(  32,  32, 0xffcf9022, ['Face', 'Smiley', 'Yellow', 'Standard'])
+        .addGeneric(1058, 236,         -1, ['Caution', 'Warning', 'Hazard', 'Stripes', 'Black', 'Yellow'])
+        .addGeneric(  33,  33, 0xff000000, ['Black', 'Dark', 'Standard']),
+      new ItemBrickPackage('factory', 'Factory Package')
+        .addFactory(45, 45, 0xff72614b, ['X', 'Crate', 'Metal', 'Box', 'Wood'])
+        .addFactory(46, 46, 0xff6e6b60, ['Concrete', 'Grey', 'Gray', 'Stone', 'Slate', 'X'])
+        .addFactory(47, 47, 0xff8e734f, ['Wood', 'Tree', 'Wooden', 'House', 'Planks', 'Flooring', 'Parquet'])
+        .addFactory(48, 48, 0xff7f4f2b, ['X', 'Crate', 'Wooden', 'Box', 'Wood', 'Storage'])
+        .addFactory(49, 49, 0xff757575, ['Silver', 'Metal', 'Scales']),
+      new ItemBrickPackage('secrets', 'Secret Bricks', ['Hidden', 'Invisible'])
+        .addSecret( 44, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , 'completely black, makes minimap invisible', true ,  44, 0x01000000, ['Black', 'Pure', 'Old', 'Solid'])
+        .addSecret( 50, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ''                                         , true , 139, 0x00000000, ['Appear'])
+        .addSecret(243, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ''                                         , true , 140, 0x01000000, ['Blank', 'Hidden'])
+        .addSecret(136, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ''                                         , false, 141, 0x00000000, ['Disappear']),
+      new ItemBrickPackage('glass', 'Glass bricks', ['Bright', 'Light', 'Shine', 'Polish', 'Neon'])
+        .addGlass(51, 51, 0xfff89299, ['Red', 'Light red', 'Pink', 'Ruby'])
+        .addGlass(58, 58, 0xfff6ba94, ['Orange', 'Light orange', 'Topaz'])
+        .addGlass(57, 57, 0xfff8da8c, ['Yellow', 'Light yellow', 'Jasmine'])
+        .addGlass(56, 56, 0xff92fbaa, ['Green', 'Light green', 'Emerald'])
+        .addGlass(55, 55, 0xff95dcf6, ['Cyan', 'Light blue', 'Diamond'])
+        .addGlass(54, 54, 0xff7e99f6, ['Blue', 'Sapphire'])
+        .addGlass(53, 53, 0xffa789f6, ['Purple', 'Violet', 'Amethyst'])
+        .addGlass(52, 52, 0xffe98bf6, ['Pink', 'Magenta', 'Purple', 'Quartz']),
+      new ItemBrickPackage('minerals', 'Minerals', ['Neon', 'Pure', 'Bright'])
+        .addMineral(70, 70, 0xffee0000, ['Red', 'Ruby'])
+        .addMineral(76, 76, 0xffee7700, ['Orange', 'Topaz'])
+        .addMineral(75, 75, 0xffeeee00, ['Yellow', 'Jasmine'])
+        .addMineral(74, 74, 0xff00ee00, ['Green', 'Lime', 'Emerald', 'Peridot'])
+        .addMineral(73, 73, 0xff00eeee, ['Cyan', 'Light blue', 'Aquamarine', 'Turquoise'])
+        .addMineral(72, 72, 0xff0000ee, ['Blue', 'Indigo', 'Sapphire', 'Lapis'])
+        .addMineral(71, 71, 0xffee00ee, ['Pink', 'Magenta', 'Purple', 'Amethyst']),
+      new ItemBrickPackage('christmas 2011', 'Christmas 2011 bricks', ['Holiday', 'Wrapping Paper', 'Gift', 'Present'])
+        .addXmas2011(78, 78, -1, ['Yellow'])
+        .addXmas2011(79, 79, -1, ['White'])
+        .addXmas2011(80, 80, -1, ['Red'])
+        .addXmas2011(81, 81, -1, ['Blue'])
+        .addXmas2011(82, 82, -1, ['Green']),
       new ItemBrickPackage('gravity', 'Gravity Modifying Arrows', ['Physics', 'Motion', 'Action', 'Standard'])
         .addGravity(   0, ItemLayer.BACKGROUND, ItemManager.blocksBMD       ,   0, 0xff000000, ['Clear', 'Empty', 'Delete', 'Nothing', 'Erase'])
         .addGravity(   1, ItemLayer.DECORATION, ItemManager.blocksBMD       ,   1, 0x00000000, ['Left', 'Arrow'])
@@ -1479,8 +1556,14 @@ class ItemManager {
         .addGravity( 413, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, 322, 0x00000000, ['Invisible', 'Right', 'Arrow'])
         .addGravity(1519, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, 652, 0x00000000, ['Invisible', 'Down', 'Arrow'])
         .addGravity( 414, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, 327, 0x00000000, ['Invisible', 'Dot'])
-        .addGravity( 460, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, 466, 0x00000000, ['Slow', 'Dot', 'Climbable', 'Physics', 'Invisible'])
-      // TODO: keys
+        .addGravity( 460, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, 466, 0x00000000, ['Slow', 'Dot', 'Climbable', 'Physics', 'Invisible']),
+      new ItemBrickPackage('keys', 'Key Blocks', ['Key', 'Lock', 'Button', 'Action', 'Standard'])
+        .addKey(  6,   6, 0xff2c1a1a, ['Red', 'Key', 'Magenta'])
+        .addKey(  7,   7, 0xff1a2c1a, ['Green', 'Key'])
+        .addKey(  8,   8, 0xff1a1a2c, ['Blue', 'Key'])
+        .addKey(408, 189, 0xff0c2d3d, ['Cyan', 'Teal'])
+        .addKey(409, 190, 0xff400c40, ['Pink', 'Violet', 'Purple'])
+        .addKey(410, 191, 0xff2c330a, ['Yellow', 'Key']),
       // TODO: gates
       // TODO: doors
       // TODO: coins
@@ -2317,6 +2400,23 @@ class World extends BlObject {
   decoration;
   foreground;
   above;
+  keyOffset = 0;
+  keys = {
+    red: false,
+    green: false,
+    blue: false,
+    cyan: false,
+    magenta: false,
+    yellow: false
+  };
+  keysTimer = {
+    red: 0,
+    green: 0,
+    blue: 0,
+    cyan: 0,
+    magenta: 0,
+    yellow: 0
+  };
 
   constructor(worldData){
     super();
@@ -2528,6 +2628,18 @@ class World extends BlObject {
     }
   }
 
+  getKey(color){
+    return this.keys[color];
+  }
+
+  setKey(color, state, fromQueue){
+    if (fromQueue && ((this.keyOffset - this.keysTimer[color]) / 30) >= 5)
+      return;
+    this.keys[color] = state;
+    if (state && !fromQueue)
+      this.keysTimer[color] = this.keyOffset;
+  }
+
   getTile(layer, x, y){
     if(layer < 0 || layer >= this.depth || x < 0 || x >= this.width || y < 0 || y >= this.height)
       return 0;
@@ -2536,107 +2648,137 @@ class World extends BlObject {
 
   overlaps(pl){
     if (pl.x < 0 || pl.y < 0 || pl.x > this.width * 16 - 16 || pl.y > this.height * 16 - 16)
-      return true;
-    /*
-    var pl:Player = o as Player;
-    if (pl.isFlying) return 0;
+      return 1;
+    if (pl.isFlying)
+      return 0;
 
-    var ox:int = pl.x>>4; //player x
-    var oy:int = pl.y>>4; //player y
+    const ox = pl.x >> 4;
+    const oy = pl.y >> 4;
 
-    var oh:Number = (o.x+o.height)/size;
-    var ow:Number = (o.y+o.width)/size;
+    const ow = (pl.x + pl.width) / 16;
+    const oh = (pl.y + pl.height) / 16;
 
-    var skipa:Boolean = false;
-    var skipb:Boolean = false;
-    var skipc:Boolean = false;
-    var skipd:Boolean = false;
-    var map:Vector.<int>;
-    var rect:Rectangle = new Rectangle(pl.x, pl.y, 16, 16);
-    for(var cy:int=oy; cy < ow; cy++){
-      map = realmap[0][cy];
-      for(var cx:int=ox; cx < oh; cx++){
-        if(!map) continue;
-        var val:int = map[cx];
+    let skipa = false;
+    let skipb = false;
+    let skipc = false;
+    let skipd = false;
+    const rect = {x: pl.x, y: pl.y, w: 16, h: 16};
+    for (let cy = oy; cy < oh; cy++){
+      const map = this.realMap[0][cy];
+      for (let cx = ox; cx < ow; cx++){
+        if (!map)
+          continue;
+        const val = map[cx];
         if (!ItemId.isSolid(val)) {
-          if (val == 243) {
-            lookup.setSecret(cx, cy, true);
-          }
+          if (val === 243)
+            this.lookup.setSecret(cx, cy, true);
           continue;
         }
-        if (!rect.intersects(new Rectangle(cx*16, cy*16, 16, 16))) continue;
-        var rot:int = lookup.getInt(cx, cy);
-        if (ItemId.isRotatableHalfBlock(val)) {
-          if (ItemId.canJumpThroughFromBelow(val)) {
-            //up
-            if ((pl.speedY < 0 || cy <= pl.overlapa || (pl.speedY == 0 && pl.speedX == 0 && (pl.oy + 15) > cy * 16)) && rot == 1) {
-              if(cy != oy || pl.overlapa == -1) pl.overlapa = cy;
-              skipa = true
-              continue
+        if (!rectIntersects(rect, cx * 16, cy * 16, 16, 16))
+          continue;
+        const rot = this.lookup.getInt(cx, cy);
+        if (ItemId.isRotatableHalfBlock(val)){
+          if (ItemId.canJumpThroughFromBelow(val)){
+            // up
+            if (
+              (
+                pl.speedY < 0 ||
+                cy <= pl.overlapa ||
+                (pl.speedY === 0 && pl.speedX === 0 && pl.oy + 15 > cy * 16)
+              ) && rot === 1
+            ){
+              if (cy !== oy || pl.overlapa === -1)
+                pl.overlapa = cy;
+              skipa = true;
+              continue;
             }
-            //right
-            if ((pl.speedX > 0 || (cx <= pl.overlapb && pl.speedX <= 0 && pl.ox < cx*16+16)) && rot == 2) {
-              if(cx != ox || pl.overlapb == -1) pl.overlapb = cx;
-              skipb = true
-              continue
+            // right
+            if (
+              (
+                pl.speedX > 0 ||
+                (cx <= pl.overlapb && pl.speedX <= 0 && pl.ox < cx * 16 + 16)
+              ) && rot == 2
+            ){
+              if (cx !== ox || pl.overlapb === -1)
+                pl.overlapb = cx;
+              skipb = true;
+              continue;
             }
-            //down
-            if ((pl.speedY > 0 || (cy <= pl.overlapc && pl.speedY <= 0 && pl.oy < cy*16+16)) && rot == 3) {
-              if(cy != oy || pl.overlapc == -1) pl.overlapc = cy;
-              skipc = true
-              continue
+            // down
+            if (
+              (
+                pl.speedY > 0 ||
+                (cy <= pl.overlapc && pl.speedY <= 0 && pl.oy < cy * 16 + 16)
+              ) && rot == 3
+            ){
+              if (cy !== oy || pl.overlapc === -1)
+                pl.overlapc = cy;
+              skipc = true;
+              continue;
             }
-            //left
-            if ((pl.speedX < 0 || cx <= pl.overlapd || (pl.speedY == 0 && pl.speedX < 0 && (pl.ox - 15) < cx * 16)) && rot == 0) {
-              if(cx != ox || pl.overlapd == -1) pl.overlapd = cx;
-              skipd = true
-              continue
+            // left
+            if (
+              (
+                pl.speedX < 0 ||
+                cx <= pl.overlapd ||
+                (pl.speedY === 0 && pl.speedX < 0 && (pl.ox - 15) < cx * 16)
+              ) && rot === 0
+            ){
+              if (cx !== ox || pl.overlapd === -1)
+                pl.overlapd = cx;
+              skipd = true;
+              continue;
             }
           }
         }
-        else if (ItemId.isHalfBlock(val)) {
-          if (rot == 1) {
-            if (!rect.intersects(new Rectangle(cx*16, cy*16+8, 16, 8)))
+        else if (ItemId.isHalfBlock(val)){
+          if (rot === 1){
+            if (!rectIntersects(rect, cx * 16, cy * 16 + 8, 16, 8))
               continue;
           }
-          else if (rot == 2) {
-            if (!rect.intersects(new Rectangle(cx*16, cy*16, 8, 16)))
+          else if (rot === 2){
+            if (!rectIntersects(rect, cx * 16, cy * 16, 8, 16))
               continue;
           }
-          else if (rot == 3) {
-            if (!rect.intersects(new Rectangle(cx*16, cy*16, 16, 8)))
+          else if (rot === 3){
+            if (!rectIntersects(rect, cx * 16, cy * 16, 16, 8))
               continue;
           }
-          else if (rot == 0) {
-            if (!rect.intersects(new Rectangle(cx*16+8, cy*16, 8, 16)))
+          else if (rot === 0){
+            if (!rectIntersects(rect, cx * 16 + 8, cy * 16, 8, 16))
               continue;
           }
         }
-        else {
-          if (ItemId.canJumpThroughFromBelow(val)) {
-            if(pl.speedY < 0 || cy <= pl.overlapa || (pl.speedY == 0 && pl.speedX == 0 && (pl.oy + 15) > cy*16)){
-              if(cy != oy || pl.overlapa == -1) pl.overlapa = cy;
-              skipa = true
-              continue
-            }
+        else if (ItemId.canJumpThroughFromBelow(val)){
+          if (
+            pl.speedY < 0 ||
+            cy <= pl.overlapa ||
+            (pl.speedY === 0 && pl.speedX === 0 && pl.oy + 15 > cy * 16)
+          ){
+            if (cy !== oy || pl.overlapa === -1)
+              pl.overlapa = cy;
+            skipa = true;
+            continue;
           }
         }
 
-        switch(val){
-          case 23: if (getKey("red")) continue; break;
-          case 24: if (getKey("green")) continue; break;
-          case 25: if (getKey("blue")) continue; break;
-          case 26: if (!getKey("red")) continue; break;
-          case 27: if (!getKey("green")) continue; break;
-          case 28: if (!getKey("blue")) continue; break;
+        switch (val){
+          case 23: if (this.getKey('red')) continue; break;
+          case 24: if (this.getKey('green')) continue; break;
+          case 25: if (this.getKey('blue')) continue; break;
+          case 26: if (!this.getKey('red')) continue; break;
+          case 27: if (!this.getKey('green')) continue; break;
+          case 28: if (!this.getKey('blue')) continue; break;
 
-          case 1005: if (getKey("cyan")) continue; break;
-          case 1006: if (getKey("magenta")) continue; break;
-          case 1007: if (getKey("yellow")) continue; break;
-          case 1008: if (!getKey("cyan")) continue; break;
-          case 1009: if (!getKey("magenta")) continue; break;
-          case 1010: if (!getKey("yellow")) continue; break;
+          case 1005: if (this.getKey('cyan')) continue; break;
+          case 1006: if (this.getKey('magenta')) continue; break;
+          case 1007: if (this.getKey('yellow')) continue; break;
+          case 1008: if (!this.getKey('cyan')) continue; break;
+          case 1009: if (!this.getKey('magenta')) continue; break;
+          case 1010: if (!this.getKey('yellow')) continue; break;
 
+          // TODO: different interactive blocks
+          /*
           case 156: if (timedoorState) continue; break;
           case 157: if (!timedoorState) continue; break;
 
@@ -2667,22 +2809,20 @@ class World extends BlObject {
 
           case ItemId.ZOMBIE_GATE: if (!pl.zombie) continue; break;
           case ItemId.ZOMBIE_DOOR: if ( pl.zombie) continue; break;
-
-          case 50:{
-            lookup.setSecret(cx, cy, true);
+          */
+          case 50:
+            this.lookup.setSecret(cx, cy, true);
             break;
-          }
         }
 
         return val;
       }
     }
-    if(!skipa) pl.overlapa = -1
-    if(!skipb) pl.overlapb = -1
-    if(!skipc) pl.overlapc = -1
-    if(!skipd) pl.overlapd = -1
-    */
-    return false;
+    if (!skipa) pl.overlapa = -1;
+    if (!skipb) pl.overlapb = -1;
+    if (!skipc) pl.overlapc = -1;
+    if (!skipd) pl.overlapd = -1;
+    return 0;
   }
 
   draw(target, ox, oy){
@@ -2699,16 +2839,39 @@ class World extends BlObject {
     const starty = Math.max(0, Math.floor(-oy / size - 1));
     const endx = Math.min(this.width, startx + width_ + 2);
     const endy = Math.min(this.height, starty + height_ + 2);
+    const point = {x: 0, y: 0};
 
-    // TODO: draw backgrounds
+    // Seperate loop to perserve shadows
+    for (let cy = starty; cy < endy; cy++){
+      const bgrow = this.background[cy]
+      const fgrow = this.foreground[cy]
+      point.y = (cy << 4) + oy;
+      for(let cx = startx; cx < endx; cx++){
+        point.x = (cx << 4) + ox;
+
+        if (fgrow[cx] !== 0)
+          continue;
+
+        /*
+        TODO: customBgColor
+        if(bgrow[cx] === 0 && customBgColor){
+          //target.copyPixels(ItemManager.bmdBricks[614],rect16x16,point);
+          target.fillRect(new Rectangle(point.x,point.y,16,16), bgColor);
+        }else
+        */
+          ItemManager.bricks[bgrow[cx]].draw(target, point.x, point.y);
+      }
+    }
+
     // TODO: draw imageBlocks
     // TODO: advance ice
 
     for (let cy = starty; cy < endy; cy++){
       const fgrow = this.foreground[cy];
       const drow = this.decoration[cy];
+      point.y = (cy << 4) + oy;
       for (let cx = startx; cx < endx; cx++){
-        const point = {x: (cx << 4) + ox, y: (cy << 4) + oy};
+        point.x = (cx << 4) + ox;
         let type = fgrow[cx];
 
         if (type !== 0){
@@ -2720,7 +2883,650 @@ class World extends BlObject {
         if (type === 0)
           continue;
 
-        // TODO: draw decoration
+        /*
+        // render rotateables, note spikes and portals are not in this list currently
+        if (ItemId.isBlockRotateable(type) && !ItemId.isNonRotatableHalfBlock(type) && type != ItemId.HALLOWEEN_2016_EYES && type != ItemId.FIREWORKS && type != ItemId.DUNGEON_TORCH) {
+          var rot:int = lookup.getInt(cx, cy);
+          var rotSprite:BlSprite = ItemManager.getRotateableSprite(type);
+          rotSprite.drawPoint(target, point, rot);
+          continue;
+        }
+        switch(type){
+
+          case ItemId.CHECKPOINT:{
+            continue;
+          }
+
+          //Red doors
+          case 23:
+          case 26: {
+            if (getKey("red")) {
+              ItemManager.sprDoors.drawPoint(target, point, type == 23? 0 : 3);
+              continue;
+            }
+            break;
+          }
+
+          //Green doors
+          case 24:
+          case 27: {
+            if (getKey("green")) {
+              ItemManager.sprDoors.drawPoint(target, point, type == 24? 1 : 4);
+              continue;
+            }
+            break;
+          }
+
+          //Blue doors
+          case 25:
+          case 28: {
+            if (getKey("blue")) {
+              ItemManager.sprDoors.drawPoint(target, point, type == 25? 2 : 5);
+              continue;
+            }
+            break;
+          }
+
+          //Cyan doors
+          case 1005:
+          case 1008: {
+            if (getKey("cyan")) {
+              ItemManager.sprDoors.drawPoint(target, point, type == 1005? 14 : 17);
+              continue;
+            }
+            break;
+          }
+
+          //Magenta doors
+          case 1006:
+          case 1009: {
+            if (getKey("magenta")) {
+              ItemManager.sprDoors.drawPoint(target, point, type == 1006? 15 : 18);
+              continue;
+            }
+            break;
+          }
+
+          //Yellow doors
+          case 1007:
+          case 1010: {
+            if (getKey("yellow")) {
+              ItemManager.sprDoors.drawPoint(target, point, type == 1007? 16 : 19);
+              continue;
+            }
+            break;
+          }
+
+          // Death doors/gates
+          case ItemId.DEATH_DOOR:{
+            if (lookup.getInt(cx, cy) <= player.deaths) {
+              ItemManager.sprDoors.drawPoint(target, point, 20)
+            } else {
+              ItemManager.sprDeathDoor.drawPoint(target, point, lookup.getInt(cx, cy) - player.deaths)
+            }
+            continue;
+          }
+          case ItemId.DEATH_GATE:{
+            if (lookup.getInt(cx, cy) <= player.deaths) {
+              ItemManager.sprDoors.drawPoint(target, point, 21)
+            } else {
+              ItemManager.sprDeathGate.drawPoint(target, point, lookup.getInt(cx, cy) - player.deaths)
+            }
+            continue;
+          }
+
+          //Purple switch, doors and gates
+          case ItemId.DOOR_PURPLE:{
+            if (player.switches[lookup.getInt(cx, cy)]) {
+              ItemManager.sprPurpleGates.drawPoint(target, point, lookup.getInt(cx, cy))
+            } else {
+              ItemManager.sprPurpleDoors.drawPoint(target, point, lookup.getInt(cx, cy))
+            }
+            continue;
+          }
+          case ItemId.GATE_PURPLE:{
+            if (player.switches[lookup.getInt(cx, cy)]) {
+              ItemManager.sprPurpleDoors.drawPoint(target, point, lookup.getInt(cx, cy))
+            } else {
+              ItemManager.sprPurpleGates.drawPoint(target, point, lookup.getInt(cx, cy))
+            }
+            continue;
+          }
+
+          case ItemId.DOOR_ORANGE:{
+            if (orangeSwitches[lookup.getInt(cx, cy)]) {
+              ItemManager.sprOrangeGates.drawPoint(target, point, lookup.getInt(cx, cy))
+            } else {
+              ItemManager.sprOrangeDoors.drawPoint(target, point, lookup.getInt(cx, cy))
+            }
+            continue;
+          }
+          case ItemId.GATE_ORANGE:{
+            if (orangeSwitches[lookup.getInt(cx, cy)]) {
+              ItemManager.sprOrangeDoors.drawPoint(target, point, lookup.getInt(cx, cy))
+            } else {
+              ItemManager.sprOrangeGates.drawPoint(target, point, lookup.getInt(cx, cy))
+            }
+            continue;
+          }
+
+          case ItemId.DOOR_GOLD:{
+            if(player.wearsGoldSmiley){
+              ItemManager.sprDoors.drawPoint(target, point, 10)
+              continue;
+            }
+            break;
+          }
+          case ItemId.GATE_GOLD:{
+            if(player.wearsGoldSmiley){
+              ItemManager.sprDoors.drawPoint(target, point, 11)
+              continue;
+            }
+            break;
+          }
+
+          case ItemId.SWITCH_PURPLE:{
+            if (player.switches[lookup.getInt(cx, cy)]) {
+              ItemManager.sprSwitchDOWN.drawPoint(target, point, lookup.getInt(cx, cy))
+            } else {
+              ItemManager.sprSwitchUP.drawPoint(target, point,lookup.getInt(cx, cy))
+            }
+            continue;
+          }
+
+          case ItemId.SWITCH_ORANGE:{
+            if (orangeSwitches[lookup.getInt(cx, cy)]) {
+              ItemManager.sprOrangeSwitchDOWN.drawPoint(target, point,lookup.getInt(cx, cy))
+            } else {
+              ItemManager.sprOrangeSwitchUP.drawPoint(target, point,lookup.getInt(cx, cy))
+            }
+            continue;
+          }
+
+          case ItemId.RESET_PURPLE:{
+            ItemManager.sprSwitchRESET.drawPoint(target, point, lookup.getInt(cx, cy))
+            continue;
+          }
+
+          case ItemId.RESET_ORANGE:{
+            ItemManager.sprOrangeSwitchRESET.drawPoint(target, point,lookup.getInt(cx, cy))
+            continue;
+          }
+
+          //Time doors
+          case ItemId.TIMEDOOR:{
+            ItemManager.sprDoorsTime.drawPoint(target, point, Math.min( (((offset-hideTimedoorOffset)/30)>>0) , 4) + (timedoorState? 5: 0))
+            continue;
+          }
+          case ItemId.TIMEGATE:{
+            ItemManager.sprDoorsTime.drawPoint(target, point,Math.min( (((offset-hideTimedoorOffset)/30)>>0) , 4) + (timedoorState? 0: 5))
+            continue;
+          }
+
+          // Invisible arrow blink
+          case 411:
+          case 412:
+          case 413:
+          case 414: {
+            if (!player.isFlying && !full) {
+              if (lookup.isBlink(cx, cy)) {
+                if (lookup.getBlink(cx, cy) >= 0) {
+                  var id:int = type - 411;
+                  if (lookup.getBlink(cx, cy) == 0) {
+                    lookup.setBlink(cx, cy, id * 5);
+                  }
+                  var frame:int = lookup.getBlink(cx, cy);
+                  ItemManager.sprInvGravityBlink.drawPoint(target, point, frame);
+
+                  if (lookup.updateBlink(cx, cy, 1/10) >= 5 + id * 5) {
+                    lookup.deleteBlink(cx, cy);
+                  }
+                } else {
+                  lookup.updateBlink(cx, cy, 1);
+                  break;
+                }
+                continue;
+              } else {
+                continue;
+              }
+            }
+            break;
+          }
+
+          case 1519: {
+            if (!player.isFlying && !full) {
+              if (lookup.isBlink(cx, cy)) {
+                if (lookup.getBlink(cx, cy) >= 0) {
+                  ItemManager.sprInvGravityDownBlink.drawPoint(target, point, lookup.getBlink(cx, cy));
+                  if (lookup.updateBlink(cx, cy, 1/10) >= 5) {
+                    lookup.deleteBlink(cx, cy);
+                  }
+                } else {
+                  lookup.updateBlink(cx, cy, 1);
+                  break;
+                }
+                continue;
+              } else {
+                continue;
+              }
+            }
+            break;
+          }
+
+          case ItemId.SLOW_DOT_INVISIBLE: {
+            if (!player.isFlying && !full) {
+              if (lookup.isBlink(cx, cy)) {
+                if (lookup.getBlink(cx, cy) >= 0) {
+                  ItemManager.sprInvDotBlink.drawPoint(target, point, lookup.getBlink(cx, cy));
+                  if (lookup.updateBlink(cx, cy, 1/10) >= 5) {
+                    lookup.deleteBlink(cx, cy);
+                  }
+                } else {
+                  lookup.updateBlink(cx, cy, 1);
+                  break;
+                }
+                continue;
+              } else {
+                continue;
+              }
+            }
+            break;
+          }
+
+          case ItemId.CROWNDOOR:{
+            if (player.collideWithCrownDoorGate) {
+              ItemManager.sprDoors.drawPoint(target, point, 40);
+              continue;
+            }
+            break;
+          }
+
+          case ItemId.CROWNGATE:{
+            if (player.collideWithCrownDoorGate) {
+              ItemManager.sprDoors.drawPoint(target, point, 41);
+              continue;
+            }
+            break;
+          }
+
+          case ItemId.SILVERCROWNDOOR:{
+            if (player.collideWithSilverCrownDoorGate) {
+              ItemManager.sprDoors.drawPoint(target, point, 42);
+              continue;
+            }
+            break;
+          }
+
+          case ItemId.SILVERCROWNGATE:{
+            if (player.collideWithSilverCrownDoorGate) {
+              ItemManager.sprDoors.drawPoint(target, point, 43);
+              continue;
+            }
+            break;
+          }
+
+          case ItemId.COINDOOR:{
+            // Open / Invisible
+            if (lookup.getInt(cx, cy) <= player.coins) {
+              ItemManager.sprDoors.drawPoint(target, point, 6)
+            } else {
+              // Locked
+              ItemManager.sprCoinDoors.drawPoint(target, point, lookup.getInt(cx, cy) - player.coins)
+            }
+            continue;
+          }
+
+          case ItemId.BLUECOINDOOR:{
+            // Open / Invisible
+            if (lookup.getInt(cx, cy) <= player.bcoins) {
+              ItemManager.sprDoors.drawPoint(target, point, 36)
+            } else {
+              // Locked
+              ItemManager.sprBlueCoinDoors.drawPoint(target, point, lookup.getInt(cx, cy) - player.bcoins)
+            }
+            continue;
+          }
+
+          case ItemId.COINGATE:{
+            // Open / Invisible
+            if (lookup.getInt(cx,cy) <= player.coins) {
+              ItemManager.sprDoors.drawPoint(target, point, 7)
+            } else {
+              // Locked
+              ItemManager.sprCoinGates.drawPoint(target, point, lookup.getInt(cx, cy) - player.coins)
+            }
+            continue;
+          }
+
+          case ItemId.BLUECOINGATE:{
+            // Open / Invisible
+            if (lookup.getInt(cx, cy) <= player.bcoins) {
+              ItemManager.sprDoors.drawPoint(target, point, 37)
+            }else{
+              // Locked
+              ItemManager.sprBlueCoinGates.drawPoint(target, point, lookup.getInt(cx, cy) - player.bcoins)
+            }
+            continue;
+          }
+
+          case ItemId.ZOMBIE_DOOR: {
+            if (player.zombie) {
+              ItemManager.sprDoors.drawPoint(target, point, 12);
+            }
+            else {
+              ItemManager.sprDoors.drawPoint(target, point, 13);
+            }
+            continue;
+          }
+          case ItemId.ZOMBIE_GATE: {
+            if (player.zombie) {
+              ItemManager.sprDoors.drawPoint(target, point, 13);
+            }
+            else {
+              ItemManager.sprDoors.drawPoint(target, point, 12);
+            }
+            continue;
+          }
+
+          case 83:{
+            if (lookup.isBlink(cx, cy)) {
+              ItemManager.sprDrumsBlink.drawPoint(target, point, (lookup.getBlink(cx, cy)/6)<<0);
+              if (lookup.updateBlink(cx, cy, -1) <= 0) {
+                lookup.deleteBlink(cx, cy);
+              }
+              continue;
+            }
+            break;
+          }
+          case 77:{
+            if (lookup.isBlink(cx, cy)) {
+              ItemManager.sprPianoBlink.drawPoint(target, point, (lookup.getBlink(cx, cy)/6)<<0);
+              if (lookup.updateBlink(cx, cy, -1) <= 0) {
+                lookup.deleteBlink(cx, cy);
+              }
+              continue;
+            }
+            break;
+          }
+
+          //If user can edit, draw shadow coins
+          case 110:{
+            if(Bl.data.canEdit){
+              ItemManager.sprCoinShadow.drawPoint(target, point, ((offset >> 0)+cx+cy)%12)
+            }
+            continue;
+          }
+
+          case 111:{
+            if(Bl.data.canEdit){
+              ItemManager.sprBonusCoinShadow.drawPoint(target, point, ((offset >> 0)+cx+cy)%12)
+            }
+            continue;
+          }
+
+          case ItemId.SPIKE:{
+            ItemManager.sprSpikes.drawPoint(target, point, lookup.getInt(cx, cy));
+            continue;
+          }
+
+          case ItemId.SPIKE_SILVER:{
+            ItemManager.sprSpikesSilver.drawPoint(target, point, lookup.getInt(cx, cy));
+            continue;
+          }
+          case ItemId.SPIKE_BLACK:{
+            ItemManager.sprSpikesBlack.drawPoint(target, point, lookup.getInt(cx, cy));
+            continue;
+          }
+          case ItemId.SPIKE_RED:{
+            ItemManager.sprSpikesRed.drawPoint(target, point, lookup.getInt(cx, cy));
+            continue;
+          }
+          case ItemId.SPIKE_GOLD:{
+            ItemManager.sprSpikesGold.drawPoint(target, point, lookup.getInt(cx, cy));
+            continue;
+          }
+          case ItemId.SPIKE_GREEN:{
+            ItemManager.sprSpikesGreen.drawPoint(target, point, lookup.getInt(cx, cy));
+            continue;
+          }
+          case ItemId.SPIKE_BLUE:{
+            ItemManager.sprSpikesBlue.drawPoint(target, point, lookup.getInt(cx, cy));
+            continue;
+          }
+
+          case ItemId.PORTAL:{
+            var p:Portal = lookup.getPortal(cx,cy)
+            ItemManager.sprPortal.drawPoint(target, point, p.rotation * 15 + (((offset/1.5 >> 0)+cx+cy)%15) + 1)// +1 because the first frame is just cy "dead portal" used by the UI
+            continue;
+          }
+
+          case ItemId.PORTAL_INVISIBLE: {
+            if ((Bl.data.canEdit && player.isFlying) || full) {
+              var pInv:Portal = lookup.getPortal(cx,cy);
+              ItemManager.sprPortalInvisible.drawPoint(target, point, pInv.rotation);
+            }
+            continue;
+          }
+
+          case ItemId.WORLD_PORTAL:{
+            ItemManager.sprPortalWorld.drawPoint(target, point, (((offset/2 >> 0)+cx+cy)%21));
+
+            if (Math.random()*100<18) {
+              addParticle(new Particle(this, Math.random()*100<50?6:7, (cx*16)+6, (cy*16)+6, .7, .7, 0.013, 0.013, Math.random()*360, Math.random()*115, true));
+            }
+            continue;
+          }
+
+          case ItemId.DIAMOND:{
+            ItemManager.sprDiamond.drawPoint(target, point, ((offset/5 >> 0)+cx+cy)%13)
+            continue;
+          }
+
+          case ItemId.CAKE:{
+            ItemManager.sprCake.drawPoint(target, point, ((offset/5 >> 0)+cx+cy)%5)
+            continue;
+          }
+
+          case ItemId.HOLOGRAM:{
+            ItemManager.sprHologram.drawPoint(target, point, ((offset/5 >> 0)+cx+cy)%5)
+            continue;
+          }
+
+          case ItemId.EFFECT_TEAM: {
+            var effectBlockTeam:int = lookup.getInt(cx, cy);
+            ItemManager.sprTeamEffect.drawPoint(target, point, effectBlockTeam);
+
+            continue;
+          }
+
+          case ItemId.TEAM_DOOR: {
+            var teamDoorTeam:int = lookup.getInt(cx, cy);
+            var teamDoorFrame:int = 22 + teamDoorTeam;
+            if (player.team == teamDoorTeam) teamDoorFrame += 7;
+            ItemManager.sprDoors.drawPoint(target, point, teamDoorFrame);
+            continue;
+          }
+          case ItemId.TEAM_GATE: {
+            var teamGateTeam:int = lookup.getInt(cx, cy);
+            var teamGateFrame:int = 29 + teamGateTeam;
+            if (player.team == teamGateTeam) teamGateFrame -= 7;
+            ItemManager.sprDoors.drawPoint(target, point, teamGateFrame);
+            continue;
+          }
+
+          case ItemId.EFFECT_CURSE: {
+            ItemManager.sprEffect.drawPoint(target, point, lookup.getInt(cx, cy) != 0 ? 4 : 11);
+            continue;
+          }
+          case ItemId.EFFECT_FLY: {
+            ItemManager.sprEffect.drawPoint(target, point, lookup.getBoolean(cx, cy) ? 1 : 8);
+            continue;
+          }
+          case ItemId.EFFECT_JUMP: {
+            ItemManager.sprEffect.drawPoint(target, point, [7, 0, 22][lookup.getInt(cx, cy)]);
+            continue;
+          }
+          case ItemId.EFFECT_PROTECTION: {
+            ItemManager.sprEffect.drawPoint(target, point, lookup.getBoolean(cx, cy) ? 3 : 10);
+            continue;
+          }
+          case ItemId.EFFECT_RUN: {
+            ItemManager.sprEffect.drawPoint(target, point, [9, 2, 25][lookup.getInt(cx, cy)]);
+            continue;
+          }
+          case ItemId.EFFECT_ZOMBIE: {
+            ItemManager.sprEffect.drawPoint(target, point, lookup.getInt(cx, cy) != 0 ? 5 : 12);
+            continue;
+          }
+          case ItemId.EFFECT_LOW_GRAVITY: {
+            ItemManager.sprEffect.drawPoint(target, point, lookup.getBoolean(cx, cy) ? 13 : 14);
+            continue;
+          }
+          case ItemId.EFFECT_MULTIJUMP: {
+            if (lookup.getInt(cx, cy) == 1) {
+              ItemManager.sprEffect.drawPoint(target, point, 16)
+            }
+            else ItemManager.sprMultiJumps.drawPoint(target, point, lookup.getInt(cx, cy))
+            continue;
+          }
+          case ItemId.EFFECT_GRAVITY: {
+            ItemManager.sprGravityEffect.drawPoint(target, point, lookup.getInt(cx, cy));
+            continue;
+          }
+          case ItemId.EFFECT_POISON: {
+            ItemManager.sprEffect.drawPoint(target, point, lookup.getInt(cx, cy) != 0 ? 23 : 24);
+            continue;
+          }
+
+          //Secret passages!
+          case 50:{
+            if (showAllSecrets || full || lookup.getSecret(cx, cy)) {
+              ItemManager.sprSecret.drawPoint(target, point, 0);
+            }
+            continue;
+          }
+          case 243:{
+            if (showAllSecrets || full || lookup.getSecret(cx, cy)) {
+              ItemManager.sprSecret.drawPoint(target, point, 1);
+            } else {
+              ItemManager.bricks[44].drawTo(target, (cx<<4)+ox, (cy<<4)+oy)
+            }
+            continue;
+          }
+          case 136:{
+            var pl:Player = (Global.base.state as PlayState).player;
+            if ((Bl.data.canEdit && pl.isFlying) || full){
+              ItemManager.sprSecret.drawPoint(target, point, 2);
+            }
+            continue;
+          }
+
+          case ItemId.LABEL: {
+            continue;
+          }
+
+          case ItemId.ICE: {
+            if (lookup.getNumber(cx, cy) != 0) {
+              lookup.setNumber(cx, cy, lookup.getNumber(cx, cy) - .25);
+              if (lookup.getNumber(cx, cy) % 12 == 0) {
+                lookup.setNumber(cx, cy, 0);
+              }
+            } else if (ice == (cx + cy) % iceTime || Math.random() < 0.0001) {
+              lookup.setNumber(cx, cy, 11.75);
+            }
+            ItemManager.sprIce.drawPoint(target, point, 11 - (lookup.getNumber(cx, cy) >> 0) % 12);
+            continue;
+          }
+
+          case ItemId.CAVE_TORCH:{
+            ItemManager.sprCaveTorch.drawPoint(target, point, ((offset/2.3 >> 0)+(width-cx)+cy)%12);
+            continue;
+          }
+
+          case ItemId.DUNGEON_TORCH:{
+            ItemManager.sprDungeonTorch.drawPoint(target, point, lookup.getInt(cx, cy) * 12 + ((offset/2.3 >> 0)+(width-cx)+cy)%12);
+            continue;
+          }
+
+          case ItemId.CHRISTMAS_2016_CANDLE:{
+            ItemManager.sprChristmas2016Candle.drawPoint(target, point, ((offset/2.3 >> 0)+(width-cx)+cy)%12);
+            continue;
+          }
+
+          case ItemId.HALLOWEEN_2016_EYES:{
+            if (player.isFlying)
+            {
+              ItemManager.sprHalloweenEyes.drawPoint(target, point, (lookup.getNumber(cx, cy)*6));
+              continue;
+            }
+
+            if (lookup.isBlink(cx, cy)) {
+              if (cx == startx || cx == endx-1 || cy == starty || cy == endy-1)
+              {
+                lookup.deleteBlink(cx, cy);
+                continue;
+              }
+              var blink:int = lookup.getBlink(cx, cy);
+              if (blink >= 6)
+              {
+                blink -= 6;
+                //blink = 5-blink;
+              }
+              else
+              {
+                blink = 5-blink;
+              }
+              ItemManager.sprHalloweenEyes.drawPoint(target, point, blink+(lookup.getNumber(cx, cy)*6));
+              if ((lookup.getBlink(cx, cy) != 5 && Math.random()<.25) || (lookup.getBlink(cx, cy) == 5 && Math.random() <= 0.01)){
+                if (lookup.updateBlink(cx, cy, -1) <= 0) {
+                  lookup.deleteBlink(cx, cy);
+                }
+              }
+            }
+            else
+            {
+              if (Math.random() < 0.05 && MathUtil.inRange(cx*16, cy*16, player.x, player.y, 120))
+                lookup.setBlink(cx,cy, 11);
+            }
+            continue;
+          }
+          case 1520:{
+            if (lookup.isBlink(cx, cy)) {
+              ItemManager.sprGuitarBlink.drawPoint(target, point, (lookup.getBlink(cx, cy)/6)<<0);
+              if (lookup.updateBlink(cx, cy, -1) <= 0) {
+                lookup.deleteBlink(cx, cy);
+              }
+              continue;
+            }
+
+            break;
+          }
+          case ItemId.FIREWORKS: {
+            if (lookup.isBlink(cx, cy)) {
+              var speed:Number = 1 / 3;
+              var b:int = lookup.getBlink(cx, cy);
+              var frames:int = ItemManager.blocksFireworksBMD.width / 64 / speed;
+              if (b >= 0 && b <= frames) {
+                infront.push({
+                  d:ItemManager.blocksFireworksBMD,
+                  r:new Rectangle(Math.floor(b * speed) * 64, lookup.getInt(cx, cy) * 64, 64, 64),
+                  p:new Point(point.x - 24, point.y - 24)
+                });
+              }
+              if (lookup.updateBlink(cx, cy, 1) >= frames + 60 * 3) {
+                lookup.deleteBlink(cx, cy);
+              }
+            } else if (Math.random() < 0.01 && MathUtil.inRange(cx * 16, cy * 16, player.x, player.y, 12 * 16)) {
+              lookup.setBlink(cx, cy, 0);
+            }
+            if (player.isFlying) {
+              ItemManager.sprFireworks.drawPoint(target, point, lookup.getInt(cx, cy));
+            }
+            continue;
+          }
+        }
+        */
+        ItemManager.bricks[type].draw(target, point.x, point.y);
       }
     }
 
@@ -2871,6 +3677,7 @@ class Player extends SynchronizedSprite {
   name;
   isMe;
   isDead = false;
+  isFlying = false;
   state;
   spriteRect; // rect2
   queue = [];
@@ -2896,6 +3703,11 @@ class Player extends SynchronizedSprite {
   enforceMovement = false;
 
   worldGravityMultiplier = 1;
+
+  overlapa = -1;
+  overlapb = -1;
+  overlapc = -1;
+  overlapd = -1;
 
   // effects
   flipGravity = 0;
@@ -3044,7 +3856,7 @@ class Player extends SynchronizedSprite {
 
     let rotateGravitymo = true;
     let rotateGravitymor = true;
-    const isGod = false; // TODO: this.isFlying
+    const isGod = this.isFlying;
     this.morx = 0;
     this.mory = 0;
     this.mox = 0;
@@ -3823,10 +4635,10 @@ class Player extends SynchronizedSprite {
 class Me extends Player {
   getPlayerInput(input){
     if (this.isControlled){
-      this.leftDown      = input.keyDown.ArrowLeft  ? -1 : 0;
-      this.upDown        = input.keyDown.ArrowUp    ? -1 : 0;
-      this.rightDown     = input.keyDown.ArrowRight ?  1 : 0;
-      this.downDown      = input.keyDown.ArrowDown  ?  1 : 0;
+      this.leftDown      = input.keyDown.ArrowLeft  || input.keyDown.KeyA ? -1 : 0;
+      this.upDown        = input.keyDown.ArrowUp    || input.keyDown.KeyW ? -1 : 0;
+      this.rightDown     = input.keyDown.ArrowRight || input.keyDown.KeyD ?  1 : 0;
+      this.downDown      = input.keyDown.ArrowDown  || input.keyDown.KeyS ?  1 : 0;
       this.spaceJustDown = !!input.keyJustPressed.Space;
       this.spaceDown     = !!input.keyDown.Space;
       this.horizontal    = this.leftDown + this.rightDown;
@@ -4174,7 +4986,6 @@ async function load(){
         accumulatedTime -= Config.physics_ms_per_tick;
       }
       state.enterFrame();
-      // TODO: reset "just pressed" inputs Bl.exitFrame();
       state.exitFrame();
       screen.startDraw();
       state.draw(screen, 0, 0);
