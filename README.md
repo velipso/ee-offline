@@ -3,7 +3,7 @@ Everybody Edits: Offline (EEO) is a recreation of Everybody Edits (EE), adapted 
 
 This fork was created by velipso in order to port the game to HTML5.  It's not done, but you can play what is available so far by clicking here:
 
-[Play Demo](https://cdn.githubraw.com/velipso/ee-offline/main/web/index.html)
+[Play Demo](https://cdn.githubraw.com/velipso/ee-offline/cfadd419d1c04df158f78ebe112c7f6d1396b7cb/web/index.html)
 
 ## Version differences
 Some features of EE were tricky or unnecessary to preserve, and thus there are several differences between EE and EEO. Those include:
@@ -25,20 +25,7 @@ Some features of EE were tricky or unnecessary to preserve, and thus there are s
 * New level format: .eelvls, a zip full of .eelvl files. The purpose of this is to allow you to easily save, load, and share collections of worlds that use World Portals. If you use the World Manager to add any sub-worlds to your world, using /save will save an .eelvls instead of an .eelvl.
 
 ## Modifying the game
-You will need either [FlashDevelop](https://www.flashdevelop.org) ([mirror - setup](https://www.mediafire.com/file/vz1m7718ly0oi4i/FlashDevelop-5.3.3.exe/file) | [mirror - zip](https://www.mediafire.com/file/w3w0rssm2v4f908/FlashDevelop-5.3.3.zip/file)), available for free, or [Adobe's Flash Builder](https://www.adobe.com/products/flash-builder-standard.html), in order to edit, build, and debug the source code - note that this quick guide is aimed at FlashDevelop. Additionally, you will need the [Flex SDK](https://helpx.adobe.com/flash-builder/release-note/flex-4-6-sdk-release.html) ([mirror](https://www.mediafire.com/file/s06u3lr3dbpkucz/flex.zip/file)), and, of course, you also need to download and unzip the [EEO source code](https://github.com/Seb-135/ee-offline/archive/main.zip) from this repo.
-
-The `WebClient.as3proj` included in the source code should be automatically associated with FlashDevelop. Opening it will open FD, but before you can start editing, you will need to [specify where you downloaded Flex]. You can do this with Project (on the top bar) > Properties... > SDK > Manage...
-
-From here, you have to click on the `...` on the right to bring up yet another popup, where you press `...` next to the `Path` field. Navigate to your Flex SDK folder, select it, and close out of all of the additional popup windows.
-
-Over on the right, you should see Outline, Bookmarks, Files, and Project. Select the Project tab if it isn't already selected - these are the local files. From there, you can open the `src` folder, which contains all of EEO's code (images are stored in `media`, and assets are stored in `swc` - you will need Adobe Animate to edit assets)
-
-You're now good to go! As an example, find a script with a catchy name, such as `Player.as`, and look through until you find a function you would like to change. Perhaps you want to replace `killPlayer()` on line 1187 to make yourself immortal - this is a simple case of replacing the entire function with only the following:
-`public function killPlayer():void { }`
-
-This way, when the game tries to kill a player, it will do absolutely nothing. Or, perhaps, if you don't want Fake Players to also be immortal, you could instead put `if(isme) return;` at the top of the function. What you do is entirely up to you.
-
-Once you have made changes that you're satisfied with, you can build the project into an .swf. On the top bar, there should be a drop-down menu, with options of `Debug` or `Release`. The Debug version runs much slower (at ~30fps) but the errors it logs will allow you to track down issues easier. The Release version is the version that you can play and possibly even share with others. To the left of the drop-down are two buttons: a blue play button to build and run the swf, and a cog to just build the swf. By default, the .swf file will end up where your `WebClient.as3proj` file is, in a sub-folder called either `bin` or `bin-debug`, depending on which version you built.
+The code for the HTML5 port is located in the `web/` directory.  Edit the files, and launch in a browser.  Enjoy!
 
 ## Community
 If you need any help with modding, want to share your creations, or just want to talk about the game, you can join the [EEO Discord](https://discord.gg/V5maATbSgc)
