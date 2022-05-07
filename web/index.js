@@ -914,20 +914,20 @@ class ItemBrick {
     // validate types
     if (typeof id !== 'number')
       throw new Error('Invalid id');
-    if (layer !== ItemLayer.FOREGROUND || layer !== ItemLayer.BACKGROUND ||
-      layer !== ItemLayer.DECORATION || layer !== ItemLayer.ABOVE)
+    if (layer !== ItemLayer.FOREGROUND && layer !== ItemLayer.BACKGROUND &&
+      layer !== ItemLayer.DECORATION && layer !== ItemLayer.ABOVE)
       throw new Error('Invalid layer');
     if (!bmd || !bmd.img)
       throw new Error('Invalid bmd');
-    if (typeof artOffset !== 'number')
+    if (typeof offset !== 'number')
       throw new Error('Invalid artOffset');
     if (typeof payVaultId !== 'string')
       throw new Error('Invalid payVaultId');
     if (typeof description !== 'string')
       throw new Error('Invalid description');
-    if (tab !== ItemTab.BLOCK ||
-      tab !== ItemTab.ACTION ||
-      tab !== ItemTab.DECORATIVE ||
+    if (tab !== ItemTab.BLOCK &&
+      tab !== ItemTab.ACTION &&
+      tab !== ItemTab.DECORATIVE &&
       tab !== ItemTab.BACKGROUND)
       throw new Error('Invalid tab');
     if (typeof requiresOwnership !== 'boolean')
@@ -2701,7 +2701,6 @@ class World extends BlObject {
         if (!map)
           continue;
         const val = map[cx];
-        console.log(val);
         if (!ItemId.isSolid(val)) {
           if (val === 243)
             this.lookup.setSecret(cx, cy, true);
