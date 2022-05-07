@@ -1,6 +1,10 @@
 ## About
 Everybody Edits: Offline (EEO) is a recreation of Everybody Edits (EE), adapted by Seb135 and LuciferX for singleplayer due to Adobe ending support for Flash. The source code has been uploaded here, to possibly allow for a new age of modders to tear apart and change the game.
 
+This fork was created by velipso in order to port the game to HTML5.  It's not done, but you can play what is available so far by clicking here:
+
+[Play Demo](https://cdn.githubraw.com/velipso/ee-offline/main/web/index.html)
+
 ## Version differences
 Some features of EE were tricky or unnecessary to preserve, and thus there are several differences between EE and EEO. Those include:
 * Smaller window size (640x500 vs 850x500), with the chat sidebar removed.
@@ -35,6 +39,6 @@ You're now good to go! As an example, find a script with a catchy name, such as 
 This way, when the game tries to kill a player, it will do absolutely nothing. Or, perhaps, if you don't want Fake Players to also be immortal, you could instead put `if(isme) return;` at the top of the function. What you do is entirely up to you.
 
 Once you have made changes that you're satisfied with, you can build the project into an .swf. On the top bar, there should be a drop-down menu, with options of `Debug` or `Release`. The Debug version runs much slower (at ~30fps) but the errors it logs will allow you to track down issues easier. The Release version is the version that you can play and possibly even share with others. To the left of the drop-down are two buttons: a blue play button to build and run the swf, and a cog to just build the swf. By default, the .swf file will end up where your `WebClient.as3proj` file is, in a sub-folder called either `bin` or `bin-debug`, depending on which version you built.
- 
+
 ## Community
 If you need any help with modding, want to share your creations, or just want to talk about the game, you can join the [EEO Discord](https://discord.gg/V5maATbSgc)
