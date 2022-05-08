@@ -1,4 +1,4 @@
-let state;
+let screen, input, eeGame, tutorialZip, tutorialLoaded = false;
 
 //
 // Flash polyfills
@@ -1405,6 +1405,49 @@ class ItemBrickPackage {
     return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
       shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
   }
+
+  addOneWay(id, artOffset, tags){
+    const layer = ItemLayer.DECORATION;
+    const base = ItemManager.specialBlocksBMD;
+    const payVaultId = 'brickoneway';
+    const description = '';
+    const tab = ItemTab.BLOCK;
+    const miniMapColor = -1;
+    const requiresOwnership = false;
+    const shadow = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addMagic(id, payVaultId, description, artOffset, tags){
+    const layer = ItemLayer.FOREGROUND;
+    const base = ItemManager.blocksBMD;
+    const tab = ItemTab.BLOCK;
+    const miniMapColor = -1;
+    const requiresOwnership = false;
+    const shadow = true;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addTile(id, layer, base, tab, artOffset, tags){
+    const payVaultId = 'bricktiles';
+    const description = '';
+    const miniMapColor = -1;
+    const requiresOwnership = false;
+    const shadow = true;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
 }
 
 //
@@ -2009,9 +2052,27 @@ class ItemManager {
       // TODO: farm
       // TODO: autumn 2014
       // TODO: christmas 2014
-      // TODO: one-way
+      new ItemBrickPackage('one-way', 'One-way Blocks', ['Platform'])
+        .addOneWay(ItemId.ONEWAY_WHITE , 566, ['One way', 'White', 'Light', 'Morphable', 'One-way'])
+        .addOneWay(ItemId.ONEWAY_GRAY  , 472, ['One way', 'Gray', 'Grey', 'Morphable', 'One-way'])
+        .addOneWay(ItemId.ONEWAY_BLACK , 488, ['One way', 'Black', 'Dark', 'Morphable', 'One-way'])
+        .addOneWay(ItemId.ONEWAY_RED   , 480, ['One way', 'Red', 'Morphable', 'One-way'])
+        .addOneWay(ItemId.ONEWAY_ORANGE, 272, ['One way', 'Orange', 'Morphable', 'One-way'])
+        .addOneWay(ItemId.ONEWAY_YELLOW, 268, ['One way', 'Yellow', 'Morphable', 'One-way'])
+        .addOneWay(ItemId.ONEWAY_GREEN , 484, ['One way', 'Green', 'Morphable', 'One-way'])
+        .addOneWay(ItemId.ONEWAY_CYAN  , 264, ['One way', 'Cyan', 'Blue', 'Morphable', 'One-way'])
+        .addOneWay(ItemId.ONEWAY_BLUE  , 476, ['One way', 'Blue', 'Dark', 'Morphable', 'One-way'])
+        .addOneWay(ItemId.ONEWAY_PINK  , 276, ['One way', 'Purple', 'Pink', 'Morphable', 'One-way']),
       // TODO: valentines 2015
-      // TODO: magic
+      new ItemBrickPackage('magic', 'Magic Blocks' , ['Rare'])
+        .addMagic(1013, 'brickmagic' , 'the first magic block'  , 200, ['Green', 'Emerald', 'Peridot'])
+        .addMagic(1014, 'brickmagic2', 'the second magic block' , 201, ['Purple', 'Violet', 'Amethyst'])
+        .addMagic(1015, 'brickmagic3', 'the third magic block'  , 202, ['Yellow', 'Orange', 'Amber', 'Topaz'])
+        .addMagic(1016, 'brickmagic4', 'the fourth magic block' , 203, ['Blue', 'Sapphire'])
+        .addMagic(1017, 'brickmagic5', 'the fifth magic block'  , 204, ['Red', 'Ruby', 'Garnet'])
+        .addMagic(1132, 'brickmagic6', 'the sixth magic block'  , 293, ['Cyan', 'Aquamarine', 'Turquoise'])
+        .addMagic(1142, 'brickmagic7', 'the seventh magic block', 299, ['White', 'Opal', 'Pearl'])
+        .addMagic(1161, 'brickmagic8', 'the eighth magic block' , 316, ['Black', 'Onyx']),
       // TODO: effect
       // TODO: gold
       // TODO: cave
@@ -2031,7 +2092,27 @@ class ItemManager {
       // TODO: halloween 2016
       // TODO: construction
       // TODO: christmas 2016
-      // TODO: tiles
+      new ItemBrickPackage('tiles', 'Tiles', ['Tile'])
+        .addTile(1106, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 275, ['White'])
+        .addTile(1107, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 276, ['Gray', 'Grey'])
+        .addTile(1108, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 277, ['Black', 'Gray', 'Grey'])
+        .addTile(1109, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 278, ['Red'])
+        .addTile(1110, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 279, ['Orange'])
+        .addTile(1111, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 280, ['Yellow'])
+        .addTile(1112, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 281, ['Green'])
+        .addTile(1113, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 282, ['Cyan'])
+        .addTile(1114, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 283, ['Blue'])
+        .addTile(1115, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 284, ['Purple'])
+        .addTile( 733, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 227, ['White'])
+        .addTile( 734, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 228, ['Gray', 'Grey'])
+        .addTile( 735, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 229, ['Black', 'Gray', 'Grey'])
+        .addTile( 736, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 230, ['Red'])
+        .addTile( 737, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 231, ['Orange'])
+        .addTile( 738, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 232, ['Yellow'])
+        .addTile( 739, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 233, ['Green'])
+        .addTile( 740, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 234, ['Cyan'])
+        .addTile( 741, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 235, ['Blue'])
+        .addTile( 742, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 236, ['Purple']),
       // TODO: St. Patricks 2017
       // TODO: half blocks
       // TODO: winter 2018
@@ -2431,15 +2512,9 @@ class Lookup {
 //
 
 class CampaignPage {
-  defaultWorld;
-
-  constructor(){
-    this.getCampaigns();
-  }
-
-  getCampaigns(){
+  static getCampaigns(zipObj){
     const tempCamps = [];
-    for (const entry of CampaignPage.CampaignZip){
+    for (const entry of zipObj){
       let i = 0;
       const campId = parseInt(entry.name.substr(0, entry.name.indexOf('/')), 10);
       const tierId = parseInt(entry.name.substr(entry.name.indexOf('/') + 1, entry.name.indexOf('.')), 10);
@@ -2488,7 +2563,7 @@ class CampaignPage {
       }
     }
 
-    this.defaultWorld = tempCamps[0].worlds[0].eelvl;
+    return tempCamps;
   }
 }
 
@@ -2497,15 +2572,53 @@ class CampaignPage {
 //
 
 class EverybodyEdits {
-  campaigns;
+  screen;
+  input;
+  state;
+  running = false;
+  lastTick;
+  accumulatedTime;
 
-  constructor(){
+  constructor(screen, input, eelvl){
+    this.screen = screen;
+    this.input = input;
     ItemManager.init();
-    this.campaigns = new CampaignPage();
+    this.state = new PlayState(eelvl);
   }
 
-  get defaultWorld(){
-    return this.campaigns.defaultWorld;
+  run(){
+    this.lastTick = Date.now();
+    this.accumulatedTime = 0;
+    this.running = true;
+    this.tick();
+  }
+
+  tick(){
+    const now = Date.now();
+    const dt = Math.min(15 * Config.physics_ms_per_tick, now - this.lastTick);
+    this.lastTick = now;
+
+    if (this.state){
+      this.accumulatedTime += dt;
+      while (this.accumulatedTime >= Config.physics_ms_per_tick){
+        this.state.tick(this.input);
+        this.screen.tick(this.input);
+        this.input.endTick();
+        this.accumulatedTime -= Config.physics_ms_per_tick;
+      }
+      this.state.enterFrame();
+      this.state.exitFrame();
+      this.screen.startDraw();
+      this.state.draw(this.screen, 0, 0);
+      this.screen.endDraw();
+    }
+
+    if (this.running)
+      window.requestAnimationFrame(() => this.tick());
+  }
+
+  stop(){
+    this.running = false;
   }
 }
 
@@ -2949,7 +3062,7 @@ class World extends BlObject {
             break;
         }
         if (ItemId.isNPC(type)){
-          this.lookup.setNpc(nx, ny, name, messages, ItemManager.getNpcById(type));
+          //TODO: this.lookup.setNpc(nx, ny, name, messages, ItemManager.getNpcById(type));
         }
       }
     }
@@ -4433,9 +4546,9 @@ class Player extends SynchronizedSprite {
   world;
   name;
   isMe;
+  state;
   isDead = false;
   isFlying = false;
-  state;
   spriteRect; // rect2
   queue = [];
   lastJump = -Date.now();
@@ -4525,6 +4638,40 @@ class Player extends SynchronizedSprite {
     //if (speedBoost == 2) sm *= 0.6;
     //if (zombie) sm *= 0.6;
     return sm;
+  }
+
+  placeAtSpawn(checkpoint){
+    let nx = 1;
+    let ny = 1;
+    /*
+    if(checkpoint && checkpoint_x != -1) {
+      nx = checkpoint_x;
+      ny = checkpoint_y;
+    } else*/if (this.world.spawnPoints.length > 0){
+      const worldSpawn = 0;
+      if (!this.world.spawnPoints[worldSpawn])
+        this.world.spawnPoints[worldSpawn] = [];
+      const spawnID = this.world.spawnPoints[worldSpawn].length > 0 ? worldSpawn : 0;
+
+      /* TODO: next spawn position
+      if (!world.nextSpawnPos[spawnID] ||
+        world.nextSpawnPos[spawnID] >= world.spawnPoints[spawnID].length)
+        world.nextSpawnPos[spawnID] = 0;
+      */
+      const nextSpawnPos = 0;
+
+      if (this.world.spawnPoints[spawnID].length > 0){
+        nx = this.world.spawnPoints[spawnID][nextSpawnPos][0];
+        ny = this.world.spawnPoints[spawnID][nextSpawnPos][1];
+        // TODO: world.nextSpawnPos[spawnID]++;
+      }
+    }
+    nx *= 16;
+    ny *= 16;
+    if (this.isMe)
+      this.state.offset(this.x - nx, this.y - ny);
+    this.x = nx;
+    this.y = ny;
   }
 
   tick(input){
@@ -5537,6 +5684,7 @@ class PlayState extends BlContainer {
     this.bcoins = coinCount.bcoins;
 
     this.player = new Me(this.world, 'Sean', true, this);
+    this.player.placeAtSpawn(false);
     this.player.worldGravityMultiplier = this.world.gravity;
     this.x = -this.player.x + Config.bw / 2;
     this.y = -this.player.y + Config.bh / 2;
@@ -5820,34 +5968,35 @@ function loadImg(logicalWidth, logicalHeight, src){
   });
 }
 
-function loadBlob(src){
-  return fetch(src).then(response => response.blob());
+function loadBlob(url){
+  return fetch(url).then(response => response.blob());
 }
 
-function loadZip(src){
-  return loadBlob(src).then(blob => {
-    return JSZip.loadAsync(blob);
-  }).then(zip => {
+function blobToZipObj(blob){
+  const exts = ['.eelvl', '.info', '.png'];
+  return JSZip.loadAsync(blob).then(zip => {
     const promises = [];
     zip.forEach((name, info) => {
       if (info.dir)
         return;
-      promises.push(zip.file(info.name).async('uint8array').then(data => (
-        {name, data: new FlashByteArray(data)}
-      )));
+      if (exts.some(ext => info.name.toLowerCase().endsWith(ext))){
+        promises.push(zip.file(info.name).async('uint8array').then(data => (
+          {name, data: new FlashByteArray(data)}
+        )));
+      }
     });
     return Promise.all(promises);
   });
 }
 
-async function load(){
+async function loadResources(){
   const dpr = window.devicePixelRatio || 1;
   const cnv = document.createElement('canvas');
   document.body.appendChild(cnv);
   const ctx = cnv.getContext('2d');
 
-  const screen = new Screen(cnv, ctx, dpr);
-  const input = new Input();
+  screen = new Screen(cnv, ctx, dpr);
+  input = new Input();
 
   window.addEventListener('keydown', e => {
     e.preventDefault();
@@ -5886,7 +6035,6 @@ async function load(){
 
   const loads = [
     [false, false, document.fonts.ready],
-    [CampaignPage, 'CampaignZip', loadZip('../media/campaigns/campaigns.zip')],
     LI('smileysBMD'              , 4888,  52, 'smileys.png'                ),
     LI('smileyPlatinumSpenderBMD',  312,  52, 'smileys_platinumspender.png'),
     LI('aurasBMD'                , 3392, 128, 'auras.png'                  ),
@@ -5932,43 +6080,222 @@ async function load(){
       key[0][key[1]] = loadedValues[i];
   });
 
-  if (sessionStorage.getItem('hideControls') !== 'true')
-    document.getElementById('controls').style.display = '';
-
-  let lastTick = Date.now();
-  let accumulatedTime = 0;
-  function tick(){
-    const now = Date.now();
-    const dt = Math.min(15 * Config.physics_ms_per_tick, now - lastTick);
-    lastTick = now;
-
-    if (state){
-      accumulatedTime += dt;
-      while (accumulatedTime >= Config.physics_ms_per_tick){
-        state.tick(input);
-        screen.tick(input);
-        input.endTick();
-        accumulatedTime -= Config.physics_ms_per_tick;
-      }
-      state.enterFrame();
-      state.exitFrame();
-      screen.startDraw();
-      state.draw(screen, 0, 0);
-      screen.endDraw();
-    }
-
-    window.requestAnimationFrame(tick);
-  }
-
-  const ee = new EverybodyEdits();
-  state = new PlayState(ee.defaultWorld);
-  tick();
+  screen.drawBanner('Loading tutorial...');
+  tutorialZip = await blobToZipObj(await loadBlob('../media/campaigns/campaigns.zip'));
+  playTutorial();
 }
 
-function hideControls(){
-  document.getElementById('controls').style.display = 'none';
-  sessionStorage.setItem('hideControls', 'true');
+function restoreMenu(){
+  if (sessionStorage.getItem('hideMenu') === 'true')
+    hideMenu();
+  else
+    showMenu();
+}
+
+function hideMenu(){
+  document.getElementById('menu').style.display = 'none';
+  document.getElementById('menu-closed').style.display = '';
+  sessionStorage.setItem('hideMenu', 'true');
   return false;
 }
 
-load();
+function hideWorlds(){
+  document.getElementById('worlds').style.display = 'none';
+  restoreMenu();
+  return false;
+}
+
+function showWorlds(){
+  document.getElementById('worlds').style.display = '';
+  document.getElementById('world-list').scrollTop = 0;
+  document.getElementById('menu').style.display = 'none';
+  document.getElementById('menu-closed').style.display = 'none';
+}
+
+function showMenu(){
+  document.getElementById('menu').style.display = '';
+  document.getElementById('menu-closed').style.display = 'none';
+  sessionStorage.removeItem('hideMenu');
+  return false;
+}
+
+async function playFile(file){
+  if (!file)
+    return;
+  const data = await new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onloadend = e => {
+      resolve(e.target.result);
+    };
+    r.readAsArrayBuffer(file);
+  });
+  const ext = file.name.toLowerCase();
+  if (ext.endsWith('.zip') || ext.endsWith('.eelvls'))
+    loadZipObj(await blobToZipObj(data), false);
+  else
+    loadEelvl(new FlashByteArray(new Uint8Array(data)));
+}
+
+async function playURL(url){
+  loadZipObj(await blobToZipObj(await loadBlob(url)), false);
+}
+
+function playTutorial(){
+  loadZipObj(tutorialZip, true);
+}
+
+function loadZipObj(zipObj, tutorial){
+  const createElement = (name, children) => {
+    const p = document.createElement(name);
+    if (Array.isArray(children))
+      children.forEach(c => p.appendChild(typeof c === 'string' ? document.createTextNode(c) : c));
+    else if (typeof children === 'string')
+      p.appendChild(document.createTextNode(children));
+    else if (children)
+      p.appendChild(children);
+    return p;
+  };
+  const P      = c => createElement('p'  , c);
+  const DIV    = c => createElement('div', c);
+  const H1     = c => createElement('h1' , c);
+  const H2     = c => createElement('h2' , c);
+  const H3     = c => createElement('h3' , c);
+  const UL     = c => createElement('ul' , c);
+  const LI     = c => createElement('li' , c);
+  const A      = (c, click) => {
+    const ele = createElement('a', c);
+    ele.href = '#';
+    ele.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      click();
+      return false;
+    });
+    return ele;
+  };
+
+  const list = document.getElementById('world-list');
+  list.innerHTML = '';
+
+  if (tutorial){
+    // tutorial zip has specific format
+    list.appendChild(H1('Tutorial Campaigns'));
+    const cats = CampaignPage.getCampaigns(zipObj);
+    for (let c = 0; c < cats.length; c++){
+      const cat = cats[c];
+      const ul = UL();
+      for (let w = 0; w < cat.worlds.length; w++){
+        const world = cat.worlds[w];
+        ul.appendChild(LI([
+          `${c + 1}.${w + 1}. `,
+          A(world.name, () => {
+            hideWorlds();
+            loadEelvl(world.eelvl);
+          })
+        ]));
+      }
+      list.appendChild(DIV([
+        H2(`${c + 1}. ${cat.name}`),
+        P(`${cat.desc} [${cat.diff}]`),
+        ul
+      ]));
+    }
+    showWorlds();
+    if (!tutorialLoaded){
+      tutorialLoaded = true;
+      loadEelvl(cats[0].worlds[0].eelvl);
+    }
+  }
+  else{
+    // generic file... make directory structure
+    const root = [];
+    for (const file of zipObj){
+      const path = file.name.split('/');
+      let here = {files: root};
+      while (path.length > 0){
+        const name = path.shift();
+        if (path.length === 0){
+          // file
+          here.files.push({dir: false, name, data: file.data});
+        }
+        else{
+          // directory
+          const sub = here.files.find(d => d.dir && d.name === name);
+          if (sub)
+            here = sub;
+          else{
+            const sub2 = {dir: true, name, files: []};
+            here.files.push(sub2);
+            here = sub2;
+          }
+        }
+      }
+    }
+    const sortFiles = dir => {
+      dir.sort(
+        (a, b) =>
+          a.dir && !b.dir ? 1 :
+          !a.dir && b.dir ? -1 :
+          a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+      );
+      for (const f of dir)
+        if (f.dir) sortFiles(f.files);
+    };
+    sortFiles(root);
+    const containsEelvl = dir => {
+      for (const f of dir){
+        if (f.dir){
+          if (containsEelvl(f.files))
+            return true;
+        }
+        else if (f.name.toLowerCase().endsWith('.eelvl'))
+          return true;
+      }
+      return false;
+    };
+    const outputFiles = (dir, depth) => {
+      for (const file of dir){
+        if (file.dir){
+          if (containsEelvl(file.files)){
+            list.appendChild(
+              (([H1, H2, H3])[Math.min(2, depth)])(file.name)
+            );
+            outputFiles(file.files, depth + 1);
+          }
+        }
+        else if (file.name.toLowerCase().endsWith('.png')){
+          const img = document.createElement('img');
+          img.src = URL.createObjectURL(new Blob([file.data.data]));
+          img.title = file.name;
+          img.style.display = 'block';
+          img.style.maxWidth = '50%';
+          img.style.height = 'auto';
+          list.appendChild(img);
+        }
+        else if (file.name.toLowerCase().endsWith('.eelvl')){
+          const ul = UL(LI(A(file.name, () => {
+            hideWorlds();
+            loadEelvl(file.data);
+          })));
+          ul.style.paddingLeft = '0';
+          list.appendChild(ul);
+        }
+      }
+    };
+    if (!containsEelvl(root))
+      list.appendChild(H2('No levels found'));
+    else
+      outputFiles(root, 0);
+    showWorlds();
+  }
+}
+
+function loadEelvl(eelvl){
+  screen.drawBanner('Loading level...');
+  if (eeGame)
+    eeGame.stop();
+  eeGame = new EverybodyEdits(screen, input, eelvl);
+  eeGame.run();
+}
+
+loadResources();
