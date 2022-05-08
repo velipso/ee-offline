@@ -5523,6 +5523,8 @@ class Screen {
   cnv;
   ctx;
   dpr;
+  transX;
+  transY;
   scale;
   loading = true;
   debug = false;
@@ -5545,25 +5547,36 @@ class Screen {
     this.boundary.y = 0;
     this.boundary.w = Config.bw;
     this.boundary.h = Config.bh;
-    const scaleW = this.cnv.width * this.zoom / Config.bw;
-    const scaleH = this.cnv.height * this.zoom / Config.bh;
-    const scale = Math.min(scaleW, scaleH);
-    const tx = (this.cnv.width - Config.bw * scale) * 0.5;
-    const ty = (this.cnv.height - Config.bh * scale) * 0.5;
-    this.ctx.translate(tx, ty);
-    this.ctx.scale(scale, scale);
-    this.scale = scaleH;
+    const scale = Math.min(
+      this.cnv.width * this.zoom / Config.bw,
+      this.cnv.height * this.zoom / Config.bh
+    );
+    this.transX = Math.round((this.cnv.width - Config.bw * scale) * 0.5);
+    this.transY = Math.round((this.cnv.height - Config.bh * scale) * 0.5);
+    this.scale = scale;
     if (this.fullScreen){
-      this.boundary.x = Math.floor(-tx / scale);
-      this.boundary.y = Math.floor(-ty / scaleW);
-      this.boundary.w = Math.floor(this.cnv.width / scale);
-      this.boundary.h = Math.floor(this.cnv.height / scale);
+      this.boundary.x = Math.round(-this.transX / scale);
+      this.boundary.y = Math.round(-this.transY / scale);
+      this.boundary.w = Math.round(this.cnv.width / scale);
+      this.boundary.h = Math.round(this.cnv.height / scale);
     }
     else{
       this.ctx.beginPath();
-      this.ctx.rect(0, 0, Config.bw, Config.bh);
+      const x1 = this.worldToScreenX(0);
+      const y1 = this.worldToScreenY(0);
+      const x2 = this.worldToScreenX(Config.bw);
+      const y2 = this.worldToScreenY(Config.bh);
+      this.ctx.rect(x1, y1, x2 - x1, y2 - y1);
       this.ctx.clip();
     }
+  }
+
+  worldToScreenX(x){
+    return Math.round(x * this.scale + this.transX);
+  }
+
+  worldToScreenY(y){
+    return Math.round(y * this.scale + this.transY);
   }
 
   endDraw(){
@@ -5586,50 +5599,62 @@ class Screen {
       // TODO: this
     }
     else{
+      const x1 = this.worldToScreenX(dst.x);
+      const y1 = this.worldToScreenY(dst.y);
+      const x2 = this.worldToScreenX(dst.x + dst.w);
+      const y2 = this.worldToScreenY(dst.y + dst.h);
       this.ctx.drawImage(
         bmd.img,
         src.x * bmd.scale,
         src.y * bmd.scale,
         src.w * bmd.scale,
         src.h * bmd.scale,
-        Math.floor(dst.x),
-        Math.floor(dst.y),
-        Math.floor(dst.w) + 1 / this.scale,
-        Math.floor(dst.h) + 1 / this.scale
+        x1,
+        y1,
+        x2 - x1,
+        y2 - y1
       );
     }
   }
 
   fillRect(dst, color){
     this.ctx.fillStyle = color;
-    this.ctx.fillRect(dst.x, dst.y, dst.w, dst.h);
+    const x1 = this.worldToScreenX(dst.x);
+    const y1 = this.worldToScreenY(dst.y);
+    const x2 = this.worldToScreenX(dst.x + dst.w);
+    const y2 = this.worldToScreenY(dst.y + dst.h);
+    this.ctx.fillRect(x1, y1, x2 - x1, y2 - y1);
   }
 
   text(text, align, baseline, x, y){
-    this.ctx.font = '12px ee_nokiafc22';
+    this.ctx.font = `${12 * this.scale}px ee_nokiafc22`;
     this.ctx.fillStyle = '#fff';
     this.ctx.textAlign = align;
     this.ctx.textBaseline = baseline;
-    this.ctx.fillText(text, x, y);
+    this.ctx.fillText(text, this.worldToScreenX(x), this.worldToScreenY(y));
   }
 
   debugText(text, x, y){
     if (!this.debug)
       return;
-    this.ctx.font = '7px sans-serif';
+    this.ctx.font = `${7 * this.scale}px sans-serif`;
     this.ctx.fillStyle = '#fff';
     this.ctx.textAlign = 'center';
     this.ctx.textBaseline = 'middle';
-    this.ctx.fillText(text, x, y);
+    this.ctx.fillText(text, this.worldToScreenX(x), this.worldToScreenY(y));
   }
 
   debugRect(x, y, w, h){
     if (!this.debug)
       return;
+    const x1 = this.worldToScreenX(x);
+    const y1 = this.worldToScreenY(y);
+    const x2 = this.worldToScreenX(x + w);
+    const y2 = this.worldToScreenY(y + h);
     this.ctx.strokeStyle = '#f00';
     this.ctx.beginPath();
-    this.ctx.rect(x, y, w, h);
-    this.ctx.lineWidth = this.dpr;
+    this.ctx.rect(x1, y1, x2 - x1, y2 - y1);
+    this.ctx.lineWidth = 2 * this.dpr;
     this.ctx.stroke();
   }
 
@@ -5651,7 +5676,7 @@ class Screen {
     this.cnv.height = Math.round(h * this.dpr);
     this.cnv.style.width = `${w}px`;
     this.cnv.style.height = `${h}px`;
-    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    this.ctx.imageSmoothingEnabled = false;
     if (this.loading)
       this.drawBanner('Loading...');
   }
@@ -5726,7 +5751,6 @@ async function load(){
   const cnv = document.createElement('canvas');
   document.body.appendChild(cnv);
   const ctx = cnv.getContext('2d');
-  ctx.imageSmoothingEnabled = false;
 
   const screen = new Screen(cnv, ctx, dpr);
   const input = new Input();
