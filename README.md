@@ -3,7 +3,7 @@ Everybody Edits: Offline (EEO) is a recreation of Everybody Edits (EE), adapted 
 
 This fork was created by velipso in order to port the game to HTML5.  It's not done, but you can play what is available so far by clicking here:
 
-[Play Demo](https://cdn.githubraw.com/velipso/ee-offline/f4b8aa972f7d0c9541ff00aaf81e1c0b0cd466d2/web/index.html)
+[Play Demo](https://cdn.githubraw.com/velipso/ee-offline/319bec256fc24442eea4a548cfc93bac54d91d42/web/index.html)
 
 ## Version differences
 Some features of EE were tricky or unnecessary to preserve, and thus there are several differences between EE and EEO. Those include:
