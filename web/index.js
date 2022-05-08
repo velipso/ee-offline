@@ -5527,6 +5527,7 @@ class Screen {
   loading = true;
   debug = false;
   fullScreen = true;
+  zoom = 1;
   boundary = {x: 0, y: 0, w: Config.bw, h: Config.bh};
 
   constructor(cnv, ctx, dpr){
@@ -5536,7 +5537,7 @@ class Screen {
   }
 
   startDraw(){
-    this.ctx.loading = false;
+    this.loading = false;
     this.ctx.fillStyle = '#000';
     this.ctx.fillRect(0, 0, this.cnv.width, this.cnv.height);
     this.ctx.save();
@@ -5544,33 +5545,21 @@ class Screen {
     this.boundary.y = 0;
     this.boundary.w = Config.bw;
     this.boundary.h = Config.bh;
-    const scaleW = this.cnv.width / Config.bw;
-    const scaleH = this.cnv.height / Config.bh;
-    if (scaleW > scaleH){
-      const tx = (this.cnv.width - Config.bw * scaleH) * 0.5;
-      this.ctx.translate(tx, 0);
-      this.ctx.scale(scaleH, scaleH);
-      this.scale = scaleH;
-      if (this.fullScreen){
-        this.boundary.x = Math.floor(-tx / scaleH);
-        this.boundary.y = 0;
-        this.boundary.w = Math.floor(this.cnv.width / scaleH);
-        this.boundary.h = Config.bh;
-      }
+    const scaleW = this.cnv.width * this.zoom / Config.bw;
+    const scaleH = this.cnv.height * this.zoom / Config.bh;
+    const scale = Math.min(scaleW, scaleH);
+    const tx = (this.cnv.width - Config.bw * scale) * 0.5;
+    const ty = (this.cnv.height - Config.bh * scale) * 0.5;
+    this.ctx.translate(tx, ty);
+    this.ctx.scale(scale, scale);
+    this.scale = scaleH;
+    if (this.fullScreen){
+      this.boundary.x = Math.floor(-tx / scale);
+      this.boundary.y = Math.floor(-ty / scaleW);
+      this.boundary.w = Math.floor(this.cnv.width / scale);
+      this.boundary.h = Math.floor(this.cnv.height / scale);
     }
     else{
-      const ty = (this.cnv.height - Config.bh * scaleW) * 0.5;
-      this.ctx.translate(0, ty);
-      this.ctx.scale(scaleW, scaleW);
-      this.scale = scaleW;
-      if (this.fullScreen){
-        this.boundary.x = 0;
-        this.boundary.y = Math.floor(-ty / scaleW);
-        this.boundary.w = Config.bw;
-        this.boundary.h = Math.floor(this.cnv.height / scaleW);
-      }
-    }
-    if (!this.fullScreen){
       this.ctx.beginPath();
       this.ctx.rect(0, 0, Config.bw, Config.bh);
       this.ctx.clip();
@@ -5597,32 +5586,17 @@ class Screen {
       // TODO: this
     }
     else{
-      if (this.scale >= 1){
-        this.ctx.drawImage(
-          bmd.img,
-          src.x * bmd.scale,
-          src.y * bmd.scale,
-          src.w * bmd.scale,
-          src.h * bmd.scale,
-          Math.floor(dst.x),
-          Math.floor(dst.y),
-          Math.floor((dst.w + 1) * this.scale - 1) / this.scale,
-          Math.floor((dst.h + 1) * this.scale - 1) / this.scale
-        );
-      }
-      else{
-        this.ctx.drawImage(
-          bmd.img,
-          src.x * bmd.scale,
-          src.y * bmd.scale,
-          src.w * bmd.scale,
-          src.h * bmd.scale,
-          Math.floor(dst.x),
-          Math.floor(dst.y),
-          Math.floor(dst.w) + this.scale,
-          Math.floor(dst.h) + this.scale
-        );
-      }
+      this.ctx.drawImage(
+        bmd.img,
+        src.x * bmd.scale,
+        src.y * bmd.scale,
+        src.w * bmd.scale,
+        src.h * bmd.scale,
+        Math.floor(dst.x),
+        Math.floor(dst.y),
+        Math.floor(dst.w) + 1 / this.scale,
+        Math.floor(dst.h) + 1 / this.scale
+      );
     }
   }
 
@@ -5682,11 +5656,21 @@ class Screen {
       this.drawBanner('Loading...');
   }
 
+  multiplyZoom(m){
+    this.zoom = Math.min(1, this.zoom * m);
+    if (this.zoom > 0.95)
+      this.zoom = 1;
+  }
+
   tick(input){
     if (input.keyJustPressed.F1)
       this.debug = !this.debug;
     if (input.keyJustPressed.F2)
       this.fullScreen = !this.fullScreen;
+    if (input.keyJustPressed.F3)
+      this.multiplyZoom(1 / 1.1);
+    if (input.keyJustPressed.F4)
+      this.multiplyZoom(1.1);
   }
 }
 

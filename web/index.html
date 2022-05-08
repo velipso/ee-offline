@@ -24,12 +24,14 @@ canvas {
 }
 #controls {
   font-family: ee_nokiafc22;
+  font-size: 16px;
+  overflow: auto;
   color: #fff;
   position: absolute;
   bottom: 20px;
   left: 20px;
   width: 300px;
-  height: 140px;
+  height: 160px;
   border: 2px solid #2ac;
   border-radius: 10px;
   background-color: #278;
@@ -38,6 +40,10 @@ canvas {
 
 #controls p {
   margin: 10px 0;
+}
+
+#controls p:last-child {
+  margin-bottom: 0;
 }
 
 #controls-x {
@@ -58,7 +64,8 @@ canvas {
       Move: W / S / A / D / Arrows<br />
       Jump: Space<br />
       Debug: F1<br />
-      Full screen: F2
+      Full screen: F2<br />
+      Zoom: F3 / F4
     </p>
   </div>
   <script src="jszip.min.js"></script>
