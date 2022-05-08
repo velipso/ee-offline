@@ -100,6 +100,10 @@ function rectIntersects(rect, x, y, w, h){
   );
 }
 
+function randomRange(minNum, maxNum){
+  return (Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum);
+}
+
 //
 // Config
 //
@@ -1243,10 +1247,52 @@ class ItemBrickPackage {
       shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
   }
 
+  addGate(id, artOffset, miniMapColor, tags){
+    const layer = ItemLayer.DECORATION;
+    const base = ItemManager.blocksBMD;
+    const payVaultId = '';
+    const description = '';
+    const tab = ItemTab.ACTION;
+    const requiresOwnership = false;
+    const shadow = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addDoor(id, artOffset, miniMapColor, tags){
+    const layer = ItemLayer.DECORATION;
+    const base = ItemManager.blocksBMD;
+    const payVaultId = '';
+    const description = '';
+    const tab = ItemTab.ACTION;
+    const requiresOwnership = false;
+    const shadow = true;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
   addCoin(id, layer, base, payVaultId, shadow, artOffset, miniMapColor, requiresAdmin, requiresPurchase, tags){
     const description = '';
     const tab = ItemTab.ACTION;
     const requiresOwnership = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addPortal(id, payVaultId, description, requiresOwnership, artOffset, miniMapColor, tags){
+    const layer = ItemLayer.DECORATION;
+    const base = ItemManager.specialBlocksBMD;
+    const tab = ItemTab.ACTION;
+    const shadow = true;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
     const selectorBG = 0;
     return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
       shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
@@ -1377,194 +1423,194 @@ class ItemManager {
     // Smileys
     //
     ([
-      ["Smiley"              , ""                        ],
-      ["Grin"                , ""                        ],
-      ["Tongue"              , ""                        ],
-      ["Happy"               , ""                        ],
-      ["Annoyed"             , ""                        ],
-      ["Sad"                 , ""                        ],
-      ["Crying"              , "pro"                     ],
-      ["Wink"                , "pro"                     ],
-      ["Frustrated"          , "pro"                     ],
-      ["Shades"              , "pro"                     ],
-      ["Devil"               , "pro"                     ],
-      ["Inquisitive"         , "pro"                     ],
-      ["Ninja"               , "smileyninja"              , 0x00000000],
-      ["Santa"               , "smileysanta"             ],
-      ["Worker"              , ""                        ],
-      ["Big Spender"         , "smileybigspender"        ],
-      ["Superman"            , "smileysuper"             ],
-      ["Surprise"            , "smileysupprice"          ],
-      ["Indifferent"         , ""                        ],
-      ["Girl"                , ""                        ],
-      ["New Year 2010"       , "mixednewyear2010"        ],
-      ["Coy"                 , ""                        ],
-      ["Wizard"              , "smileywizard"            ],
-      ["Fan Boy"             , "smileyfanboy"            ],
-      ["Terminator"          , ""                        ],
-      ["Extra Grin"          , "smileyxd"                ],
-      ["Bully"               , "smileybully"             ],
-      ["Commando"            , "smileycommando"          ],
-      ["Kissing"             , "smileyvalentines2011"    ],
-      ["Bird"                , "smileybird"              ],
-      ["Bunny"               , "smileybunni"             ],
-      ["Diamond Touch"       , "unobtainable"            ],
-      ["Fire Wizard"         , "smileywizard2"           ],
-      ["Extra Tongue"        , "smileyxdp"               ],
-      ["Postman"             , "smileypostman"           ],
-      ["Templar"             , "smileytemplar"           ],
-      ["Angel"               , ""                        ],
-      ["Nurse"               , "smileynurse"             ],
-      ["Vampire"             , "smileyhw2011vampire"     ],
-      ["Ghost"               , "smileyhw2011ghost"       ],
-      ["Frankenstein"        , "smileyhw2011frankenstein"],
-      ["Witch"               , "smileywitch"             ],
-      ["Indian"              , "smileytg2011indian"      ],
-      ["Pilgrim"             , "smileytg2011pilgrim"     ],
-      ["Pumpkin"             , "smileypumpkin1"          ],
-      ["Lit Pumpkin"         , "smileypumpkin2"          ],
-      ["Snowman"             , "smileyxmassnowman"       ],
-      ["Reindeer"            , "smileyxmasreindeer"      ],
-      ["Grinch"              , "smileyxmasgrinch"        ],
-      ["Maestro"             , "bricknode"               ],
-      ["DJ"                  , "brickdrums"              ],
-      ["Sigh"                , ""                        ],
-      ["Robber"              , ""                         , 0x00000000],
-      ["Police"              , ""                         , 0xff0c64f6],
-      ["Purple Ghost"        , "smileypurpleghost"       ],
-      ["Pirate"              , ""                        ],
-      ["Viking"              , ""                        ],
-      ["Karate"              , ""                        ],
-      ["Cowboy"              , ""                        ],
-      ["Diver"               , "smileydiver"             ],
-      ["Tanned"              , "smileytanned"            ],
-      ["Propeller Hat"       , ""                        ],
-      ["Hard Hat"            , "smileyhardhat"           ],
-      ["Gas Mask"            , "smileygasmask"           ],
-      ["Robot"               , ""                        ],
-      ["Peasant"             , ""                        ],
-      ["Guard"               , ""                        ],
-      ["Blacksmith"          , ""                        ],
-      ["LOL"                 , ""                        ],
-      ["Dog"                 , ""                        ],
-      ["Alien"               , "smileyalien"             ],
-      ["Astronaut"           , "smileyastronaut"         ],
-      ["PartyOrange"         , "unobtainable"            ],
-      ["PartyGreen"          , "unobtainable"            ],
-      ["PartyBlue"           , "unobtainable"            ],
-      ["PartyRed"            , "unobtainable"            ],
-      ["Daredevil"           , ""                        ],
-      ["Monster"             , "smileymonster"           ],
-      ["Skeleton"            , "smileyskeleton"          ],
-      ["Mad Scientist"       , "smileymadscientist"      ],
-      ["Headhunter"          , "smileyheadhunter"        ],
-      ["Safari"              , "smileysafari"            ],
-      ["Archaeologist"       , "smileyarchaeologist"     ],
-      ["New Year 2013"       , "smileynewyear2012"       ],
-      ["Winter Hat"          , "smileywinter"            ],
-      ["Fire demon"          , "smileyfiredeamon"        ],
-      ["Bishop"              , "smileybishop"            ],
-      ["Zombie"              , "unobtainable"            ],
-      ["Bruce"               , "smileyzombieslayer"      ],
-      ["Unit"                , "smileyunit"              ],
-      ["Spartan"             , "smileyspartan"           ],
-      ["Lady"                , "smileyhelen"             ],
-      ["Cow"                 , "smileycow"               ],
-      ["Scarecrow"           , "smileyscarecrow"         ],
-      ["Dark Wizard"         , "smileydarkwizard"        ],
-      ["Kung Fu Master"      , "smileykungfumaster"      ],
-      ["Fox"                 , "smileyfox"               ],
-      ["Night Vision"        , "smileynightvision"       ],
-      ["Summer Girl"         , "smileysummergirl"        ],
-      ["Fan Boy II"          , "smileyfanboy2"           ],
-      ["Sci-Fi Hologram"     , "unobtainable"            ],
-      ["Gingerbread"         , "smileygingerbread"       ],
-      ["Caroler"             , "smileycaroler"           ],
-      ["Elf"                 , "smileyelf"               ],
-      ["Nutcracker"          , "smileynutcracker"        ],
-      ["Blushing"            , "brickvalentines2015"     ],
-      ["Artist"              , "smileyartist"            ],
-      ["Princess"            , ""                        ],
-      ["Chef"                , ""                        ],
-      ["Clown"               , ""                        ],
-      ["Red Ninja"           , "smileyninjared"          ],
-      ["3D Glasses"          , "smiley3dglasses"         ],
-      ["Sunburned"           , "smileysunburned"         ],
-      ["Tourist"             , "smileytourist"           ],
-      ["Graduate"            , "smileygraduate"          ],
-      ["Sombrero"            , "smileysombrero"          ],
-      ["Cat"                 , ""                        ],
-      ["Scared"              , ""                        ],
-      ["Ghoul"               , "smileyghoul"             ],
-      ["Mummy"               , "smileymummy"             ],
-      ["Bat"                 , "smileybat"               ],
-      ["Eyeball"             , "smileyeyeball"           ],
-      ["Light Wizard"        , "smileylightwizard"       ],
-      ["Hooded"              , "smileyhooded"            ],
-      ["Earmuffs"            , "smileyearmuffs"          ],
-      ["Penguin"             , "smileypenguin"           ],
-      ["Gold Smiley"         , "goldmember"              ],
-      ["Gold Ninja"          , "goldmember"              ],
-      ["Gold Robot"          , "goldmember"              ],
-      ["Gold Top Hat"        , "goldmember"              ],
-      ["Sick"                , ""                        ],
-      ["Unsure"              , ""                        ],
-      ["Goofy"               , "smileygoofy"             ],
-      ["Raindrop"            , "smileyraindrop"          ],
-      ["Bee"                 , "smileybee"               ],
-      ["Butterfly"           , "smileybutterfly"         ],
-      ["Sea Captain"         , "smileyseacaptain"        ],
-      ["Soda Clerk"          , "smileysodaclerk"         ],
-      ["Lifeguard"           , "smileylifeguard"         ],
-      ["Aviator"             , "smileyaviator"           ],
-      ["Sleepy"              , "smileysleepy"            ],
-      ["Seagull"             , "smileyseagull"           ],
-      ["Werewolf"            , "smileywerewolf"          ],
-      ["Swamp Creature"      , "smileyswampcreature"     ],
-      ["Fairy"               , "smileyfairy"             ],
-      ["Firefighter"         , "smileyfirefighter"       ],
-      ["Spy"                 , "smileyspy"                , 0x00000000],
-      ["Devil Skull"         , "smileydevilskull"        ],
-      ["Clockwork Robot"     , "smileyclockwork"         ],
-      ["Teddy Bear"          , "smileyteddybear"         ],
-      ["Christmas Soldier"   , "smileychristmassoldier"  ],
-      ["Scrooge"             , "smileyscrooge"           ],
-      ["Boy"                 , ""                        ],
-      ["Pigtails"            , "smileypigtails"          ],
-      ["Doctor"              , "smileydoctor"            ],
-      ["Turban"              , "smileyturban"            ],
-      ["Hazmat Suit"         , "smileyhazmatsuit"        ],
-      ["Leprechaun"          , "smileyleprechaun"        ],
-      ["Angry"               , "smileyangry"             ],
-      ["Smirk"               , "smileysmirk"             ],
-      ["Sweat"               , "smileysweat"             ],
-      ["Country Singer"      , "brickguitar"             ],
-      ["Thor"                , "smileythor"              ],
-      ["Cowgirl"             , ""                        ],
-      ["Raccoon"             , "smileyraccoon"           ],
-      ["Lion"                , "smileylion"              ],
-      ["Laika"               , "smileylaiika"            ],
-      ["Fishbowl"            , "smileyfishbowl"          ],
-      ["Slime"               , "smileyslime"             ],
-      ["Designer"            , "smileydesigner"          ],
-      ["Frozen"              , "smileyfrozen"            ],
-      ["Masquerade"          , "smileymasquerade"        ],
-      ["Polar Bear"          , "smileypolarbear"         ],
-      ["Baseball Cap"        , "smileybaseball"          ],
-      ["Golfer"              , "smileygolfer"            ],
-      ["Platinum Big Spender", "smileyplatinumspender"   ],
-      ["Green Dragon"        , "smileydragongreen"       ],
-      ["Red Dragon"          , "smileydragonred"         ],
-      ["Executioner"         , "smileyexecutioner"       ],
-      ["Gargoyle"            , "smileygargoyle"          ],
-      ["Banshee"             , "smileybanshee"           ],
-      ["Golem"               , "smileygolem"             ],
-      ["Frost Dragon"        , "smileyfrostdragon"       ],
-      ["Squirrel"            , "smileysquirrel"          ],
-      ["Golden Dragon"       , "smileygoldendragon"      ],
-      ["Robot Mk II"         , "smileyrobot2"            ],
-      ["Black Dragon"        , "smileydragonblack"       ],
-      ["Silver Dragon"       , "smileydragonsilver"      ]
+      ['Smiley'              , ''                        ],
+      ['Grin'                , ''                        ],
+      ['Tongue'              , ''                        ],
+      ['Happy'               , ''                        ],
+      ['Annoyed'             , ''                        ],
+      ['Sad'                 , ''                        ],
+      ['Crying'              , 'pro'                     ],
+      ['Wink'                , 'pro'                     ],
+      ['Frustrated'          , 'pro'                     ],
+      ['Shades'              , 'pro'                     ],
+      ['Devil'               , 'pro'                     ],
+      ['Inquisitive'         , 'pro'                     ],
+      ['Ninja'               , 'smileyninja'              , 0x00000000],
+      ['Santa'               , 'smileysanta'             ],
+      ['Worker'              , ''                        ],
+      ['Big Spender'         , 'smileybigspender'        ],
+      ['Superman'            , 'smileysuper'             ],
+      ['Surprise'            , 'smileysupprice'          ],
+      ['Indifferent'         , ''                        ],
+      ['Girl'                , ''                        ],
+      ['New Year 2010'       , 'mixednewyear2010'        ],
+      ['Coy'                 , ''                        ],
+      ['Wizard'              , 'smileywizard'            ],
+      ['Fan Boy'             , 'smileyfanboy'            ],
+      ['Terminator'          , ''                        ],
+      ['Extra Grin'          , 'smileyxd'                ],
+      ['Bully'               , 'smileybully'             ],
+      ['Commando'            , 'smileycommando'          ],
+      ['Kissing'             , 'smileyvalentines2011'    ],
+      ['Bird'                , 'smileybird'              ],
+      ['Bunny'               , 'smileybunni'             ],
+      ['Diamond Touch'       , 'unobtainable'            ],
+      ['Fire Wizard'         , 'smileywizard2'           ],
+      ['Extra Tongue'        , 'smileyxdp'               ],
+      ['Postman'             , 'smileypostman'           ],
+      ['Templar'             , 'smileytemplar'           ],
+      ['Angel'               , ''                        ],
+      ['Nurse'               , 'smileynurse'             ],
+      ['Vampire'             , 'smileyhw2011vampire'     ],
+      ['Ghost'               , 'smileyhw2011ghost'       ],
+      ['Frankenstein'        , 'smileyhw2011frankenstein'],
+      ['Witch'               , 'smileywitch'             ],
+      ['Indian'              , 'smileytg2011indian'      ],
+      ['Pilgrim'             , 'smileytg2011pilgrim'     ],
+      ['Pumpkin'             , 'smileypumpkin1'          ],
+      ['Lit Pumpkin'         , 'smileypumpkin2'          ],
+      ['Snowman'             , 'smileyxmassnowman'       ],
+      ['Reindeer'            , 'smileyxmasreindeer'      ],
+      ['Grinch'              , 'smileyxmasgrinch'        ],
+      ['Maestro'             , 'bricknode'               ],
+      ['DJ'                  , 'brickdrums'              ],
+      ['Sigh'                , ''                        ],
+      ['Robber'              , ''                         , 0x00000000],
+      ['Police'              , ''                         , 0xff0c64f6],
+      ['Purple Ghost'        , 'smileypurpleghost'       ],
+      ['Pirate'              , ''                        ],
+      ['Viking'              , ''                        ],
+      ['Karate'              , ''                        ],
+      ['Cowboy'              , ''                        ],
+      ['Diver'               , 'smileydiver'             ],
+      ['Tanned'              , 'smileytanned'            ],
+      ['Propeller Hat'       , ''                        ],
+      ['Hard Hat'            , 'smileyhardhat'           ],
+      ['Gas Mask'            , 'smileygasmask'           ],
+      ['Robot'               , ''                        ],
+      ['Peasant'             , ''                        ],
+      ['Guard'               , ''                        ],
+      ['Blacksmith'          , ''                        ],
+      ['LOL'                 , ''                        ],
+      ['Dog'                 , ''                        ],
+      ['Alien'               , 'smileyalien'             ],
+      ['Astronaut'           , 'smileyastronaut'         ],
+      ['PartyOrange'         , 'unobtainable'            ],
+      ['PartyGreen'          , 'unobtainable'            ],
+      ['PartyBlue'           , 'unobtainable'            ],
+      ['PartyRed'            , 'unobtainable'            ],
+      ['Daredevil'           , ''                        ],
+      ['Monster'             , 'smileymonster'           ],
+      ['Skeleton'            , 'smileyskeleton'          ],
+      ['Mad Scientist'       , 'smileymadscientist'      ],
+      ['Headhunter'          , 'smileyheadhunter'        ],
+      ['Safari'              , 'smileysafari'            ],
+      ['Archaeologist'       , 'smileyarchaeologist'     ],
+      ['New Year 2013'       , 'smileynewyear2012'       ],
+      ['Winter Hat'          , 'smileywinter'            ],
+      ['Fire demon'          , 'smileyfiredeamon'        ],
+      ['Bishop'              , 'smileybishop'            ],
+      ['Zombie'              , 'unobtainable'            ],
+      ['Bruce'               , 'smileyzombieslayer'      ],
+      ['Unit'                , 'smileyunit'              ],
+      ['Spartan'             , 'smileyspartan'           ],
+      ['Lady'                , 'smileyhelen'             ],
+      ['Cow'                 , 'smileycow'               ],
+      ['Scarecrow'           , 'smileyscarecrow'         ],
+      ['Dark Wizard'         , 'smileydarkwizard'        ],
+      ['Kung Fu Master'      , 'smileykungfumaster'      ],
+      ['Fox'                 , 'smileyfox'               ],
+      ['Night Vision'        , 'smileynightvision'       ],
+      ['Summer Girl'         , 'smileysummergirl'        ],
+      ['Fan Boy II'          , 'smileyfanboy2'           ],
+      ['Sci-Fi Hologram'     , 'unobtainable'            ],
+      ['Gingerbread'         , 'smileygingerbread'       ],
+      ['Caroler'             , 'smileycaroler'           ],
+      ['Elf'                 , 'smileyelf'               ],
+      ['Nutcracker'          , 'smileynutcracker'        ],
+      ['Blushing'            , 'brickvalentines2015'     ],
+      ['Artist'              , 'smileyartist'            ],
+      ['Princess'            , ''                        ],
+      ['Chef'                , ''                        ],
+      ['Clown'               , ''                        ],
+      ['Red Ninja'           , 'smileyninjared'          ],
+      ['3D Glasses'          , 'smiley3dglasses'         ],
+      ['Sunburned'           , 'smileysunburned'         ],
+      ['Tourist'             , 'smileytourist'           ],
+      ['Graduate'            , 'smileygraduate'          ],
+      ['Sombrero'            , 'smileysombrero'          ],
+      ['Cat'                 , ''                        ],
+      ['Scared'              , ''                        ],
+      ['Ghoul'               , 'smileyghoul'             ],
+      ['Mummy'               , 'smileymummy'             ],
+      ['Bat'                 , 'smileybat'               ],
+      ['Eyeball'             , 'smileyeyeball'           ],
+      ['Light Wizard'        , 'smileylightwizard'       ],
+      ['Hooded'              , 'smileyhooded'            ],
+      ['Earmuffs'            , 'smileyearmuffs'          ],
+      ['Penguin'             , 'smileypenguin'           ],
+      ['Gold Smiley'         , 'goldmember'              ],
+      ['Gold Ninja'          , 'goldmember'              ],
+      ['Gold Robot'          , 'goldmember'              ],
+      ['Gold Top Hat'        , 'goldmember'              ],
+      ['Sick'                , ''                        ],
+      ['Unsure'              , ''                        ],
+      ['Goofy'               , 'smileygoofy'             ],
+      ['Raindrop'            , 'smileyraindrop'          ],
+      ['Bee'                 , 'smileybee'               ],
+      ['Butterfly'           , 'smileybutterfly'         ],
+      ['Sea Captain'         , 'smileyseacaptain'        ],
+      ['Soda Clerk'          , 'smileysodaclerk'         ],
+      ['Lifeguard'           , 'smileylifeguard'         ],
+      ['Aviator'             , 'smileyaviator'           ],
+      ['Sleepy'              , 'smileysleepy'            ],
+      ['Seagull'             , 'smileyseagull'           ],
+      ['Werewolf'            , 'smileywerewolf'          ],
+      ['Swamp Creature'      , 'smileyswampcreature'     ],
+      ['Fairy'               , 'smileyfairy'             ],
+      ['Firefighter'         , 'smileyfirefighter'       ],
+      ['Spy'                 , 'smileyspy'                , 0x00000000],
+      ['Devil Skull'         , 'smileydevilskull'        ],
+      ['Clockwork Robot'     , 'smileyclockwork'         ],
+      ['Teddy Bear'          , 'smileyteddybear'         ],
+      ['Christmas Soldier'   , 'smileychristmassoldier'  ],
+      ['Scrooge'             , 'smileyscrooge'           ],
+      ['Boy'                 , ''                        ],
+      ['Pigtails'            , 'smileypigtails'          ],
+      ['Doctor'              , 'smileydoctor'            ],
+      ['Turban'              , 'smileyturban'            ],
+      ['Hazmat Suit'         , 'smileyhazmatsuit'        ],
+      ['Leprechaun'          , 'smileyleprechaun'        ],
+      ['Angry'               , 'smileyangry'             ],
+      ['Smirk'               , 'smileysmirk'             ],
+      ['Sweat'               , 'smileysweat'             ],
+      ['Country Singer'      , 'brickguitar'             ],
+      ['Thor'                , 'smileythor'              ],
+      ['Cowgirl'             , ''                        ],
+      ['Raccoon'             , 'smileyraccoon'           ],
+      ['Lion'                , 'smileylion'              ],
+      ['Laika'               , 'smileylaiika'            ],
+      ['Fishbowl'            , 'smileyfishbowl'          ],
+      ['Slime'               , 'smileyslime'             ],
+      ['Designer'            , 'smileydesigner'          ],
+      ['Frozen'              , 'smileyfrozen'            ],
+      ['Masquerade'          , 'smileymasquerade'        ],
+      ['Polar Bear'          , 'smileypolarbear'         ],
+      ['Baseball Cap'        , 'smileybaseball'          ],
+      ['Golfer'              , 'smileygolfer'            ],
+      ['Platinum Big Spender', 'smileyplatinumspender'   ],
+      ['Green Dragon'        , 'smileydragongreen'       ],
+      ['Red Dragon'          , 'smileydragonred'         ],
+      ['Executioner'         , 'smileyexecutioner'       ],
+      ['Gargoyle'            , 'smileygargoyle'          ],
+      ['Banshee'             , 'smileybanshee'           ],
+      ['Golem'               , 'smileygolem'             ],
+      ['Frost Dragon'        , 'smileyfrostdragon'       ],
+      ['Squirrel'            , 'smileysquirrel'          ],
+      ['Golden Dragon'       , 'smileygoldendragon'      ],
+      ['Robot Mk II'         , 'smileyrobot2'            ],
+      ['Black Dragon'        , 'smileydragonblack'       ],
+      ['Silver Dragon'       , 'smileydragonsilver'      ]
     ]).forEach((row, id) => {
       const [name, payVaultId, miniMapColor] = row;
       ItemManager.smilies.push(new ItemSmiley(
@@ -1581,22 +1627,22 @@ class ItemManager {
     // Auras
     //
     ([
-      ["White"   , ""            ],
-      ["Red"     , "aurared"     ],
-      ["Blue"    , "aurablue"    ],
-      ["Yellow"  , "aurayellow"  ],
-      ["Green"   , "auragreen"   ],
-      ["Purple"  , "aurapurple"  ],
-      ["Orange"  , "auraorange"  ],
-      ["Cyan"    , "auracyan"    ],
-      ["Gold"    , "goldmember"  ],
-      ["Pink"    , "aurapink"    ],
-      ["Indigo"  , "auraindigo"  ],
-      ["Lime"    , "auralime"    ],
-      ["Black"   , "aurablack"   ],
-      ["Teal"    , "aurateal"    ],
-      ["Grey"    , "auragrey"    ],
-      ["Amaranth", "auraamaranth"]
+      ['White'   , ''            ],
+      ['Red'     , 'aurared'     ],
+      ['Blue'    , 'aurablue'    ],
+      ['Yellow'  , 'aurayellow'  ],
+      ['Green'   , 'auragreen'   ],
+      ['Purple'  , 'aurapurple'  ],
+      ['Orange'  , 'auraorange'  ],
+      ['Cyan'    , 'auracyan'    ],
+      ['Gold'    , 'goldmember'  ],
+      ['Pink'    , 'aurapink'    ],
+      ['Indigo'  , 'auraindigo'  ],
+      ['Lime'    , 'auralime'    ],
+      ['Black'   , 'aurablack'   ],
+      ['Teal'    , 'aurateal'    ],
+      ['Grey'    , 'auragrey'    ],
+      ['Amaranth', 'auraamaranth']
     ]).forEach((row, id) => {
       const [name, payVaultId] = row;
       ItemManager.auraColors.push(new ItemAuraColor(id, name, payVaultId));
@@ -1607,20 +1653,20 @@ class ItemManager {
     //
     let auraImagesIndex = 0;
     ([
-      ["Default"  , ItemManager.aurasBMD      , ""                   ,  1, 0.200, true ],
-      ["Pinwheel" , ItemManager.aurasBMD      , "aurashapepinwheel"  ,  6, 0.200, true ],
-      ["Torus"    , ItemManager.aurasBMD      , "aurashapetorus"     ,  1, 0.200, true ],
-      ["Ornate"   , ItemManager.aurasBMD      , "goldmember"         ,  6, 0.200, true ],
-      ["Spiral"   , ItemManager.aurasBMD      , "aurashapespiral"    ,  6, 0.150, true ],
-      ["Star"     , ItemManager.aurasBMD      , "aurashapestar"      ,  1, 0.200, true ],
-      ["Snowflake", ItemManager.aurasBMD      , "aurashapesnowflake" ,  1, 0.200, true ],
-      ["Atom"     , ItemManager.aurasBMD      , "aurashapeatom"      ,  8, 0.175, true ],
-      ["Sawblade" , ItemManager.aurasBMD      , "aurashapesawblade"  ,  6, 0.200, true ],
-      ["Target"   , ItemManager.aurasBMD      , "aurashapetarget"    ,  6, 0.150, true ],
-      ["Bubble"   , ItemManager.aurasBubbleBMD, "aurabubble"         ,  8, 0.100, false],
-      ["Galaxy"   , ItemManager.aurasGalaxyBMD, "auragalaxy"         , 12, 0.150, false],
-      ["Heart"    , ItemManager.aurasBMD      , "aurashapeheart"     , 10, 0.125, true ],
-      ["Flower"   , ItemManager.aurasBMD      , "aurashapesunflower" ,  1, 0.200, true ]
+      ['Default'  , ItemManager.aurasBMD      , ''                   ,  1, 0.200, true ],
+      ['Pinwheel' , ItemManager.aurasBMD      , 'aurashapepinwheel'  ,  6, 0.200, true ],
+      ['Torus'    , ItemManager.aurasBMD      , 'aurashapetorus'     ,  1, 0.200, true ],
+      ['Ornate'   , ItemManager.aurasBMD      , 'goldmember'         ,  6, 0.200, true ],
+      ['Spiral'   , ItemManager.aurasBMD      , 'aurashapespiral'    ,  6, 0.150, true ],
+      ['Star'     , ItemManager.aurasBMD      , 'aurashapestar'      ,  1, 0.200, true ],
+      ['Snowflake', ItemManager.aurasBMD      , 'aurashapesnowflake' ,  1, 0.200, true ],
+      ['Atom'     , ItemManager.aurasBMD      , 'aurashapeatom'      ,  8, 0.175, true ],
+      ['Sawblade' , ItemManager.aurasBMD      , 'aurashapesawblade'  ,  6, 0.200, true ],
+      ['Target'   , ItemManager.aurasBMD      , 'aurashapetarget'    ,  6, 0.150, true ],
+      ['Bubble'   , ItemManager.aurasBubbleBMD, 'aurabubble'         ,  8, 0.100, false],
+      ['Galaxy'   , ItemManager.aurasGalaxyBMD, 'auragalaxy'         , 12, 0.150, false],
+      ['Heart'    , ItemManager.aurasBMD      , 'aurashapeheart'     , 10, 0.125, true ],
+      ['Flower'   , ItemManager.aurasBMD      , 'aurashapesunflower' ,  1, 0.200, true ]
     ]).forEach((row, id) => {
       const [name, base, payVaultId, frames, speed, rotate, generate] = row;
       if (generate){
@@ -1763,8 +1809,20 @@ class ItemManager {
         .addKey(408, 189, 0xff0c2d3d, ['Cyan', 'Teal'])
         .addKey(409, 190, 0xff400c40, ['Pink', 'Violet', 'Purple'])
         .addKey(410, 191, 0xff2c330a, ['Yellow', 'Key']),
-      // TODO: gates
-      // TODO: doors
+      new ItemBrickPackage('gates', 'Gate Blocks', ['Key', 'Lock', 'Action', 'Standard'])
+        .addGate(  26,  26, 0xff9c2d46, ['Red', 'Magenta'])
+        .addGate(  27,  27, 0xff379c30, ['Green'])
+        .addGate(  28,  28, 0xff2d449c, ['Blue'])
+        .addGate(1008, 195, 0xff2d8d99, ['Cyan', 'Teal'])
+        .addGate(1009, 196, 0xff912d99, ['Pink', 'Purple', 'Violet'])
+        .addGate(1010, 197, 0xff97922d, ['Yellow']),
+      new ItemBrickPackage('doors', 'Door Blocks', ['Key', 'Lock', 'Action', 'Standard'])
+        .addDoor(  23,  23, 0xff9c2d46, ['Red', 'Magenta'])
+        .addDoor(  24,  24, 0xff379c30, ['Green'])
+        .addDoor(  25,  25, 0xff2d449c, ['Blue'])
+        .addDoor(1005, 192, 0xff2d8d99, ['Cyan', 'Teal'])
+        .addDoor(1006, 193, 0xff912d99, ['Pink', 'Purple', 'Violet'])
+        .addDoor(1007, 194, 0xff97922d, ['Yellow']),
       new ItemBrickPackage('coins', 'Coin Blocks')
         .addCoin(100, ItemLayer.ABOVE     , ItemManager.specialBlocksBMD, ''      , false,   0, 0x00000000, false, false, ['Gold', 'G-Coins', 'Yellow', 'Money', 'Primary', 'Collect', 'Magic', 'Value', 'Standard'])
         .addCoin(101, ItemLayer.ABOVE     , ItemManager.specialBlocksBMD, ''      , false,  13, 0x00000000, false, false, ['Blue', 'B-Coin', 'Secondary', 'Money', 'Optional', 'Collect', 'Magic', 'Value', 'Standard'])
@@ -1786,7 +1844,10 @@ class ItemManager {
       // TODO: music
       // TODO: hazards
       // TODO: liquids
-      // TODO: portals
+      new ItemBrickPackage('portals', 'Portal Blocks', ['Teleport'])
+        .addPortal(381,'brickinvisibleportal','teleports the player to another portal', false, 138,0x00000000, ['Invisible', 'Secrets', 'Hidden'])
+        .addPortal(242,'brickportal'         ,'teleports the player to another portal', false,  52,        -1, ['Visible', 'Blue'])
+        .addPortal(374,'brickworldportal'    ,'teleports the player to another world' , true , 113,        -1, ['World', 'Red']),
       // TODO: diamond
       // TODO: cake
       // TODO: hologram
@@ -2300,7 +2361,7 @@ class Lookup {
   }
 
   getPortal(x, y){
-    this.portalLookup[x + y * this.width] || {id: 0, target: 0, location: 0, type: ItemId.PORTAL};
+    return this.portalLookup[x + y * this.width] || {id: 0, target: 0, location: 0, type: ItemId.PORTAL};
   }
 
   setPortal(x, y, value){
@@ -2324,7 +2385,7 @@ class Lookup {
   }
 
   getNpc(x, y){
-    // TODO: return npcLookup[getLookupId(x, y)] || new Npc("&invalid&", ["r","i","p"], new Point(x, y), null);
+    // TODO: return npcLookup[getLookupId(x, y)] || new Npc('&invalid&', ['r','i','p'], new Point(x, y), null);
     return this.npcLookup[x + y * this.width];
   }
 
@@ -2336,7 +2397,7 @@ class Lookup {
     const portals = [];
     for (let i = 0; i < this.portalLookup.length; i++){
       const p = this.portalLookup[i];
-      if (p.id === portalId){
+      if (p && p.id === portalId){
         portals.push({
           x: (i % this.width) << 4,
           y: (Math.floor(i / this.width)) << 4
@@ -2702,6 +2763,7 @@ class BlockSprite extends BlSprite {
 
 class World extends BlObject {
   player;
+  playState;
   lookup;
   spawnPoints = [];
   depth = 0;
@@ -2874,7 +2936,7 @@ class World extends BlObject {
             break;
           case ItemId.LABEL: {
             this.lookup.setLabel(nx, ny, text, text_color, wrapLength);
-            // TODO: var t:BlText = new BlText(Global.default_label_size,wrapLength,uint("0x"+text_color.substr(1,text_color.length)),"left","system",true);
+            // TODO: var t:BlText = new BlText(Global.default_label_size,wrapLength,uint('0x'+text_color.substr(1,text_color.length)),'left','system',true);
             // TODO: t.text = text;
             // TODO: t.x = nx * size;
             // TODO: t.y = ny * size;
@@ -2912,6 +2974,10 @@ class World extends BlObject {
 
   setPlayer(p){
     this.player = p;
+  }
+
+  setPlayState(playState){
+    this.playState = playState;
   }
 
   setMapArray(map){
@@ -3051,7 +3117,7 @@ class World extends BlObject {
       case 1000:
         this.lookup.setLabel(x, y, properties.text, properties.text_color, properties.wraplength);
         /* TODO: setTileComplex label
-        var t:BlText = new BlText(Global.default_label_size,lookup.getLabel(x, y).WrapLength,uint("0x"+properties.text_color.substr(1,properties.text_color.length)),"left","system",true);
+        var t:BlText = new BlText(Global.default_label_size,lookup.getLabel(x, y).WrapLength,uint('0x'+properties.text_color.substr(1,properties.text_color.length)),'left','system',true);
         t.text = properties.text;
         t.x = x * size;
         t.y = y * size;
@@ -3140,8 +3206,13 @@ class World extends BlObject {
   }
 
   tick(input){
-    this.aniOffset += 0.3;
     this.overlapCells = [];
+    this.aniOffset += 0.3;
+
+    for (const color of Object.keys(this.keys)){
+      if (this.keys[color] && ((this.aniOffset - this.keysTimer[color]) / 30) >= 5)
+        this.playState.switchKey(color, false, false);
+    }
   }
 
   overlaps(pl){
@@ -3410,67 +3481,55 @@ class World extends BlObject {
         switch (type){
           case ItemId.CHECKPOINT:
             continue;
-          /*
-          //Red doors
+          // Red doors
           case 23:
-          case 26: {
-            if (getKey("red")) {
-              ItemManager.sprDoors.drawPoint(target, point, type == 23? 0 : 3);
+          case 26:
+            if (this.getKey('red')){
+              ItemManager.sprDoors.drawPoint(target, point, type === 23 ? 0 : 3);
               continue;
             }
             break;
-          }
-
-          //Green doors
+          // Green doors
           case 24:
-          case 27: {
-            if (getKey("green")) {
-              ItemManager.sprDoors.drawPoint(target, point, type == 24? 1 : 4);
+          case 27:
+            if (this.getKey('green')){
+              ItemManager.sprDoors.drawPoint(target, point, type === 24 ? 1 : 4);
               continue;
             }
             break;
-          }
-
-          //Blue doors
+          // Blue doors
           case 25:
-          case 28: {
-            if (getKey("blue")) {
-              ItemManager.sprDoors.drawPoint(target, point, type == 25? 2 : 5);
+          case 28:
+            if (this.getKey('blue')){
+              ItemManager.sprDoors.drawPoint(target, point, type === 25 ? 2 : 5);
               continue;
             }
             break;
-          }
-
-          //Cyan doors
+          // Cyan doors
           case 1005:
-          case 1008: {
-            if (getKey("cyan")) {
-              ItemManager.sprDoors.drawPoint(target, point, type == 1005? 14 : 17);
+          case 1008:
+            if (this.getKey('cyan')){
+              ItemManager.sprDoors.drawPoint(target, point, type === 1005 ? 14 : 17);
               continue;
             }
             break;
-          }
-
-          //Magenta doors
+          // Magenta doors
           case 1006:
-          case 1009: {
-            if (getKey("magenta")) {
-              ItemManager.sprDoors.drawPoint(target, point, type == 1006? 15 : 18);
+          case 1009:
+            if (this.getKey('magenta')){
+              ItemManager.sprDoors.drawPoint(target, point, type === 1006 ? 15 : 18);
               continue;
             }
             break;
-          }
-
-          //Yellow doors
+          // Yellow doors
           case 1007:
-          case 1010: {
-            if (getKey("yellow")) {
-              ItemManager.sprDoors.drawPoint(target, point, type == 1007? 16 : 19);
+          case 1010:
+            if (this.getKey('yellow')){
+              ItemManager.sprDoors.drawPoint(target, point, type === 1007 ? 16 : 19);
               continue;
             }
             break;
-          }
-
+          /*
           // Death doors/gates
           case ItemId.DEATH_DOOR:{
             if (lookup.getInt(cx, cy) <= player.deaths) {
@@ -3807,7 +3866,7 @@ class World extends BlObject {
 
           case ItemId.PORTAL:{
             var p:Portal = lookup.getPortal(cx,cy)
-            ItemManager.sprPortal.drawPoint(target, point, p.rotation * 15 + (((offset/1.5 >> 0)+cx+cy)%15) + 1)// +1 because the first frame is just cy "dead portal" used by the UI
+            ItemManager.sprPortal.drawPoint(target, point, p.rotation * 15 + (((offset/1.5 >> 0)+cx+cy)%15) + 1)// +1 because the first frame is just cy 'dead portal' used by the UI
             continue;
           }
 
@@ -4380,6 +4439,7 @@ class Player extends SynchronizedSprite {
   spriteRect; // rect2
   queue = [];
   lastJump = -Date.now();
+  lastPortal;
   current;
   current_below;
 
@@ -5024,8 +5084,127 @@ class Player extends SynchronizedSprite {
       }
     }
 
+    const processPortals = () => {
+      this.current = this.world.getTile(0, cx, cy);
+
+      if (!isGod && this.current == ItemId.WORLD_PORTAL){
+        /* TODO: world portals
+        if (!this.isMe){
+          this.resetSend = true;
+          this.resetPlayer(false, false, wp.target);
+        } else if (this.isMe && KeyBinding.risky.isDown() && !resetSend) {
+          var wp:WorldPortal = world.lookup.getWorldPortal(cx, cy);
+          if (wp.id.length > 0) {
+            resetSend = true;
+            //if (wp.id != connection.roomId) {
+              //if (connection.connected) {
+                //connection.disconnect();
+              //}
+              //var d:NavigationEvent = new NavigationEvent(NavigationEvent.JOIN_WORLD,true,false);
+              //d.world_id = wp.id;
+              //d.joindata.spawnid = wp.target;
+              //d.joindata.lastowner = Global.ownerID;
+              //d.joindata.lastcrew = Global.currentLevelCrew;
+              //Global.base.dispatchEvent(d);
+            //} else {
+              //connection.send('reset', cx, cy);
+            //}
+            var id:int = parseInt(wp.id);
+            if (Global.isValidWorldIndex(id)) {
+              Global.base.campaigns.joinWorld(id, wp.target);
+            }
+            else resetPlayer(false, false, wp.target);
+          }
+        }
+        */
+      }
+
+      if (isGod ||
+        (this.current !== ItemId.PORTAL && this.current != ItemId.PORTAL_INVISIBLE) ||
+        (this.world.lookup.getPortal(cx, cy).target === this.world.lookup.getPortal(cx, cy).id)){
+        this.lastPortal = null;
+        return;
+      }
+
+      if (this.lastPortal != null)
+        return;
+
+      this.lastPortal = {x: cx << 4, y: cy << 4};
+      const portals = this.world.lookup.getPortals(this.world.lookup.getPortal(cx, cy).target);
+      if (portals.length <= 0)
+        return;
+      const cp = portals[randomRange(0, portals.length - 1)];
+      let oldRotation =
+        this.world.lookup.getPortal(this.lastPortal.x >> 4, this.lastPortal.y >> 4).rotation;
+      const newRotation = this.world.lookup.getPortal(cp.x >> 4, cp.y >> 4).rotation;
+      if (oldRotation < newRotation)
+        oldRotation += 4;
+
+      const osx = this.speedX;
+      const osy = this.speedY;
+      const omx = this.modifierX;
+      const omy = this.modifierY;
+
+      const dir = oldRotation - newRotation;
+      const magic = 1.42;
+
+      switch (dir){
+        case 1: // 90 degrees
+          this.speedX = osy * magic;
+          this.speedY = -osx * magic;
+
+          this.modifierX = omy * magic;
+          this.modifierY = -omx * magic;
+
+          remainderY = -remainderX;
+          currentSY = -currentSX;
+          break;
+        case 2: // 180 degrees
+          this.speedX = -osx * magic;
+          this.speedY = -osy * magic;
+
+          this.modifierX = -omx * magic;
+          this.modifierY = -omy * magic;
+
+          remainderY = -remainderY;
+          currentSY = -currentSY;
+          remainderX = -remainderX;
+          currentSX = -currentSX;
+          break;
+        case 3: // 270 degrees
+          this.speedX = -osy * magic;
+          this.speedY = osx * magic;
+
+          this.modifierX = -omy * magic;
+          this.modifierY = omx * magic;
+
+          remainderX = -remainderY;
+          currentSX = -currentSY;
+          break;
+      }
+
+      if (this.state && this.state.target == this)
+        this.state.offset(this.x - cp.x, this.y - cp.y);
+
+      /* TODO: portal particles
+      if (Global.base.settings.particles) {
+        if (current == ItemId.PORTAL && isme) { // In
+          for (var k:int = 0; k < 25; k++) {
+            var speedFactor:Number = (Math.random() + 1) / 2;
+            world.addParticle(new Particle(world, (Math.random()*100 < 50 ? 5 : 4), cp.x+6, cp.y+6, speedFactor, speedFactor, speedFactor/70, speedFactor/70, Math.random()*360, Math.random()*90, false));
+          }
+        }
+      }
+      */
+
+      this.x = cp.x
+      this.y = cp.y
+
+      this.lastPortal = cp;
+    };
+
     while ((currentSX !== 0 && !doneX) || (currentSY != 0 && !doneY)){
-      // TODO: this.processPortals();
+      processPortals();
       ox = this.x;
       oy = this.y;
 
@@ -5153,138 +5332,6 @@ class Player extends SynchronizedSprite {
     }
 
     this.updateTicks();
-
-    /*
-    function randomRange(minNum:Number, maxNum:Number):Number
-    {
-      return (Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum);
-    }
-
-    function processPortals():void{
-//        cx = (x+8)>>4;
-//        cy = (y+8)>>4;
-//
-      current = world.getTile(0, cx, cy);
-
-      if (!isGod && current == ItemId.WORLD_PORTAL) {
-        if (!isme) {
-          resetSend = true;
-          resetPlayer(false, false, wp.target);
-        } else if (isme && KeyBinding.risky.isDown() && !resetSend) {
-          var wp:WorldPortal = world.lookup.getWorldPortal(cx, cy);
-          if (wp.id.length > 0) {
-            resetSend = true;
-            //if (wp.id != connection.roomId) {
-              //if (connection.connected) {
-                //connection.disconnect();
-              //}
-              //var d:NavigationEvent = new NavigationEvent(NavigationEvent.JOIN_WORLD,true,false);
-              //d.world_id = wp.id;
-              //d.joindata.spawnid = wp.target;
-              //d.joindata.lastowner = Global.ownerID;
-              //d.joindata.lastcrew = Global.currentLevelCrew;
-              //Global.base.dispatchEvent(d);
-            //} else {
-              //connection.send("reset", cx, cy);
-            //}
-            var id:int = parseInt(wp.id);
-            if (Global.isValidWorldIndex(id)) {
-              Global.base.campaigns.joinWorld(id, wp.target);
-            }
-            else resetPlayer(false, false, wp.target);
-          }
-        }
-      }
-
-      if (isGod || (current != ItemId.PORTAL && current != ItemId.PORTAL_INVISIBLE) || (world.lookup.getPortal(cx, cy).target == world.lookup.getPortal(cx, cy).id)) {
-        lastPortal = null;
-        return;
-      }
-
-      if (lastPortal != null)
-        return;
-
-      lastPortal =  new Point(cx<<4, cy<<4)
-      var portals:Vector.<Point> = world.lookup.getPortals(world.lookup.getPortal(cx,cy).target);
-
-      if (portals.length <= 0) return;
-      var cp:Point = portals[randomRange(0, portals.length - 1)];
-
-      var oldRotationg:int = world.lookup.getPortal(lastPortal.x>>4, lastPortal.y>>4).rotation
-      var newRotation:int = world.lookup.getPortal(cp.x>>4, cp.y>>4).rotation
-
-      if (oldRotationg < newRotation) oldRotationg += 4;
-
-      /*
-       * 0 - down
-       * 1 - left
-       * 2 - up
-       * 3 - right
-      * /
-
-      var osx:Number = speedX
-      var osy:Number = speedY
-      var omx:Number = modifierX
-      var omy:Number = modifierY
-
-      var dir:int = oldRotationg-newRotation
-      var magic:Number = 1.42
-
-      switch(dir){
-        case 1:{ // 90 degrees
-          speedX = osy * magic
-          speedY = -osx * magic
-
-          modifierX = omy*magic
-          modifierY = -omx*magic
-
-          remainderY = -remainderX
-          currentSY = -currentSX
-          break;
-        }
-        case 2:{ // 180 degrees
-          speedX = -osx * magic
-          speedY = -osy * magic
-
-          modifierX = -omx*magic
-          modifierY = -omy*magic
-
-          remainderY = -remainderY
-          currentSY = -currentSY
-          remainderX = -remainderX
-          currentSX = -currentSX
-          break;
-        }
-        case 3:{ // 270 degrees
-          speedX = -osy * magic
-          speedY = osx * magic
-
-          modifierX = -omy*magic
-          modifierY = omx*magic
-
-          remainderX = -remainderY
-          currentSX = -currentSY
-          break;
-        }
-      }
-
-      if (state && state.target == that) state.offset( x-cp.x,y-cp.y )
-
-      if (Global.base.settings.particles) {
-        if (current == ItemId.PORTAL && isme) { // In
-          for (var k:int = 0; k < 25; k++) {
-            var speedFactor:Number = (Math.random() + 1) / 2;
-            world.addParticle(new Particle(world, (Math.random()*100 < 50 ? 5 : 4), cp.x+6, cp.y+6, speedFactor, speedFactor, speedFactor/70, speedFactor/70, Math.random()*360, Math.random()*90, false));
-          }
-        }
-      }
-
-      x = cp.x
-      y = cp.y
-
-      lastPortal = cp;
-    }
-    */
   }
 
   draw(target, ox, oy){
@@ -5340,6 +5387,16 @@ class Player extends SynchronizedSprite {
 
 class Me extends Player {
   coinCountChanged = false;
+  pastX;
+  pastY;
+  keyToColor = {
+    '6': 'red',
+    '7': 'green',
+    '8': 'blue',
+    '408': 'cyan',
+    '409': 'magenta',
+    '410': 'yellow'
+  };
 
   getPlayerInput(input){
     if (this.isControlled){
@@ -5409,6 +5466,28 @@ class Me extends Player {
         break;
       }
     }
+
+    if (this.pastX !== cx || this.pastY !== cy){ // only just-entered blocks
+      if (this.isMe){
+        // TODO: piano, drums, guitar
+      }
+
+      if (!isGod){
+        switch (this.current){
+          case ItemId.KEY_RED:
+          case ItemId.KEY_GREEN:
+          case ItemId.KEY_BLUE:
+          case ItemId.KEY_CYAN:
+          case ItemId.KEY_MAGENTA:
+          case ItemId.KEY_YELLOW:
+            this.state.switchKey(this.keyToColor[this.current], true, false);
+            break;
+        }
+      }
+
+      this.pastX = cx;
+      this.pastY = cy;
+    }
   }
 
   sendMovement(cx, cy){
@@ -5445,6 +5524,7 @@ class PlayState extends BlContainer {
   world;
   coins = 0;
   bcoins = 0;
+  keysQueue = [];
 
   constructor(worldData){
     super();
@@ -5462,6 +5542,7 @@ class PlayState extends BlContainer {
     this.y = -this.player.y + Config.bh / 2;
     this.add(this.player);
     this.world.setPlayer(this.player);
+    this.world.setPlayState(this);
     this.target = this.player;
   }
 
@@ -5470,9 +5551,22 @@ class PlayState extends BlContainer {
   }
 
   enterFrame(){
+    const keysLength = this.keysQueue.length;
+    for (let i = 0; i < keysLength; i++){
+      const {color, state} = this.keysQueue.shift();
+      this.switchKey(color, state, true);
+    }
   }
 
   exitFrame(){
+  }
+
+  switchKey(color, state, fromQueue){
+    this.world.setKey(color, state, fromQueue);
+    if (this.world.overlaps(this.player)){
+      this.world.setKey(color, !state);
+      this.keysQueue.push({color, state});
+    }
   }
 
   draw(target, ox, oy){
@@ -5486,7 +5580,7 @@ class PlayState extends BlContainer {
     const ox2 = ox + this.x;
     const oy2 = oy + this.y;
 
-    // Draws the "above" decoration layer
+    // Draws the 'above' decoration layer
     this.world.postDraw(target, ox2, oy2);
 
     // Draws you, if flying
