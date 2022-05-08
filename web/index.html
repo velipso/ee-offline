@@ -3,6 +3,14 @@
 <head>
   <title>Everybody Edits</title>
   <style>
+@font-face {
+  font-family: ee_nokiafc22;
+  src: url('../media/nokiafc22.ttf');
+}
+@font-face {
+  font-family: ee_visitor;
+  src: url('../media/visitor.ttf');
+}
 html, body {
   margin: 0;
   padding: 0;
@@ -14,11 +22,47 @@ html, body {
 canvas {
   display: block;
 }
+#controls {
+  font-family: ee_nokiafc22;
+  color: #fff;
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 300px;
+  height: 140px;
+  border: 2px solid #2ac;
+  border-radius: 10px;
+  background-color: #278;
+  padding: 0 10px;
+}
+
+#controls p {
+  margin: 10px 0;
+}
+
+#controls-x {
+  display: block;
+  float: right;
+  margin-top: 10px;
+  color: #6ef;
+}
   </style>
 </head>
 <body>
-<script src="jszip.min.js"></script>
-<script src="pako_inflate.min.js"></script>
-<script src="index.js"></script>
+  <div id="controls" style="display: none;">
+    <a id="controls-x" onclick="javascript: return hideControls();">X</a>
+    <p>
+      Controls:
+    </p>
+    <p>
+      Move: W / S / A / D / Arrows<br />
+      Jump: Space<br />
+      Debug: F1<br />
+      Full screen: F2
+    </p>
+  </div>
+  <script src="jszip.min.js"></script>
+  <script src="pako_inflate.min.js"></script>
+  <script src="index.js"></script>
 </body>
 </html>

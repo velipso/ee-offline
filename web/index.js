@@ -245,7 +245,7 @@ class ItemId {
   static WORLD_PORTAL_SPAWN                      = 1582;
   static ZOMBIE_GATE                             = 206;
   static ZOMBIE_DOOR                             = 207;
-  static GLOWYLINE_BLUE_SLOPE                    = 375;
+  static GLOWY_LINE_BLUE_SLOPE                   = 375;
   static GLOWY_LINE_BLUE_STRAIGHT                = 376;
   static GLOWY_LINE_YELLOW_SLOPE                 = 377;
   static GLOWY_LINE_YELLOW_STRAIGHT              = 378;
@@ -548,7 +548,7 @@ class ItemId {
   static isBlockRotateable(id){
     switch (id){
       case ItemId.GLOWY_LINE_BLUE_STRAIGHT:
-      case ItemId.GLOWYLINE_BLUE_SLOPE:
+      case ItemId.GLOWY_LINE_BLUE_SLOPE:
       case ItemId.GLOWY_LINE_GREEN_SLOPE:
       case ItemId.GLOWY_LINE_GREEN_STRAIGHT:
       case ItemId.GLOWY_LINE_YELLOW_SLOPE:
@@ -896,7 +896,8 @@ class ItemTab {
 
 class ItemBrick {
   id;
-  payVauldId;
+  debugId;
+  payVaultId;
   layer;
   bmd;
   offset;
@@ -944,11 +945,12 @@ class ItemBrick {
       throw new Error('Invalid selectorBG');
 
     this.id = id;
+    this.debugId = id;
     this.layer = layer;
     this.miniMapColor = miniMapColor < 0 ? 0 : miniMapColor; // TODO: generateThumbColor
     this.bmd = bmd; // TODO: shadow
     this.offset = offset;
-    this.payVauldId = payVaultId;
+    this.payVaultId = payVaultId;
     this.description = description;
     this.tab = tab;
     this.requiresOwnership = requiresOwnership;
@@ -965,6 +967,54 @@ class ItemBrick {
       {x: this.offset * 16, y: 0, w: 16, h: 16},
       {x: ox, y: oy, w: 16, h: 16}
     );
+    target.debugText(`${this.debugId}`, ox + 8, oy + 8);
+  }
+
+  drawWithNumber(target, ox, oy, num){
+    target.copyPixels(
+      this.bmd,
+      {x: this.offset * 16, y: 0, w: 16, h: 16},
+      {x: ox, y: oy, w: 16, h: 16}
+    );
+    if (num >= 1000){
+      target.copyPixels(
+        ItemManager.blockNumbersBMD,
+        {x: 40, y: 0, w: 4, h: 5},
+        {x: ox + 12, y: oy + 11, w: 4, h: 5}
+      );
+    }
+    else{
+      num = '' + num;
+      for (let i = 0; i < num.length; i++){
+        const n = num[i] - '0';
+        target.copyPixels(
+          ItemManager.blockNumbersBMD,
+          {x: n * 4, y: 0, w: 4, h: 5},
+          {x: ox + 12 - i * 5, y: oy + 11, w: 4, h: 5}
+        );
+      }
+    }
+  }
+
+  copy(debugId){
+    const brick = new ItemBrick(
+      this.id,
+      this.layer,
+      this.bmd,
+      this.offset,
+      this.payVaultId,
+      this.description,
+      this.tab,
+      this.requiresOwnership,
+      this.requiresAdmin,
+      this.requiresPurchase,
+      this.hasShadow,
+      this.miniMapColor,
+      this.tags,
+      this.selectorBG
+    );
+    brick.debugId = debugId;
+    return brick;
   }
 }
 
@@ -1184,6 +1234,123 @@ class ItemBrickPackage {
     const payVaultId = '';
     const description = 'hit to activate key doors and gates for everyone for 6 seconds';
     const tab = ItemTab.ACTION;
+    const requiresOwnership = false;
+    const shadow = true;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addCoin(id, layer, base, payVaultId, shadow, artOffset, miniMapColor, requiresAdmin, requiresPurchase, tags){
+    const description = '';
+    const tab = ItemTab.ACTION;
+    const requiresOwnership = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addDark(id, shadow, artOffset, tags){
+    const layer = ItemLayer.BACKGROUND;
+    const base = ItemManager.bgBlocksBMD;
+    const payVaultId = '';
+    const description = '';
+    const tab = ItemTab.BACKGROUND;
+    const miniMapColor = -1;
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addPastel(id, artOffset, tags){
+    const layer = ItemLayer.BACKGROUND;
+    const base = ItemManager.bgBlocksBMD;
+    const payVaultId = '';
+    const description = '';
+    const tab = ItemTab.BACKGROUND;
+    const miniMapColor = -1;
+    const requiresOwnership = false;
+    const shadow = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addCanvas(id, artOffset, tags){
+    const layer = ItemLayer.BACKGROUND;
+    const base = ItemManager.bgBlocksBMD;
+    const payVaultId = 'brickbgcanvas';
+    const description = '';
+    const tab = ItemTab.BACKGROUND;
+    const miniMapColor = -1;
+    const requiresOwnership = false;
+    const shadow = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addScifi(id, layer, base, tab, artOffset, miniMapColor, tags){
+    const payVaultId = 'brickscifi';
+    const description = '';
+    const requiresOwnership = false;
+    const shadow = true;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addPrison(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = 'brickprison';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addCloud(id, layer, base, tab, artOffset, miniMapColor, tags){
+    const payVaultId = '';
+    const description = '';
+    const requiresOwnership = false;
+    const shadow = true;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addMedieval(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = 'brickmedieval';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addChecker(id, artOffset, miniMapColor, tags){
+    const layer = ItemLayer.DECORATION;
+    const base = ItemManager.blocksBMD;
+    const payVaultId = '';
+    const description = '';
+    const tab = ItemTab.BLOCK;
     const requiresOwnership = false;
     const shadow = true;
     const requiresAdmin = false;
@@ -1598,7 +1765,15 @@ class ItemManager {
         .addKey(410, 191, 0xff2c330a, ['Yellow', 'Key']),
       // TODO: gates
       // TODO: doors
-      // TODO: coins
+      new ItemBrickPackage('coins', 'Coin Blocks')
+        .addCoin(100, ItemLayer.ABOVE     , ItemManager.specialBlocksBMD, ''      , false,   0, 0x00000000, false, false, ['Gold', 'G-Coins', 'Yellow', 'Money', 'Primary', 'Collect', 'Magic', 'Value', 'Standard'])
+        .addCoin(101, ItemLayer.ABOVE     , ItemManager.specialBlocksBMD, ''      , false,  13, 0x00000000, false, false, ['Blue', 'B-Coin', 'Secondary', 'Money', 'Optional', 'Collect', 'Magic', 'Value', 'Standard'])
+        .addCoin(110, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, 'hidden', false,  26, 0x00000000, true , true , [])
+        .addCoin(111, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, 'hidden', false,  39, 0x00000000, true , true , [])
+        .addCoin(165, ItemLayer.DECORATION, ItemManager.blocksBMD       , ''      , false, 139, 0xffb88e15, false, false, ['Gate', 'Yellow', 'Gold', 'Primary', 'Lock'])
+        .addCoin( 43, ItemLayer.DECORATION, ItemManager.blocksBMD       , ''      , true ,  43, 0xffb88e15, false, false, ['Door', 'Yellow', 'Gold', 'Primary', 'Lock'])
+        .addCoin(214, ItemLayer.DECORATION, ItemManager.blocksBMD       , ''      , true , 186, 0xff1c60f4, false, false, ['Gate', 'Blue', 'Optional', 'Lock'])
+        .addCoin(213, ItemLayer.DECORATION, ItemManager.blocksBMD       , ''      , true , 185, 0xff1c60f4, false, false, ['Door', 'Blue', 'Optional', 'Lock']),
       // TODO: tools
       // TODO: crown
       // TODO: boost
@@ -1624,17 +1799,74 @@ class ItemManager {
       // TODO: betabg
       // TODO: brickbg
       // TODO: checker
-      // TODO: dark
+      new ItemBrickPackage('dark', 'Solid Dark Backgrounds', ['Solid'])
+        .addDark(719, false, 213, ['White', 'Light'])
+        .addDark(520, false,  20, ['Gray', 'Grey', 'Shadow'])
+        .addDark(652, true , 146, ['Black', 'Dark', 'Shadow'])
+        .addDark(523, false,  23, ['Red'])
+        .addDark(651, true , 145, ['Orange'])
+        .addDark(524, false,  24, ['Yellow', 'Lime'])
+        .addDark(525, false,  25, ['Green'])
+        .addDark(526, false,  26, ['Cyan', 'Teal', 'Turquoise', 'Blue'])
+        .addDark(521, false,  21, ['Blue'])
+        .addDark(522, false,  22, ['Purple', 'Magenta', 'Pink', 'Violet']),
       // TODO: normal
-      // TODO: pastel
-      // TODO: canvas
+      new ItemBrickPackage('pastel', 'Pretty Pastel Backgrounds', ['Solid', 'Bright'])
+        .addPastel(532,  32, ['Pink', 'Red', 'Magenta'])
+        .addPastel(676, 170, ['Orange'])
+        .addPastel(527,  27, ['Yellow'])
+        .addPastel(529,  29, ['Yellow', 'Green', 'Lime'])
+        .addPastel(528,  28, ['Green'])
+        .addPastel(530,  30, ['Cyan', 'Light Blue', 'Sky'])
+        .addPastel(531,  31, ['Blue', 'Sky'])
+        .addPastel(677, 171, ['Purple']),
+      new ItemBrickPackage('canvas', 'Canvas Backgrounds', ['Rough', 'Textured'])
+        .addCanvas(538,  38, ['Gray', 'Grey'])
+        .addCanvas(671, 165, ['Red'])
+        .addCanvas(533,  33, ['Orange'])
+        .addCanvas(534,  34, ['Beige', 'Brown', 'Tan'])
+        .addCanvas(535,  35, ['Yellow'])
+        .addCanvas(536,  36, ['Green'])
+        .addCanvas(537,  37, ['Cyan', 'Light Blue', 'Water'])
+        .addCanvas(606, 106, ['Blue'])
+        .addCanvas(672, 166, ['Purple', 'Violet']),
       // TODO: carnival
       // TODO: candy
       // TODO: summer 2011
       // TODO: halloween 2011
       // TODO: christmas 2011
-      // TODO: sci-fi
-      // TODO: prison
+      new ItemBrickPackage('sci-fi', 'Sci-Fi Package', ['Future', 'Science Fiction', 'Alien', 'UFO'])
+        .addScifi(  84, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     ,  84,         -1, ['Red', 'Screen', 'Panel'])
+        .addScifi(  85, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     ,  85,         -1, ['Blue', 'Screen', 'Panel'])
+        .addScifi(1150, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , 308,         -1, ['Green', 'Screen', 'Panel'])
+        .addScifi(1151, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , 309,         -1, ['Yellow', 'Screen', 'Panel'])
+        .addScifi(1162, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , 317,         -1, ['Magenta','Pink','Purple','Screen','Panel'])
+        .addScifi(1163, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , 318,         -1, ['Cyan','Screen','Panel'])
+        .addScifi(  86, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     ,  86,         -1, ['Metal', 'Gray', 'Bumpy', 'Grey'])
+        .addScifi(  87, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     ,  87, 0xffffffff, ['Metal', 'White', 'Grey', 'Gray'])
+        .addScifi(  88, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     ,  88,         -1, ['Brown', 'Camouflauge', 'Leopard', 'Carpet'])
+        .addScifi(  89, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     ,  89,         -1, ['Platform', 'Red', 'One-way', 'One way'])
+        .addScifi(  90, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     ,  90,         -1, ['Platform', 'Blue', 'One-way', 'One way'])
+        .addScifi(  91, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     ,  91,         -1, ['Platform', 'Green', 'One-way', 'One way'])
+        .addScifi(1051, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , 234,         -1, ['Platform', 'Yellow', 'One-way', 'One way'])
+        .addScifi(1164, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , 319,         -1, ['Platform','Magenta','Pink','Purple','One-way','One way'])
+        .addScifi(1165, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , 320,         -1, ['Platform','Cyan','One-way','One way'])
+        .addScifi( 375, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 177, 0x00000000, ['Morphable', 'Laser', 'Neon', 'Blue', 'Flourescent', 'Corner'])
+        .addScifi( 376, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 181, 0x00000000, ['Morphable', 'Laser', 'Neon', 'Blue', 'Flourescent', 'Middle'])
+        .addScifi( 379, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 169, 0x00000000, ['Morphable', 'Laser', 'Neon', 'Green', 'Flourescent', 'Corner'])
+        .addScifi( 380, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 173, 0x00000000, ['Morphable', 'Laser', 'Neon', 'Green', 'Flourescent', 'Middle'])
+        .addScifi( 377, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 161, 0x00000000, ['Morphable', 'Laser', 'Neon', 'Yellow', 'Orange', 'Flourescent', 'Corner'])
+        .addScifi( 378, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 165, 0x00000000, ['Morphable', 'Laser', 'Neon', 'Yellow', 'Orange', 'Flourescent', 'Middle'])
+        .addScifi( 438, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 409, 0x00000000, ['Morphable', 'Laser', 'Neon', 'Red', 'Pink', 'Flourescent', 'Corner'])
+        .addScifi( 439, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 413, 0x00000000, ['Morphable', 'Laser', 'Neon', 'Red', 'Pink', 'Flourescent', 'Middle'])
+        .addScifi( 637, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, 131, 0xff737d81, ['Gray', 'Outline', 'Grey']),
+      new ItemBrickPackage('prison', 'Prison', ['Cell', 'Jail'])
+        .addPrison(261, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 133, 0x00000000, ['Bars', 'Metal'])
+        .addPrison( 92, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true ,  92,         -1, ['Wall', 'Brick', 'Grey', 'Gray', 'House'])
+        .addPrison(550, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true ,  50,         -1, ['Wall', 'Brick', 'Background', 'Grey', 'Gray', 'House'])
+        .addPrison(551, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true ,  51,         -1, ['Window', 'Light', 'Orange', 'Brick'])
+        .addPrison(552, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true ,  52,         -1, ['Window', 'Light', 'Blue', 'Brick'])
+        .addPrison(553, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true ,  53,         -1, ['Window', 'Dark', 'Vent', 'Brick', 'Grey', 'Gray', 'Drain']),
       // TODO: windows
       // TODO: pirate
       // TODO: stone
@@ -1644,10 +1876,50 @@ class ItemManager {
       // TODO: water
       // TODO: sand
       // TODO: summer 2012
-      // TODO: cloud
+      new ItemBrickPackage('cloud', 'Cloud Pack', ['Sky', 'Environment'])
+        .addCloud( 143, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , 120,         -1, ['Center', 'Middle', 'White'])
+        .addCloud( 311, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 182, 0x00000000, ['Top', 'Side', 'White'])
+        .addCloud( 312, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 183, 0x00000000, ['Bottom', 'Side', 'White'])
+        .addCloud( 313, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 184, 0x00000000, ['Left', 'Side', 'White'])
+        .addCloud( 314, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 185, 0x00000000, ['Right', 'Side', 'White'])
+        .addCloud( 315, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 186, 0x00000000, ['Top right', 'Corner', 'White'])
+        .addCloud( 316, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 187, 0x00000000, ['Top left', 'Corner', 'White'])
+        .addCloud( 317, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 188, 0x00000000, ['Bottom left', 'Corner', 'White'])
+        .addCloud( 318, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 189, 0x00000000, ['Bottom right', 'Corner', 'White'])
+        .addCloud(1126, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , 287,         -1, ['Center', 'Middle', 'Dark', 'Grey', 'Gray', 'Storm'])
+        .addCloud(1523, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 323, 0x00000000, ['Top', 'Side', 'Dark', 'Grey', 'Gray', 'Storm'])
+        .addCloud(1524, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 324, 0x00000000, ['Bottom', 'Side', 'Dark', 'Grey', 'Gray', 'Storm'])
+        .addCloud(1525, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 325, 0x00000000, ['Left', 'Side', 'Dark', 'Grey', 'Gray', 'Storm'])
+        .addCloud(1526, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 326, 0x00000000, ['Right', 'Side', 'Dark', 'Grey', 'Gray', 'Storm'])
+        .addCloud(1527, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 327, 0x00000000, ['Top right', 'Corner', 'Dark', 'Grey', 'Gray', 'Storm'])
+        .addCloud(1528, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 328, 0x00000000, ['Top left', 'Corner', 'Dark', 'Grey', 'Gray', 'Storm'])
+        .addCloud(1529, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 329, 0x00000000, ['Bottom left', 'Corner', 'Dark', 'Grey', 'Gray', 'Storm'])
+        .addCloud(1530, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 330, 0x00000000, ['Bottom right', 'Corner', 'Dark', 'Grey', 'Gray', 'Storm']),
       // TODO: industrial
       // TODO: clay
-      // TODO: medieval
+      new ItemBrickPackage('medieval', 'Medieval', ['Castle'])
+        .addMedieval(158, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 132, 0x00000000, ['Platform', 'Stone'])
+        .addMedieval(159, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 133,         -1, ['Brick', 'Stone'])
+        .addMedieval(160, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 134,         -1, ['Brick', 'Arrow slit', 'Stone', 'Window'])
+        .addMedieval(599, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false,  99,         -1, ['Anvil', 'Blacksmith'])
+        .addMedieval(325, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, true , 196, 0x00000000, ['Brick', 'Stone', 'House'])
+        .addMedieval(326, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 197,         -1, ['Top', 'Display', 'Stone'])
+        .addMedieval(162, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 136, 0x00000000, ['Parapet', 'Stone'])
+        .addMedieval(163, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 137, 0x00000000, ['Barrel', 'Keg'])
+        .addMedieval(437, ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 279, 0x00000000, ['Window', 'Wood', 'House'])
+        .addMedieval(600, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 100,         -1, ['Wood', 'Planks', 'Vertical', 'Brown', 'House'])
+        .addMedieval(590, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false,  90,         -1, ['Straw', 'Hay', 'Roof', 'House'])
+        .addMedieval(591, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false,  91,         -1, ['Roof', 'Shingles', 'Scales', 'Red', 'House'])
+        .addMedieval(592, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false,  92,         -1, ['Roof', 'Shingles', 'Scales', 'Green', 'House'])
+        .addMedieval(556, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false,  56,         -1, ['Roof', 'Shingles', 'Scales', 'Brown', 'House'])
+        .addMedieval(593, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false,  93,         -1, ['Gray', 'Dry wall', 'Stucco', 'Grey', 'House', 'Beige'])
+        .addMedieval(440, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 417, 0x00000000, ['Scaffolding', 'Wood', 'Morphable', 'Fence', 'House', 'Design'])
+        .addMedieval(330, ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, true , 201, 0x00000000, ['Shield', 'Warrior', 'Weapon'])
+        .addMedieval(275, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, true , 365, 0x00000000, ['Axe', 'Morphable', 'Warrior', 'Weapon'])
+        .addMedieval(329, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, true , 377, 0x00000000, ['Sword', 'Morphable', 'Warrior', 'Weapon'])
+        .addMedieval(273, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, true , 373, 0x00000000, ['Shield', 'Morphable', 'Blue', 'Green', 'Yellow', 'Red', 'Circle'])
+        .addMedieval(328, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, true , 405, 0x00000000, ['Shield', 'Morphable', 'Blue', 'Green', 'Yellow', 'Red'])
+        .addMedieval(327, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, true , 369, 0x00000000, ['Banner', 'Morphable', 'Blue', 'Green', 'Yellow', 'Red', 'Flag']),
       // TODO: pipes
       // TODO: outer space
       // TODO: desert
@@ -1655,7 +1927,17 @@ class ItemManager {
       // TODO: monster
       // TODO: fog
       // TODO: halloween 2012
-      // TODO: brickchecker
+      new ItemBrickPackage('checker', 'Checker Blocks', ['Checkered'])
+        .addChecker(1091, 263, 0xffbfbfbf, ['White', 'Light'])
+        .addChecker( 186, 161, 0xff6b6b6b, ['Gray', 'Grey'])
+        .addChecker(1026, 213,         -1, ['Black', 'Dark', 'Gray', 'Grey'])
+        .addChecker( 189, 164, 0xffa8193f, ['Red', 'Magenta'])
+        .addChecker(1025, 212,         -1, ['Orange'])
+        .addChecker( 190, 165, 0xffabb333, ['Yellow', 'Lime'])
+        .addChecker( 191, 166, 0xff45a337, ['Green'])
+        .addChecker( 192, 167, 0xff3cb2ac, ['Cyan', 'Blue'])
+        .addChecker( 187, 162, 0xff2f5391, ['Blue'])
+        .addChecker( 188, 163, 0xff803d91, ['Purple', 'Magenta', 'Pink', 'Violet']),
       // TODO: jungle
       // TODO: christmas 2012
       // TODO: lava
@@ -1892,7 +2174,7 @@ class ItemManager {
 
     // fill in missing bricks
     for (let i = 0; i < ItemManager.bricks.length; i++)
-      ItemManager.bricks[i] = ItemManager.bricks[i] || ItemManager.bricks[0];
+      ItemManager.bricks[i] = ItemManager.bricks[i] || ItemManager.bricks[0].copy(i);
   }
 }
 
@@ -2178,13 +2460,9 @@ class BlObject {
   moving = false;
   hitmap;
 
-  update(input){}
   enterFrame(){}
   exitFrame(){}
-
-  tick(input){
-    this.update(input);
-  }
+  tick(input){}
 
   draw(target, ox, oy){
     target.fillRect({x: this.x + ox, y: this.y + oy, w: 1, h: 1}, '#ffffff');
@@ -2279,8 +2557,6 @@ class BlSprite extends BlObject {
   offset;
   bmdAlpha;
   shadow;
-  sprImage;
-  sprImageShadow;
   rotateDeg = 0;
 
   constructor(srcBmd, offset, width, height, frames, shadow){
@@ -2357,8 +2633,10 @@ class BlSprite extends BlObject {
     this.drawPoint(target, {x: ox + this.x, y: oy + this.y});
   }
 
-  drawPoint(target, point){
+  drawPoint(target, point, frame){
+    this.frame = frame || 0;
     if (this.shadow){
+      throw new Error('TODO: Draw sprite shadow');
       target.copyPixelsRotated(
         this.sprImageShadow,
         this.shadowRect,
@@ -2368,7 +2646,7 @@ class BlSprite extends BlObject {
     }
     else{
       target.copyPixelsRotated(
-        this.sprImage,
+        this.bmd,
         this.rect,
         {x: point.x, y: point.y, w: this.width, h: this.height},
         this.rotatedDeg
@@ -2423,6 +2701,7 @@ class BlockSprite extends BlSprite {
 //
 
 class World extends BlObject {
+  player;
   lookup;
   spawnPoints = [];
   depth = 0;
@@ -2432,7 +2711,7 @@ class World extends BlObject {
   decoration;
   foreground;
   above;
-  keyOffset = 0;
+  aniOffset = 0;
   keys = {
     red: false,
     green: false,
@@ -2449,6 +2728,7 @@ class World extends BlObject {
     magenta: 0,
     yellow: 0
   };
+  overlapCells = [];
 
   constructor(worldData){
     super();
@@ -2614,6 +2894,26 @@ class World extends BlObject {
     this.setMapArray(layers);
   }
 
+  getCoinCount(){
+    let coins = 0;
+    let bcoins = 0;
+    for (const layer of this.realMap){
+      for (const row of layer){
+        for (const cell of row){
+          if (cell === 100)
+            coins++;
+          else if (cell === 101)
+            bcoins++;
+        }
+      }
+    }
+    return {coins, bcoins};
+  }
+
+  setPlayer(p){
+    this.player = p;
+  }
+
   setMapArray(map){
     this.depth = map.length;
     this.height = map[0].length;
@@ -2660,22 +2960,188 @@ class World extends BlObject {
     }
   }
 
+  setTileComplex(layer, x, y, type, properties){
+    if (layer == 0)
+      this.lookup.deleteLookup(x, y);
+
+    if (ItemId.isBlockRotateable(type) || ItemId.isNonRotatableHalfBlock(type)){
+      if (properties && properties.rotation != null)
+        this.lookup.setInt(x, y, properties.rotation);
+    }
+
+    // removing save-breaking symbols
+    if (properties && properties.text != null)
+      properties.text = properties.text.replace(/᎙/g, '');
+    if (properties && properties.messages != null){
+      for (let i = 0; i < properties.messages.length; i++)
+        properties.messages[i] = properties.messages[i].replace(/᎙/g, '');
+    }
+
+    switch (type){
+      case ItemId.COINDOOR:
+      case ItemId.BLUECOINDOOR:
+      case ItemId.BLUECOINGATE:
+      case ItemId.COINGATE:
+      case ItemId.SWITCH_PURPLE:
+      case ItemId.RESET_PURPLE:
+      case ItemId.DOOR_PURPLE:
+      case ItemId.GATE_PURPLE:
+      case ItemId.DEATH_DOOR:
+      case ItemId.DEATH_GATE:
+      case ItemId.EFFECT_TEAM:
+      case ItemId.TEAM_DOOR:
+      case ItemId.TEAM_GATE:
+      case ItemId.EFFECT_CURSE:
+      case ItemId.EFFECT_ZOMBIE:
+      case ItemId.EFFECT_FLY:
+      case ItemId.EFFECT_JUMP:
+      case ItemId.EFFECT_PROTECTION:
+      case ItemId.EFFECT_RUN:
+      case ItemId.EFFECT_LOW_GRAVITY:
+      case ItemId.EFFECT_MULTIJUMP:
+      case ItemId.EFFECT_POISON:
+      case ItemId.SWITCH_ORANGE:
+      case ItemId.RESET_ORANGE:
+      case ItemId.DOOR_ORANGE:
+      case ItemId.GATE_ORANGE:
+      case ItemId.WORLD_PORTAL_SPAWN:
+        this.lookup.setInt(x, y, properties.rotation);
+        break;
+      case ItemId.EFFECT_GRAVITY:
+      case ItemId.SPIKE:
+      case ItemId.SPIKE_SILVER:
+      case ItemId.SPIKE_BLACK:
+      case ItemId.SPIKE_RED:
+      case ItemId.SPIKE_GOLD:
+      case ItemId.SPIKE_GREEN:
+      case ItemId.SPIKE_BLUE:
+        if (properties.rotation != null)
+          this.lookup.setInt(x, y, properties.rotation);
+        break;
+      /* TODO: setTileComplex for portals
+      case ItemId.PORTAL_INVISIBLE:
+      case ItemId.PORTAL:
+        if (properties.rotation != null && properties.id != null && properties.target != null)
+          this.lookup.setPortal(x, y, new Portal(properties.id, properties.target, properties.rotation, type));
+        break;
+      case ItemId.WORLD_PORTAL:
+        if (properties.target != null && properties.spawnid != null)
+          this.lookup.setWorldPortal(x, y, new WorldPortal(properties.target, properties.spawnid));
+        break;
+      */
+      case ItemId.TEXT_SIGN:
+        if (properties.text != null && properties.signtype != null)
+          this.lookup.setTextSign(x, y, {text: properties.text, type: properties.signtype});
+        break;
+      case 83:
+      case 77:
+      case 1520:
+        this.lookup.setInt(x, y, properties.rotation);
+        this.lookup.setBlink(x, y, 30);
+        break;
+      case 411:
+      case 412:
+      case 413:
+      case 414:
+      case ItemId.SLOW_DOT_INVISIBLE:
+      case 1519:
+      case ItemId.FIREWORKS:
+        this.lookup.setBlink(x, y, 0);
+        break;
+      case 1000:
+        this.lookup.setLabel(x, y, properties.text, properties.text_color, properties.wraplength);
+        /* TODO: setTileComplex label
+        var t:BlText = new BlText(Global.default_label_size,lookup.getLabel(x, y).WrapLength,uint("0x"+properties.text_color.substr(1,properties.text_color.length)),"left","system",true);
+        t.text = properties.text;
+        t.x = x * size;
+        t.y = y * size;
+        labelcontainer.add( t );
+        */
+        break;
+    }
+
+    /*
+    if (ItemId.isNPC(type) && properties.name != null && properties.messages) {
+      if (player.currentNpc && lookup.getNpc(x, y).equals(player.currentNpc)) {
+        lookup.setNpc(x, y, properties.name, properties.messages, ItemManager.getNpcById(type));
+        player.currentNpc = lookup.getNpc(x, y);
+        player.currentNpc.reset();
+      } else  lookup.setNpc(x, y, properties.name, properties.messages, ItemManager.getNpcById(type));
+    }
+    */
+
+    // Making sure labels get updated when a block with id 1000 is set to 0.
+    /*
+    if (type != 1000 && layer == 0) {
+      for (var j:int=0;j<labelcontainer.children.length;j++) {
+        var txt:BlText = labelcontainer.children[j] as BlText;
+        if (txt.x == (x * size) && txt.y == (y * size)) {
+          labelcontainer.remove(txt);
+          break;
+        }
+      }
+    }
+    */
+
+    this.setTile(layer, x, y, type);
+  }
+
+  setTile(layer, x, y, type){
+    const old = this.realMap[layer][y][x];
+
+    /* TODO: setTile for labels
+    if (old === 1000){
+      var ch:Vector.<BlObject> = labelcontainer.children;
+      for(var a:int = 0; a < ch.length; a++) {
+        var cc:BlObject = ch[a];
+        if (cc.x == x * size && cc.y == y * size) {
+          labelcontainer.remove(cc);
+          break;
+        }
+      }
+    }
+    */
+
+    this.setMagicTile(layer, x, y, type);
+
+    if (this.realMap[layer] && this.realMap[layer][y])
+      this.realMap[layer][y][x] = type;
+
+    // now collected
+    if (type == ItemId.COLLECTEDCOIN && old == ItemId.COIN)
+      return;
+    if (type == ItemId.COLLECTEDBLUECOIN && old == ItemId.BLUECOIN)
+      return;
+    // was collected
+    if (type == ItemId.COIN && old == ItemId.COLLECTEDCOIN)
+      return;
+    if (type == ItemId.BLUECOIN && old == ItemId.COLLECTEDBLUECOIN)
+      return;
+
+    // TOOD: (Global.base.state as PlayState).unsavedChanges = true;
+  }
+
   getKey(color){
     return this.keys[color];
   }
 
   setKey(color, state, fromQueue){
-    if (fromQueue && ((this.keyOffset - this.keysTimer[color]) / 30) >= 5)
+    if (fromQueue && ((this.aniOffset - this.keysTimer[color]) / 30) >= 5)
       return;
     this.keys[color] = state;
     if (state && !fromQueue)
-      this.keysTimer[color] = this.keyOffset;
+      this.keysTimer[color] = this.aniOffset;
   }
 
   getTile(layer, x, y){
     if(layer < 0 || layer >= this.depth || x < 0 || x >= this.width || y < 0 || y >= this.height)
       return 0;
     return this.realMap[layer][y][x]
+  }
+
+  tick(input){
+    this.aniOffset += 0.3;
+    this.overlapCells = [];
   }
 
   overlaps(pl){
@@ -2698,6 +3164,7 @@ class World extends BlObject {
     for (let cy = oy; cy < oh; cy++){
       const map = this.realMap[0][cy];
       for (let cx = ox; cx < ow; cx++){
+        this.overlapCells.push({cx, cy});
         if (!map)
           continue;
         const val = map[cx];
@@ -2828,9 +3295,16 @@ class World extends BlObject {
 
           case ItemId.SILVERCROWNDOOR: if ( pl.collideWithSilverCrownDoorGate) continue; break;
           case ItemId.SILVERCROWNGATE: if (!pl.collideWithSilverCrownDoorGate) continue; break;
-
-          case ItemId.COINDOOR:     if (lookup.getInt(cx, cy) <= pl.coins)   continue; break;
-          case ItemId.BLUECOINDOOR:   if (lookup.getInt(cx, cy) <= pl.bcoins)  continue; break;
+          */
+          case ItemId.COINDOOR:
+            if (this.lookup.getInt(cx, cy) <= pl.coins)
+              continue;
+            break;
+          case ItemId.BLUECOINDOOR:
+            if (this.lookup.getInt(cx, cy) <= pl.bcoins)
+              continue;
+            break;
+          /*
           case ItemId.DEATH_DOOR:   if (lookup.getInt(cx, cy) <= pl.deaths) continue; break;
           case ItemId.COINGATE:     if (lookup.getInt(cx, cy) >  /*pl.coins* / (pl.isme ? showCoinGate : pl.coins))  continue; break;
           case ItemId.BLUECOINGATE:   if (lookup.getInt(cx, cy) >  /*pl.bcoins* / (pl.isme ? showBlueCoinGate : pl.bcoins)) continue; break;
@@ -2847,6 +3321,7 @@ class World extends BlObject {
             break;
         }
 
+        this.overlapCells[this.overlapCells.length - 1].result = val;
         return val;
       }
     }
@@ -2861,24 +3336,31 @@ class World extends BlObject {
     this.onDraw(target, ox, oy, false);
   }
 
-  onDraw(target, ox, oy, full){
-    if (full) throw new Error('World.onDraw called with full set'); // TODO: is full used????
+  getDrawBoundary(target, ox, oy, full){
     const size = 16;
-    const width_ = full ? this.width * size : Config.bw / size;
-    const height_ = full ? this.height * size : Config.bh / size;
+    const width_ = full ? this.width * size : target.boundary.w / size;
+    const height_ = full ? this.height * size : target.boundary.h / size;
 
-    const startx = Math.max(0, Math.floor(-ox / size - 1));
-    const starty = Math.max(0, Math.floor(-oy / size - 1));
-    const endx = Math.min(this.width, startx + width_ + 2);
-    const endy = Math.min(this.height, starty + height_ + 2);
+    const bx = ox - target.boundary.x;
+    const by = oy - target.boundary.y;
+    const startX = Math.max(0, Math.floor(-bx / size - 1));
+    const startY = Math.max(0, Math.floor(-by / size - 1));
+    const endX = Math.min(this.width, startX + width_ + 2);
+    const endY = Math.min(this.height, startY + height_ + 2);
+
+    return {startX, startY, endX, endY};
+  }
+
+  onDraw(target, ox, oy, full){
+    const {startX, startY, endX, endY} = this.getDrawBoundary(target, ox, oy, full);
     const point = {x: 0, y: 0};
 
     // Seperate loop to perserve shadows
-    for (let cy = starty; cy < endy; cy++){
+    for (let cy = startY; cy < endY; cy++){
       const bgrow = this.background[cy]
       const fgrow = this.foreground[cy]
       point.y = (cy << 4) + oy;
-      for(let cx = startx; cx < endx; cx++){
+      for(let cx = startX; cx < endX; cx++){
         point.x = (cx << 4) + ox;
 
         if (fgrow[cx] !== 0)
@@ -2898,11 +3380,11 @@ class World extends BlObject {
     // TODO: draw imageBlocks
     // TODO: advance ice
 
-    for (let cy = starty; cy < endy; cy++){
+    for (let cy = startY; cy < endY; cy++){
       const fgrow = this.foreground[cy];
       const drow = this.decoration[cy];
       point.y = (cy << 4) + oy;
-      for (let cx = startx; cx < endx; cx++){
+      for (let cx = startX; cx < endX; cx++){
         point.x = (cx << 4) + ox;
         let type = fgrow[cx];
 
@@ -2923,12 +3405,12 @@ class World extends BlObject {
           rotSprite.drawPoint(target, point, rot);
           continue;
         }
-        switch(type){
+        */
 
-          case ItemId.CHECKPOINT:{
+        switch (type){
+          case ItemId.CHECKPOINT:
             continue;
-          }
-
+          /*
           //Red doors
           case 23:
           case 26: {
@@ -3196,29 +3678,26 @@ class World extends BlObject {
             }
             break;
           }
-
-          case ItemId.COINDOOR:{
-            // Open / Invisible
-            if (lookup.getInt(cx, cy) <= player.coins) {
-              ItemManager.sprDoors.drawPoint(target, point, 6)
-            } else {
-              // Locked
-              ItemManager.sprCoinDoors.drawPoint(target, point, lookup.getInt(cx, cy) - player.coins)
+          */
+          case ItemId.COINDOOR:
+            if (this.lookup.getInt(cx, cy) <= this.player.coins) // Open
+              ItemManager.sprDoors.drawPoint(target, point, 6);
+            else{ // Locked
+              ItemManager.bricks[ItemId.COINDOOR].drawWithNumber(
+                target, point.x, point.y, this.lookup.getInt(cx, cy) - this.player.coins
+              );
             }
             continue;
-          }
-
-          case ItemId.BLUECOINDOOR:{
-            // Open / Invisible
-            if (lookup.getInt(cx, cy) <= player.bcoins) {
-              ItemManager.sprDoors.drawPoint(target, point, 36)
-            } else {
-              // Locked
-              ItemManager.sprBlueCoinDoors.drawPoint(target, point, lookup.getInt(cx, cy) - player.bcoins)
+          case ItemId.BLUECOINDOOR:
+            if (this.lookup.getInt(cx, cy) <= this.player.bcoins) // Open
+              ItemManager.sprDoors.drawPoint(target, point, 36);
+            else{ // Locked
+              ItemManager.bricks[ItemId.BLUECOINDOOR].drawWithNumber(
+                target, point.x, point.y, this.lookup.getInt(cx, cy) - this.player.bcoins
+              );
             }
             continue;
-          }
-
+          /*
           case ItemId.COINGATE:{
             // Open / Invisible
             if (lookup.getInt(cx,cy) <= player.coins) {
@@ -3493,7 +3972,7 @@ class World extends BlObject {
             }
 
             if (lookup.isBlink(cx, cy)) {
-              if (cx == startx || cx == endx-1 || cy == starty || cy == endy-1)
+              if (cx == startX || cx == endX-1 || cy == startY || cy == endY-1)
               {
                 lookup.deleteBlink(cx, cy);
                 continue;
@@ -3556,16 +4035,203 @@ class World extends BlObject {
             }
             continue;
           }
+          */
         }
-        */
         ItemManager.bricks[type].draw(target, point.x, point.y);
       }
     }
 
     // TODO: draw infront
+
+    for (const k of this.overlapCells){
+      const {cx, cy, result} = k;
+      target.debugRect((cx << 4) + ox, (cy << 4) + oy, 16, 16);
+      target.debugText(
+        typeof result === 'undefined' ? 'no' : result,
+        (cx << 4) + ox + 4,
+        (cy << 4) + oy + 4
+      );
+    }
   }
 
-  postDraw(target, ox, oy, full_){
+  postDraw(target, ox, oy, full){
+    const {startX, startY, endX, endY} = this.getDrawBoundary(target, ox, oy, full);
+    const point = {x: 0, y: 0};
+
+    // Seperate loop to perserve shadows
+    for (let cy = startY; cy < endY; cy++){
+      const row = this.above[cy]
+      point.y = (cy << 4) + oy;
+      for(let cx = startX; cx < endX; cx++){
+        const type = row[cx];
+        point.x = (cx << 4) + ox;
+        switch (type){
+          case 100:
+            ItemManager.sprCoin.drawPoint(target, point,
+              ((this.aniOffset >> 0) + cx + cy) % 12);
+            break;
+          case 101:
+            ItemManager.sprBonusCoin.drawPoint(target, point,
+              ((this.aniOffset >> 0) + cx + cy) % 12);
+            break;
+          /*
+          case ItemId.WAVE:{
+            ItemManager.sprWave.drawPoint(target, point, ((offset/5 >> 0))%8);
+            break;
+          }
+          case ItemId.MUD_BUBBLE:{
+            if (lookup.getNumber(cx, cy) != 0) {
+              lookup.setNumber(cx, cy, lookup.getNumber(cx, cy) + .25);
+              if (lookup.getNumber(cx,cy ) % 10 == 0) {
+                lookup.setNumber(cx, cy, 0);
+              }
+            } else {
+              if (Math.random()<0.005) {
+                lookup.setNumber(cx, cy, 1 + Math.round(Math.random()) * 10);
+              }
+            }
+            ItemManager.sprMudBubble.drawPoint(target, point, (lookup.getNumber(cx, cy) >> 0) % 19);
+            break;
+          }
+          case ItemId.FIRE:{
+            ItemManager.sprFireHazard.drawPoint(target, point, ((offset / 1.2 >> 0) + (width - cx) + cy) % 12);
+            break;
+          }
+
+          case ItemId.WATER:{
+            if (lookup.getInt(cx, cy) != 0) {
+              lookup.setInt(cx, cy, lookup.getInt(cx, cy) + 1);
+              if (lookup.getInt(cx, cy) % 25 == 0) {
+                lookup.setInt(cx, cy, 0);
+              }
+            } else {
+              if (Math.random() < 0.001) {
+                lookup.setInt(cx, cy, int(Math.random() * 4) * 25 + 5);
+              }
+            }
+            ItemManager.sprWater.drawPoint(target, point, int(lookup.getNumber(cx, cy) / 5))
+            break;
+          }
+          case ItemId.TOXIC_WASTE: {
+            if (lookup.getInt(cx, cy) != 0) {
+              lookup.setInt(cx, cy, lookup.getInt(cx, cy) + 1);
+              if (lookup.getInt(cx, cy) % 25 == 0) {
+                lookup.setInt(cx, cy, 0);
+              }
+            } else {
+              if (Math.random() < 0.005) {
+                lookup.setInt(cx, cy, int(Math.random() * 4) * 25 + 5);
+              }
+            }
+            ItemManager.sprToxic.drawPoint(target, point, int(lookup.getNumber(cx, cy) / 5))
+            break;
+          }
+          case ItemId.TOXIC_WASTE_SURFACE: {
+            if (lookup.getNumber(cx, cy) != 0) {
+              lookup.setNumber(cx, cy, lookup.getNumber(cx, cy) + .25);
+              if (lookup.getNumber(cx,cy ) % 10 == 0) {
+                lookup.setNumber(cx, cy, 0);
+              }
+            } else {
+              if (Math.random()<0.01) {
+                lookup.setNumber(cx, cy, 1 + Math.round(Math.random()) * 10);
+              }
+            }
+            ItemManager.sprToxicBubble.drawPoint(target, point, (lookup.getNumber(cx, cy) >> 0) % 19);
+            break;
+          }
+          case ItemId.TEXT_SIGN:{
+            var isFloating:Boolean = !ItemId.isSolid(getTile(0, cx, cy + 1));
+            ItemManager.sprSign.drawPoint(target, point, lookup.getTextSign(cx, cy).type + (isFloating? 4 : 0))
+            break;
+          }
+
+          case ItemId.LAVA:{
+            ItemManager.sprLava.drawPoint(target, point, ((offset/5 >> 0))%8);
+            break;
+          }
+
+          case ItemId.GOLDEN_EASTER_EGG: {
+            infront.push({
+              d:ItemManager.blocksGoldenEasterEggBMD,
+              r:new Rectangle(0, 0, 48, 48),
+              p:new Point(point.x - 16, point.y - 16)
+            });
+            break;
+          }
+
+          default:{
+            if (ItemId.isNPC(type)) {
+              var npclookup:Npc = lookup.getNpc(cx, cy);
+              var npc:ItemNpc = ItemManager.getNpcById(type);
+              if (player.currentNpc != null && player.currentNpc.equals(npclookup) && player.currentNpc.isTalking) {
+                if (!isAnimatingNPC) {
+                  isAnimatingNPC = true;
+                  offsetNPC = offset;
+                  // Basically just makes NPCs always start animations at frame 0
+                }
+                npc.drawTo(target, point, ((offset - offsetNPC) / npc.rate >> 0) % npc.frames);
+                drewAnimatedNPC = true;
+              } else npc.drawTo(target, point, 0);
+            } else if (ItemId.isBlockRotateable(type) && !ItemId.isNonRotatableHalfBlock(type) && type != ItemId.HALLOWEEN_2016_EYES && type != ItemId.FIREWORKS && type != ItemId.DUNGEON_TORCH) {
+              var rot:int = lookup.getInt(cx, cy);
+              var rotSprite:BlSprite = ItemManager.getRotateableSprite(type);
+              rotSprite.drawPoint(target, point, rot);
+            } else {
+              target.copyPixels(ItemManager.bmdBricks[type],rect18x18,point);
+            }
+            break;
+          }
+          */
+        }
+
+        /*
+        if (decoration[cy][cx] == ItemId.CHECKPOINT) {
+          ItemManager.sprCheckpoint.drawPoint(target, point, (player.checkpoint_x == cx && player.checkpoint_y == cy) ? 1 : 0);
+        }
+
+        if (Global.playState.brushSize > 1) {
+          if(Global.playState.brushGridLocked) {
+            if ((cx - Global.playState.gridOffsetX + Global.playState.brushSize)
+              % Global.playState.brushSize == 0 &&
+              (cy - Global.playState.gridOffsetY + Global.playState.brushSize)
+              % Global.playState.brushSize == 0) {
+              target.setPixel(point.x,   point.y,   0xff0000);
+              target.setPixel(point.x-1, point.y,   0xff0000);
+              target.setPixel(point.x,   point.y-1, 0xff0000);
+              target.setPixel(point.x-1, point.y-1, 0xff0000);
+            }
+          } else {
+            //Bl.stage.mouseX
+            var mx:int = (Bl.mouseX - Global.playState.x) / 16 >> 0;
+            var my:int = (Bl.mouseY - Global.playState.y) / 16 >> 0;
+            var min:int = -Math.floor((Global.playState.brushSize-1) / 2);
+            var max:int = 1+Math.ceil((Global.playState.brushSize-1) / 2);
+            if (cx == mx + max && cy == my + max
+            || cx == mx + min && cy == my + min
+            || cx == mx + max && cy == my + min
+            || cx == mx + min && cy == my + max) {
+              target.setPixel(point.x,   point.y,   0xff0000);
+              target.setPixel(point.x-1, point.y,   0xff0000);
+              target.setPixel(point.x,   point.y-1, 0xff0000);
+              target.setPixel(point.x-1, point.y-1, 0xff0000);
+            }
+          }
+        }
+        */
+      }
+    }
+
+    /*
+    for each (var obj:Object in infront) {
+      target.copyPixels(obj.d, obj.r, obj.p);
+    }
+
+    if (!drewAnimatedNPC) isAnimatingNPC = false;
+
+    labelcontainer.draw(target,ox,oy);
+    particlecontainer.draw(target, ox, oy);
+    */
   }
 
   drawDialogs(target, ox, oy){
@@ -3716,6 +4382,14 @@ class Player extends SynchronizedSprite {
   lastJump = -Date.now();
   current;
   current_below;
+
+  // coins
+  coins = 0;
+  gx = []; // collected coin locations
+  gy = [];
+  bcoins = 0;
+  bx = []; // collect bcoin locations
+  by = [];
 
   // input
   leftDown = 0;
@@ -3869,7 +4543,7 @@ class Player extends SynchronizedSprite {
 
     if (this.current == 4 || this.current == 414 || ItemId.isClimbable(this.current)){
       delayed = this.queue.shift();
-      queue.push(this.current);
+      this.queue.push(this.current);
     }
 
     /*
@@ -3996,7 +4670,7 @@ class Player extends SynchronizedSprite {
           case 2:
           case 412:
             this.mox = 0;
-            this.moy = -_gravity;
+            this.moy = -this._gravity;
             rotateGravitymo = false;
             break;
           case 3:
@@ -4474,7 +5148,7 @@ class Player extends SynchronizedSprite {
           this.y++;
         }
         else
-          y += (ty - 14) / 15;
+          this.y += (ty - 14) / 15;
       }
     }
 
@@ -4665,6 +5339,8 @@ class Player extends SynchronizedSprite {
 //
 
 class Me extends Player {
+  coinCountChanged = false;
+
   getPlayerInput(input){
     if (this.isControlled){
       this.leftDown      = input.keyDown.ArrowLeft  || input.keyDown.KeyA ? -1 : 0;
@@ -4679,7 +5355,60 @@ class Me extends Player {
   }
 
   touchBlock(cx, cy, isGod){
-    // TODO: apply block effects
+    if (this.isMe){
+      // TODO: multiJumpEffectDisplay.update();
+      this.coinCountChanged = false;
+    }
+
+    switch (this.current){
+      case ItemId.COIN_GOLD:
+      case ItemId.COIN_BLUE:
+      case 110:
+      case 111: {
+        if (this.isMe && this.current !== 110 && this.current !== 111){
+          // TODO: SoundManager.playMiscSound(SoundId.COIN);
+          this.world.setTileComplex(0, cx, cy, this.current + 10, null); // 100 -> 110; 101 -> 111
+          if (this.current == ItemId.COIN_GOLD) {
+            this.coins++;
+            this.gx.push(cx);
+            this.gy.push(cy);
+          }
+          else {
+            this.bcoins++;
+            this.bx.push(cx);
+            this.by.push(cy);
+          }
+          this.coinCountChanged = true;
+          // TODO: if particles enabled:
+          //for (var k:int = 0; k < 4; k++)
+          // spawnCoinPatricle(cx, cy, current == ItemId.COIN_BLUE);
+        }
+        else if (!this.isMe){
+          /*
+          var found:Boolean = false;
+          for (var i:int = 0; i < gx.length; i++) {
+            if (gx[i] == cx && gy[i] == cy) {
+              found = true;
+              break;
+            }
+          }
+          if (!found) {
+            if (current == ItemId.COIN_GOLD || current == 110) {
+              coins++;
+              gx.push(cx)
+              gy.push(cy);
+            }
+            else if (current == ItemId.COIN_BLUE || current == 111) {
+              bcoins++;
+              bx.push(cx);
+              by.push(cy);
+            }
+          }
+          */
+        }
+        break;
+      }
+    }
   }
 
   sendMovement(cx, cy){
@@ -4689,7 +5418,7 @@ class Me extends Player {
         this.ov !== this.vertical ||
         this.oSpaceDown !== this.spaceDown ||
         (this.oSpaceJP !== this.spaceJustDown && this.spaceJustDown) ||
-        //TODO:coinCountChanged ||
+        this.coinCountChanged ||
         this.enforceMovement
       ){
         this.oh = this.horizontal;
@@ -4714,6 +5443,8 @@ class Me extends Player {
 class PlayState extends BlContainer {
   player;
   world;
+  coins = 0;
+  bcoins = 0;
 
   constructor(worldData){
     super();
@@ -4721,11 +5452,16 @@ class PlayState extends BlContainer {
     this.world = new World(worldData);
     this.add(this.world);
 
+    const coinCount = this.world.getCoinCount();
+    this.coins = coinCount.coins;
+    this.bcoins = coinCount.bcoins;
+
     this.player = new Me(this.world, 'Sean', true, this);
     this.player.worldGravityMultiplier = this.world.gravity;
     this.x = -this.player.x + Config.bw / 2;
     this.y = -this.player.y + Config.bh / 2;
     this.add(this.player);
+    this.world.setPlayer(this.player);
     this.target = this.player;
   }
 
@@ -4740,10 +5476,10 @@ class PlayState extends BlContainer {
   }
 
   draw(target, ox, oy){
-    const startx = -this.x - 90;
-    const starty = -this.y - 90;
-    const endx = startx + Config.bw + 180;
-    const endy = starty + Config.bh + 180;
+    const startX = -this.x - 90;
+    const startY = -this.y - 90;
+    const endX = startX + Config.bw + 180;
+    const endY = startY + Config.bh + 180;
 
     super.draw(target, ox, oy);
 
@@ -4758,6 +5494,24 @@ class PlayState extends BlContainer {
 
     // Draws bubbles for signs, world portals, etc.
     this.world.drawDialogs(target, ox2, oy2);
+
+    let hudY = target.boundary.y + 5;
+    const rightEdge = target.boundary.x + target.boundary.w - 20;
+    // TODO: player deaths
+    if (this.coins > 0){
+      target.text(`${this.player.coins}/${this.coins}`, 'right', 'top', rightEdge - 2, hudY + 4);
+      ItemManager.sprCoin.drawPoint(target, {x: rightEdge, y: hudY}, 0);
+      hudY += 15;
+    }
+    if (this.bcoins > 0){
+      target.text(`${this.player.bcoins}/${this.bcoins}`, 'right', 'top', rightEdge - 2, hudY + 4);
+      ItemManager.sprBonusCoin.drawPoint(target, {x: rightEdge, y: hudY}, 0);
+      hudY += 15;
+    }
+    /*
+    if(this.coins > 0) { cointextcontainer.draw(target, 0,usedup + min); usedup += 15; }
+    if(this.bcoins > 0) { bcointextcontainer.draw(target,0,usedup + min); usedup += 15; }
+    */
   }
 }
 
@@ -4769,7 +5523,11 @@ class Screen {
   cnv;
   ctx;
   dpr;
+  scale;
   loading = true;
+  debug = false;
+  fullScreen = true;
+  boundary = {x: 0, y: 0, w: Config.bw, h: Config.bh};
 
   constructor(cnv, ctx, dpr){
     this.cnv = cnv;
@@ -4782,20 +5540,41 @@ class Screen {
     this.ctx.fillStyle = '#000';
     this.ctx.fillRect(0, 0, this.cnv.width, this.cnv.height);
     this.ctx.save();
+    this.boundary.x = 0;
+    this.boundary.y = 0;
+    this.boundary.w = Config.bw;
+    this.boundary.h = Config.bh;
     const scaleW = this.cnv.width / Config.bw;
     const scaleH = this.cnv.height / Config.bh;
     if (scaleW > scaleH){
-      this.ctx.translate((this.cnv.width - Config.bw * scaleH) * 0.5, 0);
+      const tx = (this.cnv.width - Config.bw * scaleH) * 0.5;
+      this.ctx.translate(tx, 0);
       this.ctx.scale(scaleH, scaleH);
+      this.scale = scaleH;
+      if (this.fullScreen){
+        this.boundary.x = Math.floor(-tx / scaleH);
+        this.boundary.y = 0;
+        this.boundary.w = Math.floor(this.cnv.width / scaleH);
+        this.boundary.h = Config.bh;
+      }
     }
     else{
-      this.ctx.translate(0, (this.cnv.height - Config.bh * scaleW) * 0.5);
+      const ty = (this.cnv.height - Config.bh * scaleW) * 0.5;
+      this.ctx.translate(0, ty);
       this.ctx.scale(scaleW, scaleW);
+      this.scale = scaleW;
+      if (this.fullScreen){
+        this.boundary.x = 0;
+        this.boundary.y = Math.floor(-ty / scaleW);
+        this.boundary.w = Config.bw;
+        this.boundary.h = Math.floor(this.cnv.height / scaleW);
+      }
     }
-    this.ctx.strokeStyle = '#f00';
-    this.ctx.beginPath();
-    this.ctx.rect(0, 0, Config.bw, Config.bh);
-    this.ctx.clip();
+    if (!this.fullScreen){
+      this.ctx.beginPath();
+      this.ctx.rect(0, 0, Config.bw, Config.bh);
+      this.ctx.clip();
+    }
   }
 
   endDraw(){
@@ -4803,14 +5582,7 @@ class Screen {
   }
 
   copyPixels(bmd, src, dst){
-    this.ctx.drawImage(
-      bmd.img,
-      src.x * bmd.scale,
-      src.y * bmd.scale,
-      src.w * bmd.scale,
-      src.h * bmd.scale,
-      dst.x, dst.y, dst.w, dst.h
-    );
+    this.copyPixelsRotated(bmd, src, dst, 0);
   }
 
   copyPixelsRotated(bmd, src, dst, deg){
@@ -4825,20 +5597,66 @@ class Screen {
       // TODO: this
     }
     else{
-      this.ctx.drawImage(
-        bmd.img,
-        src.x * bmd.scale,
-        src.y * bmd.scale,
-        src.w * bmd.scale,
-        src.h * bmd.scale,
-        dst.x, dst.y, dst.w, dst.h
-      );
+      if (this.scale >= 1){
+        this.ctx.drawImage(
+          bmd.img,
+          src.x * bmd.scale,
+          src.y * bmd.scale,
+          src.w * bmd.scale,
+          src.h * bmd.scale,
+          Math.floor(dst.x),
+          Math.floor(dst.y),
+          Math.floor((dst.w + 1) * this.scale - 1) / this.scale,
+          Math.floor((dst.h + 1) * this.scale - 1) / this.scale
+        );
+      }
+      else{
+        this.ctx.drawImage(
+          bmd.img,
+          src.x * bmd.scale,
+          src.y * bmd.scale,
+          src.w * bmd.scale,
+          src.h * bmd.scale,
+          Math.floor(dst.x),
+          Math.floor(dst.y),
+          Math.floor(dst.w) + this.scale,
+          Math.floor(dst.h) + this.scale
+        );
+      }
     }
   }
 
   fillRect(dst, color){
     this.ctx.fillStyle = color;
     this.ctx.fillRect(dst.x, dst.y, dst.w, dst.h);
+  }
+
+  text(text, align, baseline, x, y){
+    this.ctx.font = '12px ee_nokiafc22';
+    this.ctx.fillStyle = '#fff';
+    this.ctx.textAlign = align;
+    this.ctx.textBaseline = baseline;
+    this.ctx.fillText(text, x, y);
+  }
+
+  debugText(text, x, y){
+    if (!this.debug)
+      return;
+    this.ctx.font = '7px sans-serif';
+    this.ctx.fillStyle = '#fff';
+    this.ctx.textAlign = 'center';
+    this.ctx.textBaseline = 'middle';
+    this.ctx.fillText(text, x, y);
+  }
+
+  debugRect(x, y, w, h){
+    if (!this.debug)
+      return;
+    this.ctx.strokeStyle = '#f00';
+    this.ctx.beginPath();
+    this.ctx.rect(x, y, w, h);
+    this.ctx.lineWidth = this.dpr;
+    this.ctx.stroke();
   }
 
   drawBanner(text){
@@ -4862,6 +5680,13 @@ class Screen {
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
     if (this.loading)
       this.drawBanner('Loading...');
+  }
+
+  tick(input){
+    if (input.keyJustPressed.F1)
+      this.debug = !this.debug;
+    if (input.keyJustPressed.F2)
+      this.fullScreen = !this.fullScreen;
   }
 }
 
@@ -4958,6 +5783,7 @@ async function load(){
   }
 
   const loads = [
+    [false, false, document.fonts.ready],
     [CampaignPage, 'CampaignZip', loadZip('../media/campaigns/campaigns.zip')],
     LI('smileysBMD'              , 4888,  52, 'smileys.png'                ),
     LI('smileyPlatinumSpenderBMD',  312,  52, 'smileys_platinumspender.png'),
@@ -4984,7 +5810,7 @@ async function load(){
     LI('effectBlocksBMD'         ,  432,  16, 'blocks_effect.png'          ),
     LI('teamBlocksBMD'           ,  112,  16, 'blocks_team.png'            ),
     LI('completeBlocksBMD'       ,   16,  16, 'blocks_complete.png'        ),
-    LI('blockNumbersBMD'         ,   44,   5, 'block_numbers.png'          ),
+    LI('blockNumbersBMD'         ,   44,   5, 'block_numbers2.png'         ),
     LI('blocksFireworksBMD'      ,  768, 384, 'blocks_fireworks.png'       ),
     LI('blocksGoldenEasterEggBMD',   48,  48, 'blocks_goldeneasteregg.png' ),
   ];
@@ -5000,8 +5826,12 @@ async function load(){
     )
   );
   loads.forEach((key, i) => {
-    key[0][key[1]] = loadedValues[i];
+    if (key[0])
+      key[0][key[1]] = loadedValues[i];
   });
+
+  if (sessionStorage.getItem('hideControls') !== 'true')
+    document.getElementById('controls').style.display = '';
 
   let lastTick = Date.now();
   let accumulatedTime = 0;
@@ -5014,6 +5844,7 @@ async function load(){
       accumulatedTime += dt;
       while (accumulatedTime >= Config.physics_ms_per_tick){
         state.tick(input);
+        screen.tick(input);
         input.endTick();
         accumulatedTime -= Config.physics_ms_per_tick;
       }
@@ -5030,6 +5861,12 @@ async function load(){
   const ee = new EverybodyEdits();
   state = new PlayState(ee.defaultWorld);
   tick();
+}
+
+function hideControls(){
+  document.getElementById('controls').style.display = 'none';
+  sessionStorage.setItem('hideControls', 'true');
+  return false;
 }
 
 load();
