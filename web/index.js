@@ -130,6 +130,7 @@ class Config {
   static camera_lag = 1 / 16;
   static bw = 640;
   static bh = 480;
+  static showBackground = true;
 }
 
 //
@@ -146,8 +147,10 @@ class Input {
   }
 
   down(code){
-    this.keyDown[code] = true;
-    this.keyJustPressed[code] = true;
+    if (!this.keyDown[code]){
+      this.keyDown[code] = true;
+      this.keyJustPressed[code] = true;
+    }
   }
 
   up(code){
@@ -4945,7 +4948,7 @@ class BlSprite extends BlObject {
         pointY,
         this.width,
         this.height,
-        this.rotatedDeg
+        this.rotateDeg
       );
     }
   }
@@ -5100,7 +5103,7 @@ class World extends BlObject {
         type === ItemId.SPIKE_RED ||
         type === ItemId.SPIKE_GOLD ||
         type === ItemId.SPIKE_GREEN ||
-        type == ItemId.SPIKE_BLUE
+        type === ItemId.SPIKE_BLUE
       ){
         rotation = data.readInt();
       }
@@ -5448,6 +5451,9 @@ class World extends BlObject {
     this.overlapCells.length = 0;
     this.aniOffset += 0.3;
 
+    if (input.keyJustPressed.F6)
+      Config.showBackground = !Config.showBackground;
+
     for (const color of Object.keys(this.keys)){
       if (this.keys[color] && ((this.aniOffset - this.keysTimer[color]) / 30) >= 5)
         this.playState.switchKey(color, false, false);
@@ -5683,7 +5689,7 @@ class World extends BlObject {
           target.fillRect(new Rectangle(point.x,point.y,16,16), bgColor);
         }else
         */
-          ItemManager.bricks[bgrow[cx]].draw(target, point.x, point.y);
+          ItemManager.bricks[Config.showBackground ? bgrow[cx] : 0].draw(target, point.x, point.y);
       }
     }
 
@@ -6839,7 +6845,7 @@ class Player extends SynchronizedSprite {
         rot = 1;
       if (rot === 1) cy -= 1;
       if (rot === 0) cx -= 1;
-      this.current = world.getTile(0, cx, cy);
+      this.current = this.world.getTile(0, cx, cy);
     }
 
     /*
