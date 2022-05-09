@@ -93,10 +93,10 @@ class FlashByteArray {
 
 function rectIntersects(rect, x, y, w, h){
   return !(
-    rect.x + rect.w < x ||
-    x + w < rect.x ||
-    rect.y + rect.h < y ||
-    y + h < rect.y
+    rect.x + rect.w <= x ||
+    x + w <= rect.x ||
+    rect.y + rect.h <= y ||
+    y + h <= rect.y
   );
 }
 
@@ -984,7 +984,8 @@ class ItemBrick {
     target.debugText(`${this.debugId}`, ox + 8, oy + 8);
   }
 
-  drawWithNumber(target, ox, oy, num){
+  drawWithNumber(target, ox, oy, num, white){
+    const srcBmd = white ? ItemManager.blockNumbersBMD : ItemManager.blockNumbers2BMD;
     target.copyPixels(
       this.bmd,
       this.offset * 16,
@@ -998,7 +999,7 @@ class ItemBrick {
     );
     if (num >= 1000){
       target.copyPixels(
-        ItemManager.blockNumbersBMD,
+        srcBmd,
         40,
         0,
         4,
@@ -1014,7 +1015,7 @@ class ItemBrick {
       for (let i = 0; i < num.length; i++){
         const n = num[num.length - i - 1] - '0';
         target.copyPixels(
-          ItemManager.blockNumbersBMD,
+          srcBmd,
           n * 4,
           0,
           4,
@@ -5028,6 +5029,7 @@ class World extends BlObject {
     yellow: 0
   };
   overlapCells = [];
+  showDeathGate = 0;
 
   constructor(){
     super();
@@ -5511,7 +5513,7 @@ class World extends BlObject {
               (
                 pl.speedX > 0 ||
                 (cx <= pl.overlapb && pl.speedX <= 0 && pl.ox < cx * 16 + 16)
-              ) && rot == 2
+              ) && rot === 2
             ){
               if (cx !== ox || pl.overlapb === -1)
                 pl.overlapb = cx;
@@ -5523,7 +5525,7 @@ class World extends BlObject {
               (
                 pl.speedY > 0 ||
                 (cy <= pl.overlapc && pl.speedY <= 0 && pl.oy < cy * 16 + 16)
-              ) && rot == 3
+              ) && rot === 3
             ){
               if (cy !== oy || pl.overlapc === -1)
                 pl.overlapc = cy;
@@ -5619,12 +5621,19 @@ class World extends BlObject {
             if (this.lookup.getInt(cx, cy) <= pl.bcoins)
               continue;
             break;
+          case ItemId.DEATH_DOOR:
+            if (this.lookup.getInt(cx, cy) <= pl.deaths)
+              continue;
+            break;
           /*
-          case ItemId.DEATH_DOOR:   if (lookup.getInt(cx, cy) <= pl.deaths) continue; break;
           case ItemId.COINGATE:     if (lookup.getInt(cx, cy) >  /*pl.coins* / (pl.isme ? showCoinGate : pl.coins))  continue; break;
           case ItemId.BLUECOINGATE:   if (lookup.getInt(cx, cy) >  /*pl.bcoins* / (pl.isme ? showBlueCoinGate : pl.bcoins)) continue; break;
-          case ItemId.DEATH_GATE:   if (lookup.getInt(cx, cy) >  /*pl.deaths* / (pl.isme ? showDeathGate : pl.deaths)) continue; break;
-
+          */
+          case ItemId.DEATH_GATE:
+            if (this.lookup.getInt(cx, cy) > (pl.isMe ? this.showDeathGate : pl.deaths))
+              continue;
+            break;
+          /*
           case ItemId.TEAM_DOOR: if (pl.team == lookup.getInt(cx, cy)) continue; break;
           case ItemId.TEAM_GATE: if (pl.team != lookup.getInt(cx, cy)) continue; break;
 
@@ -5773,25 +5782,26 @@ class World extends BlObject {
               continue;
             }
             break;
-          /*
           // Death doors/gates
-          case ItemId.DEATH_DOOR:{
-            if (lookup.getInt(cx, cy) <= player.deaths) {
-              ItemManager.sprDoors.drawPoint(target, point, 20)
-            } else {
-              ItemManager.sprDeathDoor.drawPoint(target, point, lookup.getInt(cx, cy) - player.deaths)
+          case ItemId.DEATH_DOOR:
+            if (this.lookup.getInt(cx, cy) <= this.player.deaths)
+              ItemManager.sprDoors.drawPoint(target, point.x, point.y, 20);
+            else{
+              ItemManager.bricks[ItemId.DEATH_DOOR].drawWithNumber(
+                target, point.x, point.y, this.lookup.getInt(cx, cy) - this.player.deaths, false
+              );
             }
             continue;
-          }
-          case ItemId.DEATH_GATE:{
-            if (lookup.getInt(cx, cy) <= player.deaths) {
-              ItemManager.sprDoors.drawPoint(target, point, 21)
-            } else {
-              ItemManager.sprDeathGate.drawPoint(target, point, lookup.getInt(cx, cy) - player.deaths)
+          case ItemId.DEATH_GATE:
+            if (this.lookup.getInt(cx, cy) <= this.player.deaths)
+              ItemManager.sprDoors.drawPoint(target, point.x, point.y, 21);
+            else{
+              ItemManager.bricks[ItemId.DEATH_GATE].drawWithNumber(
+                target, point.x, point.y, this.lookup.getInt(cx, cy) - this.player.deaths, true
+              );
             }
             continue;
-          }
-
+          /*
           //Purple switch, doors and gates
           case ItemId.DOOR_PURPLE:{
             if (player.switches[lookup.getInt(cx, cy)]) {
@@ -5987,7 +5997,7 @@ class World extends BlObject {
               ItemManager.sprDoors.drawPoint(target, point.x, point.y, 6);
             else{ // Locked
               ItemManager.bricks[ItemId.COINDOOR].drawWithNumber(
-                target, point.x, point.y, this.lookup.getInt(cx, cy) - this.player.coins
+                target, point.x, point.y, this.lookup.getInt(cx, cy) - this.player.coins, false
               );
             }
             continue;
@@ -5996,7 +6006,7 @@ class World extends BlObject {
               ItemManager.sprDoors.drawPoint(target, point, 36);
             else{ // Locked
               ItemManager.bricks[ItemId.BLUECOINDOOR].drawWithNumber(
-                target, point.x, point.y, this.lookup.getInt(cx, cy) - this.player.bcoins
+                target, point.x, point.y, this.lookup.getInt(cx, cy) - this.player.bcoins, false
               );
             }
             continue;
@@ -6478,11 +6488,12 @@ class World extends BlObject {
             break;
         }
 
-        /*
-        if (decoration[cy][cx] == ItemId.CHECKPOINT) {
-          ItemManager.sprCheckpoint.drawPoint(target, point, (player.checkpoint_x == cx && player.checkpoint_y == cy) ? 1 : 0);
+        if (this.decoration[cy][cx] === ItemId.CHECKPOINT){
+          ItemManager.sprCheckpoint.drawPoint(target, point.x, point.y,
+            (this.player.checkpoint_x === cx && this.player.checkpoint_y === cy) ? 1 : 0);
         }
 
+        /*
         if (Global.playState.brushSize > 1) {
           if(Global.playState.brushGridLocked) {
             if ((cx - Global.playState.gridOffsetX + Global.playState.brushSize)
@@ -6674,7 +6685,6 @@ class Player extends SynchronizedSprite {
   name;
   isMe;
   state;
-  isDead = false;
   isFlying = false;
   spriteRect; // rect2
   queue = Array.from({length: Config.physics_queue_length}).map(() => 0);
@@ -6682,6 +6692,13 @@ class Player extends SynchronizedSprite {
   lastPortal;
   current;
   current_below;
+
+  // death
+  isDead = false;
+  deadOffset = 0;
+  deaths = 0;
+  checkpoint_x = -1;
+  checkpoint_y = -1;
 
   // coins
   coins = 0;
@@ -6720,6 +6737,7 @@ class Player extends SynchronizedSprite {
   slippery = 0;
   jumpCount = 0;
   maxJumps = 1;
+  isInvulnerable = false;
 
   constructor(world, name, isMe, state){
     super(ItemManager.smileysBMD);
@@ -6740,6 +6758,15 @@ class Player extends SynchronizedSprite {
   get isControlled(){
     // TODO: check for global target
     return this.isMe;
+  }
+
+  killPlayer(){
+    if (!this.isFlying && !this.isDead){
+      this.isDead = true;
+      // TODO: deadAnim = AnimationManager.animRandomDeath();
+    }
+    else if (!this.isMe && this.isFlying)
+      this.cursed = this.zombie = this.isOnFire = this.poison = false;
   }
 
   get gravityMultiplier(){
@@ -6768,14 +6795,34 @@ class Player extends SynchronizedSprite {
     return sm;
   }
 
+  respawn(){
+    this._modifierX = 0;
+    this._modifierY = 0;
+    this.modifierX = 0;
+    this.modifierY = 0;
+    this._speedX = 0;
+    this._speedY = 0;
+    this.speedX = 0;
+    this.speedY = 0;
+    this.isDead = false;
+    // TODO: this.deathsend = false;
+    this.isOnFire = false;
+    // TODO: this.last_respawn = this.state.now();
+    // TODO: this.resetSend = false;
+    // TODO: this.tilequeue = [];
+
+    this.placeAtSpawn(true);
+  }
+
   placeAtSpawn(checkpoint){
     let nx = 1;
     let ny = 1;
-    /*
-    if(checkpoint && checkpoint_x != -1) {
-      nx = checkpoint_x;
-      ny = checkpoint_y;
-    } else*/if (this.world.spawnPoints.length > 0){
+
+    if (checkpoint && this.checkpoint_x != -1){
+      nx = this.checkpoint_x;
+      ny = this.checkpoint_y;
+    }
+    else if (this.world.spawnPoints.length > 0){
       const worldSpawn = 0;
       if (!this.world.spawnPoints[worldSpawn])
         this.world.spawnPoints[worldSpawn] = [];
@@ -6817,10 +6864,10 @@ class Player extends SynchronizedSprite {
     if (auraAnimOffset >= itemAura.frames) auraAnimOffset = 0;
     */
 
-    /*
-    if(isDead) deadoffset += .3;
-    else deadoffset = 0;
-    */
+    if (this.isDead)
+      this.deadOffset += 0.3;
+    else
+      this.deadOffset = 0;
 
     /*
     if (!isDead && (cursed || zombie || isOnFire || poison)) {
@@ -6958,8 +7005,7 @@ class Player extends SynchronizedSprite {
           case ItemId.TOXIC_WASTE: {
             this.morx = 0;
             this.mory = _toxic_buoyancy;
-            // TODO: kill player in toxic
-            // if (!this.isDead && !this.isInvulnerable) this.killPlayer();
+            if (!this.isDead && !this.isInvulnerable) this.killPlayer();
             break;
           }
           case ItemId.FIRE:
@@ -6979,8 +7025,7 @@ class Player extends SynchronizedSprite {
           case ItemId.SPIKE_BLUE_CENTER:
             this.morx = 0;
             this.mory = this._gravity;
-            // TODO: kill player on spikes
-            // if (!this.isDead && !this.isInvulnerable) this.killPlayer();
+            if (!this.isDead && !this.isInvulnerable) this.killPlayer();
             break;
           default:
             this.morx = 0;
@@ -7489,7 +7534,7 @@ class Player extends SynchronizedSprite {
       stepY();
     }
 
-    if (!this.isDead) {
+    if (!this.isDead){
       let mod = 1;
       let inJump = false;
       if (this.spaceJustDown){
@@ -7609,8 +7654,19 @@ class Player extends SynchronizedSprite {
   }
 
   draw(target, ox, oy){
-    var playerX = this.x + ox - 5;
-    var playerY = this.y + oy - 5;
+    const playerX = this.x + ox - 5;
+    const playerY = this.y + oy - 5;
+
+    if (this.isDead && this.deadOffset > 16){
+      this.respawn();
+      this.deaths++;
+      return;
+    }
+
+    if (this.isDead){
+      this.drawFace(target, playerX, playerY, true, 0);
+      return;
+    }
 
     this.drawFace(target, playerX, playerY, false, 0);
   }
@@ -7765,6 +7821,10 @@ class Me extends Player {
 
       if (!isGod){
         switch (this.current){
+          case ItemId.CHECKPOINT:
+            this.checkpoint_x = cx;
+            this.checkpoint_y = cy;
+            break;
           case ItemId.KEY_RED:
           case ItemId.KEY_GREEN:
           case ItemId.KEY_BLUE:
@@ -7846,6 +7906,13 @@ class PlayState extends BlContainer {
   tick(input){
     super.tick(input);
     this.tickCount++;
+
+    {
+      const old = this.world.showDeathGate;
+      this.world.showDeathGate = this.player.deaths;
+      if (this.world.overlaps(this.player))
+        this.world.showDeathGate = old;
+    }
   }
 
   enterFrame(){
@@ -7889,7 +7956,21 @@ class PlayState extends BlContainer {
 
     let hudY = target.boundary.y + 5;
     const rightEdge = target.boundary.x + target.boundary.w - 20;
-    // TODO: player deaths
+    if (this.player.deaths > 0){
+      target.text(`${this.player.deaths}x`, 'right', 'top', rightEdge - 2, hudY + 4);
+      target.copyPixels(
+        PlayState.deathIconBMD,
+        0,
+        0,
+        13,
+        16,
+        rightEdge + 2,
+        hudY,
+        13,
+        16
+      );
+      hudY += 15;
+    }
     if (this.coins > 0){
       target.text(`${this.player.coins}/${this.coins}`, 'right', 'top', rightEdge - 2, hudY + 4);
       ItemManager.sprCoin.drawPoint(target, rightEdge, hudY, 0);
@@ -8243,6 +8324,7 @@ async function loadResources(){
     LI('likeBMD'                 ,   16,  16, 'like.png'                   ),
     LI('allParticles'            ,   90,   6, 'particles.png'              ),
     LI('graphicsPreviewBG'       ,   48,  48, 'graphicsPreviewBG.png'      ),
+    [PlayState, 'deathIconBMD', loadImgMedia(13, 16, 'death_count_icon.png')],
     // Blocks
     LI('blocksBMD'               , 5136,  16, 'blocks.png'                 ),
     LI('decoBlocksBMD'           , 5888,  16, 'blocks_deco.png'            ),
@@ -8255,7 +8337,8 @@ async function loadResources(){
     LI('effectBlocksBMD'         ,  432,  16, 'blocks_effect.png'          ),
     LI('teamBlocksBMD'           ,  112,  16, 'blocks_team.png'            ),
     LI('completeBlocksBMD'       ,   16,  16, 'blocks_complete.png'        ),
-    LI('blockNumbersBMD'         ,   44,   5, 'block_numbers2.png'         ),
+    LI('blockNumbersBMD'         ,   44,   5, 'block_numbers.png'          ),
+    LI('blockNumbers2BMD'        ,   44,   5, 'block_numbers2.png'         ),
     LI('blocksFireworksBMD'      ,  768, 384, 'blocks_fireworks.png'       ),
     LI('blocksGoldenEasterEggBMD',   48,  48, 'blocks_goldeneasteregg.png' ),
   ];

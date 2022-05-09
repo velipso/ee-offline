@@ -119,8 +119,8 @@ class Simulator {
           case 'boost-right': placeTile =  115; break;
           case 'boost-down' : placeTile =  117; break;
           case 'boost-left' : placeTile =  114; break;
-          case 'prismarine-slab-left' : placeTile = 1116; properties = {rotation: 1}; break;
-          case 'prismarine-slab-right': placeTile = 1116; properties = {rotation: 3}; break;
+          case 'prismarine-slab-left' : placeTile = 1116; properties = {rotation: 2}; break;
+          case 'prismarine-slab-right': placeTile = 1116; properties = {rotation: 0}; break;
           case 'goal':
             if (this.goal)
               throw new Error('Cannot set goal twice');
@@ -148,6 +148,7 @@ class Simulator {
 
     if (this.spawn)
       this.world.spawnPoints = [[[this.spawn.x, this.spawn.y]]];
+    //defaultScreen.debug = true;
     this.ee = new EverybodyEdits(defaultScreen, this.input, this.world);
   }
 
@@ -348,6 +349,7 @@ class TestSuite {
       btnTd.appendChild(btn);
       btn.addEventListener('click', () => {
         let sim = simulator.clone();
+        window.sim = sim;
         let events = JSON.parse(JSON.stringify(simulator.events));
         const totalTime = events.filter(k => k.kind === 'simulateMs').reduce((v, k) => v + k.ms, 0);
         let timeLeft = totalTime;
@@ -1071,7 +1073,11 @@ p.
 
     simulation.player.input.jump = true;
 
-    simulation.simulateMs(1000);
+    simulation.simulateMs(800);
+
+    simulation.player.input.jump = false;
+
+    simulation.simulateMs(200);
 
     expect(simulation.player.worldPosition).toEqual(simulation.goal);
   });
@@ -1081,10 +1087,10 @@ it('boosts propel the player the right amount of blocks in half slabs', () => {
   const simulation = new Simulator(
     `
 p
->]
-[]. . . . .
- }         X
-............
+> ]
+.[]. . . . .
+. }         X
+.............
 `,
     {
       ']': 'prismarine-slab-right',
