@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <title>Everybody Edits</title>
+  <title>Everybody Edits: Offline [web port by velipso]</title>
   <style>
 @font-face {
   font-family: ee_nokiafc22;
@@ -167,5 +167,8 @@ button:active div {
   <script src="jszip.min.js"></script>
   <script src="pako_inflate.min.js"></script>
   <script src="index.js"></script>
+  <script>
+    loadResources().then(() => playTutorial());
+  </script>
 </body>
 </html>

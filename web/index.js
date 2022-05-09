@@ -1,4 +1,4 @@
-let screen, input, eeGame, tutorialZip, tutorialLoaded = false;
+let defaultScreen, defaultInput, eeGame, tutorialZip, tutorialLoaded = false;
 
 //
 // Flash polyfills
@@ -4566,45 +4566,51 @@ class EverybodyEdits {
   input;
   state;
   running = false;
-  lastTick;
-  accumulatedTime;
+  accumulatedTime = 0;
 
-  constructor(screen, input, eelvl){
+  static init(){
+    ItemManager.init();
+  }
+
+  constructor(screen, input, world){
     this.screen = screen;
     this.input = input;
-    ItemManager.init();
-    this.state = new PlayState(eelvl);
+    this.state = new PlayState(world);
   }
 
   run(){
-    this.lastTick = Date.now();
-    this.accumulatedTime = 0;
     this.running = true;
-    this.tick();
+
+    let lastTick = Date.now();
+    const tick = () => {
+      const now = Date.now();
+      const dt = Math.min(15 * Config.physics_ms_per_tick, now - this.lastTick);
+      this.lastTick = now;
+      this.advanceTime(dt);
+      this.draw();
+      if (this.running)
+        window.requestAnimationFrame(tick);
+    };
+
+    tick();
   }
 
-  tick(){
-    const now = Date.now();
-    const dt = Math.min(15 * Config.physics_ms_per_tick, now - this.lastTick);
-    this.lastTick = now;
-
-    if (this.state){
-      this.accumulatedTime += dt;
-      while (this.accumulatedTime >= Config.physics_ms_per_tick){
-        this.state.tick(this.input);
-        this.screen.tick(this.input);
-        this.input.endTick();
-        this.accumulatedTime -= Config.physics_ms_per_tick;
-      }
-      this.state.enterFrame();
-      this.state.exitFrame();
-      this.screen.startDraw();
-      this.state.draw(this.screen, 0, 0);
-      this.screen.endDraw();
+  advanceTime(dt){
+    this.accumulatedTime += dt;
+    while (this.accumulatedTime >= Config.physics_ms_per_tick){
+      this.state.tick(this.input);
+      this.screen.tick(this.input);
+      this.input.endTick();
+      this.accumulatedTime -= Config.physics_ms_per_tick;
     }
+  }
 
-    if (this.running)
-      window.requestAnimationFrame(() => this.tick());
+  draw(){
+    this.state.enterFrame();
+    this.state.exitFrame();
+    this.screen.startDraw();
+    this.state.draw(this.screen, 0, 0);
+    this.screen.endDraw();
   }
 
   stop(){
@@ -4907,32 +4913,15 @@ class World extends BlObject {
   };
   overlapCells = [];
 
-  constructor(worldData){
+  constructor(){
     super();
+  }
 
-    // CampaignPage::onFileLoaded
-    const data = worldData.inflate();
-    const owner = data.readUTF();
-    const worldName = data.readUTF();
-    const width = data.readInt();
-    const height = data.readInt();
-    this.gravity = data.readFloat();
-    const background = data.readUnsignedInt();
-    const description = data.readUTF();
-    const campaign = data.readBoolean();
-    const crewId = data.readUTF();
-    const crewName = data.readUTF();
-    const crewStatus = data.readInt();
-    const minimap = data.readBoolean();
-    const ownerID = data.readUTF();
-
+  clearWorld(width, height, gravity){
     this.lookup = new Lookup(width, height);
-
-    // World::deserializeFromMessage
-
-    // Create empty world array.
+    this.gravity = typeof gravity === 'number' ? gravity : 1;
     const layers = [];
-    for (let l = 0; l < 2; l++){
+    for (let l = 0; l < 3; l++){
       const cols = [];
       for (let a = 0; a < height; a++){
         const row = [];
@@ -4942,6 +4931,28 @@ class World extends BlObject {
       }
       layers.push(cols);
     }
+    this.setMapArray(layers);
+  }
+
+  loadEelvl(worldData){
+    // CampaignPage::onFileLoaded
+    const data = worldData.inflate();
+    const owner = data.readUTF();
+    const worldName = data.readUTF();
+    const width = data.readInt();
+    const height = data.readInt();
+    const gravity = data.readFloat();
+    const background = data.readUnsignedInt();
+    const description = data.readUTF();
+    const campaign = data.readBoolean();
+    const crewId = data.readUTF();
+    const crewName = data.readUTF();
+    const crewStatus = data.readInt();
+    const minimap = data.readBoolean();
+    const ownerID = data.readUTF();
+
+    this.clearWorld(width, height, gravity);
+    const layers = this.realMap;
 
     while (data.position < data.length){
       const type = data.readInt();
@@ -5021,7 +5032,7 @@ class World extends BlObject {
           this.lookup.setInt(nx, ny, rotation);
         }
 
-        switch(type) {
+        switch (type){
           case 83:
           case 77:
           case 1520:
@@ -5142,7 +5153,7 @@ class World extends BlObject {
   }
 
   setTileComplex(layer, x, y, type, properties){
-    if (layer == 0)
+    if (layer === 0)
       this.lookup.deleteLookup(x, y);
 
     if (ItemId.isBlockRotateable(type) || ItemId.isNonRotatableHalfBlock(type)){
@@ -7698,10 +7709,10 @@ class PlayState extends BlContainer {
   bcoins = 0;
   keysQueue = [];
 
-  constructor(worldData){
+  constructor(world){
     super();
 
-    this.world = new World(worldData);
+    this.world = world;
     this.add(this.world);
 
     const coinCount = this.world.getCoinCount();
@@ -8020,29 +8031,29 @@ async function loadResources(){
   document.body.appendChild(cnv);
   const ctx = cnv.getContext('2d');
 
-  screen = new Screen(cnv, ctx, dpr);
-  input = new Input();
+  defaultScreen = new Screen(cnv, ctx, dpr);
+  defaultInput = new Input();
 
   window.addEventListener('keydown', e => {
     e.preventDefault();
     e.stopPropagation();
-    input.down(e.code);
+    defaultInput.down(e.code);
   });
 
   window.addEventListener('keyup', e => {
     e.preventDefault();
     e.stopPropagation();
-    input.up(e.code);
+    defaultInput.up(e.code);
   });
 
   window.addEventListener('blur', () => {
-    input.blur();
+    defaultInput.blur();
   });
 
   new ResizeObserver(entries => {
     for (const e of entries) {
       const c = e.contentRect;
-      screen.resize(Math.round(c.width), Math.round(c.height));
+      defaultScreen.resize(Math.round(c.width), Math.round(c.height));
     }
   }).observe(document.body);
 
@@ -8089,13 +8100,13 @@ async function loadResources(){
     LI('blocksFireworksBMD'      ,  768, 384, 'blocks_fireworks.png'       ),
     LI('blocksGoldenEasterEggBMD',   48,  48, 'blocks_goldeneasteregg.png' ),
   ];
-  screen.drawLoading(0, loads.length);
+  defaultScreen.drawLoading(0, loads.length);
   let loadLeft = loads.length;
   const loadedValues = await Promise.all(
     loads.map(a =>
       a[2].then(r => {
         loadLeft--;
-        screen.drawLoading(loads.length - loadLeft, loads.length);
+        defaultScreen.drawLoading(loads.length - loadLeft, loads.length);
         return r;
       })
     )
@@ -8105,9 +8116,10 @@ async function loadResources(){
       key[0][key[1]] = loadedValues[i];
   });
 
-  screen.drawBanner('Loading tutorial...');
+  EverybodyEdits.init();
+
+  defaultScreen.drawBanner('Loading tutorial...');
   tutorialZip = await blobToZipObj(await loadBlob('../media/campaigns/campaigns.zip'));
-  playTutorial();
 }
 
 function restoreMenu(){
@@ -8316,11 +8328,11 @@ function loadZipObj(zipObj, tutorial){
 }
 
 function loadEelvl(eelvl){
-  screen.drawBanner('Loading level...');
+  defaultScreen.drawBanner('Loading level...');
   if (eeGame)
     eeGame.stop();
-  eeGame = new EverybodyEdits(screen, input, eelvl);
+  const world = new World();
+  world.loadEelvl(eelvl);
+  eeGame = new EverybodyEdits(defaultScreen, defaultInput, world);
   eeGame.run();
 }
-
-loadResources();

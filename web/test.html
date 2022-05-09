@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>Everybody Edits [test]</title>
+  <style>
+@font-face {
+  font-family: ee_nokiafc22;
+  src: url('../media/nokiafc22.ttf');
+}
+@font-face {
+  font-family: ee_visitor;
+  src: url('../media/visitor.ttf');
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #000;
+  height: 100%;
+  overflow: hidden;
+}
+canvas {
+  user-select: none;
+  display: block;
+}
+#menu {
+  font-family: monospace;
+  color: #fff;
+  overflow: auto;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  border: 2px solid #2ac;
+  border-radius: 10px;
+  background-color: #278;
+  padding: 0 10px;
+}
+table {
+  margin: 10px 10px 10px 0;
+  border-spacing: 0;
+  border-right: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+}
+td {
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  padding: 6px;
+}
+</style>
+</head>
+<body>
+  <div id="menu">
+  </div>
+  <script src="jszip.min.js"></script>
+  <script src="pako_inflate.min.js"></script>
+  <script src="index.js"></script>
+  <script src="test.js"></script>
+  <script>
+    loadResources().then(() => runTests());
+  </script>
+</body>
+</html>
