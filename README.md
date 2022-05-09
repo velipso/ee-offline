@@ -5,7 +5,7 @@ This fork was created by velipso in order to port the game to HTML5.  It's not d
 
 [Play Demo](https://cdn.githubraw.com/velipso/ee-offline/28b6ae5fd72299c58a015b9cf3d31987df4e1f16/web/index.html)
 
-The physics are currently incorrect, but you can track the progress by running the tests here:
+You can run the test suite here (adapted from [SirJosh](https://github.com/SirJosh3917/smiley-face-game)):
 
 [Run Tests](https://cdn.githubraw.com/velipso/ee-offline/28b6ae5fd72299c58a015b9cf3d31987df4e1f16/web/test.html)
 
