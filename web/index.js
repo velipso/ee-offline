@@ -990,7 +990,7 @@ class ItemBrick {
     else{
       num = '' + num;
       for (let i = 0; i < num.length; i++){
-        const n = num[i] - '0';
+        const n = num[num.length - i - 1] - '0';
         target.copyPixels(
           ItemManager.blockNumbersBMD,
           {x: n * 4, y: 0, w: 4, h: 5},
