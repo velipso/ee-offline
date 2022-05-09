@@ -968,8 +968,14 @@ class ItemBrick {
   draw(target, ox, oy){
     target.copyPixels(
       this.bmd,
-      {x: this.offset * 16, y: 0, w: 16, h: 16},
-      {x: ox, y: oy, w: 16, h: 16}
+      this.offset * 16,
+      0,
+      16,
+      16,
+      ox,
+      oy,
+      16,
+      16
     );
     target.debugText(`${this.debugId}`, ox + 8, oy + 8);
   }
@@ -977,14 +983,26 @@ class ItemBrick {
   drawWithNumber(target, ox, oy, num){
     target.copyPixels(
       this.bmd,
-      {x: this.offset * 16, y: 0, w: 16, h: 16},
-      {x: ox, y: oy, w: 16, h: 16}
+      this.offset * 16,
+      0,
+      16,
+      16,
+      ox,
+      oy,
+      16,
+      16
     );
     if (num >= 1000){
       target.copyPixels(
         ItemManager.blockNumbersBMD,
-        {x: 40, y: 0, w: 4, h: 5},
-        {x: ox + 12, y: oy + 11, w: 4, h: 5}
+        40,
+        0,
+        4,
+        5,
+        ox + 12,
+        oy + 11,
+        4,
+        5
       );
     }
     else{
@@ -993,8 +1011,14 @@ class ItemBrick {
         const n = num[num.length - i - 1] - '0';
         target.copyPixels(
           ItemManager.blockNumbersBMD,
-          {x: n * 4, y: 0, w: 4, h: 5},
-          {x: ox + 12 - i * 5, y: oy + 11, w: 4, h: 5}
+          n * 4,
+          0,
+          4,
+          5,
+          ox + 12 - i * 5,
+          oy + 11,
+          4,
+          5
         );
       }
     }
@@ -4770,25 +4794,37 @@ class BlSprite extends BlObject {
   */
 
   draw(target, ox, oy){
-    this.drawPoint(target, {x: ox + this.x, y: oy + this.y});
+    this.drawPoint(target, ox + this.x, oy + this.y);
   }
 
-  drawPoint(target, point, frame){
+  drawPoint(target, pointX, pointY, frame){
     this.frame = frame || 0;
     if (this.shadow){
       throw new Error('TODO: Draw sprite shadow');
       target.copyPixelsRotated(
         this.sprImageShadow,
-        this.shadowRect,
-        {x: point.x, y: point.y, w: this.width + 2, h: this.height + 2},
+        this.shadowRect.x,
+        this.shadowRect.y,
+        this.shadowRect.w,
+        this.shadowRect.h,
+        pointX,
+        pointY,
+        this.width + 2,
+        this.height + 2,
         this.rotatedDeg
       );
     }
     else{
       target.copyPixelsRotated(
         this.bmd,
-        this.rect,
-        {x: point.x, y: point.y, w: this.width, h: this.height},
+        this.rect.x,
+        this.rect.y,
+        this.rect.w,
+        this.rect.h,
+        pointX,
+        pointY,
+        this.width,
+        this.height,
         this.rotatedDeg
       );
     }
@@ -5285,7 +5321,7 @@ class World extends BlObject {
   }
 
   tick(input){
-    this.overlapCells = [];
+    this.overlapCells.length = 0;
     this.aniOffset += 0.3;
 
     for (const color of Object.keys(this.keys)){
@@ -5564,7 +5600,7 @@ class World extends BlObject {
           case 23:
           case 26:
             if (this.getKey('red')){
-              ItemManager.sprDoors.drawPoint(target, point, type === 23 ? 0 : 3);
+              ItemManager.sprDoors.drawPoint(target, point.x, point.y, type === 23 ? 0 : 3);
               continue;
             }
             break;
@@ -5572,7 +5608,7 @@ class World extends BlObject {
           case 24:
           case 27:
             if (this.getKey('green')){
-              ItemManager.sprDoors.drawPoint(target, point, type === 24 ? 1 : 4);
+              ItemManager.sprDoors.drawPoint(target, point.x, point.y, type === 24 ? 1 : 4);
               continue;
             }
             break;
@@ -5580,7 +5616,7 @@ class World extends BlObject {
           case 25:
           case 28:
             if (this.getKey('blue')){
-              ItemManager.sprDoors.drawPoint(target, point, type === 25 ? 2 : 5);
+              ItemManager.sprDoors.drawPoint(target, point.x, point.y, type === 25 ? 2 : 5);
               continue;
             }
             break;
@@ -5588,7 +5624,7 @@ class World extends BlObject {
           case 1005:
           case 1008:
             if (this.getKey('cyan')){
-              ItemManager.sprDoors.drawPoint(target, point, type === 1005 ? 14 : 17);
+              ItemManager.sprDoors.drawPoint(target, point.x, point.y, type === 1005 ? 14 : 17);
               continue;
             }
             break;
@@ -5596,7 +5632,7 @@ class World extends BlObject {
           case 1006:
           case 1009:
             if (this.getKey('magenta')){
-              ItemManager.sprDoors.drawPoint(target, point, type === 1006 ? 15 : 18);
+              ItemManager.sprDoors.drawPoint(target, point.x, point.y, type === 1006 ? 15 : 18);
               continue;
             }
             break;
@@ -5604,7 +5640,7 @@ class World extends BlObject {
           case 1007:
           case 1010:
             if (this.getKey('yellow')){
-              ItemManager.sprDoors.drawPoint(target, point, type === 1007 ? 16 : 19);
+              ItemManager.sprDoors.drawPoint(target, point.x, point.y, type === 1007 ? 16 : 19);
               continue;
             }
             break;
@@ -5819,7 +5855,7 @@ class World extends BlObject {
           */
           case ItemId.COINDOOR:
             if (this.lookup.getInt(cx, cy) <= this.player.coins) // Open
-              ItemManager.sprDoors.drawPoint(target, point, 6);
+              ItemManager.sprDoors.drawPoint(target, point.x, point.y, 6);
             else{ // Locked
               ItemManager.bricks[ItemId.COINDOOR].drawWithNumber(
                 target, point.x, point.y, this.lookup.getInt(cx, cy) - this.player.coins
@@ -6205,11 +6241,11 @@ class World extends BlObject {
         point.x = (cx << 4) + ox;
         switch (type){
           case 100:
-            ItemManager.sprCoin.drawPoint(target, point,
+            ItemManager.sprCoin.drawPoint(target, point.x, point.y,
               ((this.aniOffset >> 0) + cx + cy) % 12);
             break;
           case 101:
-            ItemManager.sprBonusCoin.drawPoint(target, point,
+            ItemManager.sprBonusCoin.drawPoint(target, point.x, point.y,
               ((this.aniOffset >> 0) + cx + cy) % 12);
             break;
           /*
@@ -6498,8 +6534,14 @@ class SynchronizedSprite extends SynchronizedObject {
   draw(target, ox, oy){
     target.copyPixels(
       this.bmd,
-      this.rect,
-      {x: this.x + ox, y: this.y + oy, w: this.rect.w, h: this.rect.h}
+      this.rect.x,
+      this.rect.y,
+      this.rect.w,
+      this.rect.h,
+      this.x + ox,
+      this.y + oy,
+      this.rect.w,
+      this.rect.h
     );
   }
 }
@@ -7451,21 +7493,38 @@ class Player extends SynchronizedSprite {
     var playerX = this.x + ox - 5;
     var playerY = this.y + oy - 5;
 
-    this.drawFace(target, {x: playerX, y: playerY}, false, 0);
+    this.drawFace(target, playerX, playerY, false, 0);
   }
 
-  drawFace(target, point, zombie, deg){
-    const dest = {x: point.x, y: point.y, w: 26, h: 26};
+  drawFace(target, pointX, pointY, zombie, deg){
     if (zombie){
       target.copyPixelsRotated(
         this.bmd,
-        {x: 26 * 87, y: this.spriteRect.y, w: 26, h: 26},
-        dest,
+        26 * 87,
+        this.spriteRect.y,
+        26,
+        26,
+        pointX,
+        pointY,
+        26,
+        26,
         deg
       );
     }
-    else
-      target.copyPixelsRotated(this.bmd, this.spriteRect, dest, deg);
+    else{
+      target.copyPixelsRotated(
+        this.bmd,
+        this.spriteRect.x,
+        this.spriteRect.y,
+        this.spriteRect.w,
+        this.spriteRect.h,
+        pointX,
+        pointY,
+        26,
+        26,
+        deg
+      );
+    }
   }
 
   drawGods(target, ox, oy){
@@ -7708,12 +7767,12 @@ class PlayState extends BlContainer {
     // TODO: player deaths
     if (this.coins > 0){
       target.text(`${this.player.coins}/${this.coins}`, 'right', 'top', rightEdge - 2, hudY + 4);
-      ItemManager.sprCoin.drawPoint(target, {x: rightEdge, y: hudY}, 0);
+      ItemManager.sprCoin.drawPoint(target, rightEdge, hudY, 0);
       hudY += 15;
     }
     if (this.bcoins > 0){
       target.text(`${this.player.bcoins}/${this.bcoins}`, 'right', 'top', rightEdge - 2, hudY + 4);
-      ItemManager.sprBonusCoin.drawPoint(target, {x: rightEdge, y: hudY}, 0);
+      ItemManager.sprBonusCoin.drawPoint(target, rightEdge, hudY, 0);
       hudY += 15;
     }
     /*
@@ -7791,11 +7850,11 @@ class Screen {
     this.ctx.restore();
   }
 
-  copyPixels(bmd, src, dst){
-    this.copyPixelsRotated(bmd, src, dst, 0);
+  copyPixels(bmd, srcX, srcY, srcW, srcH, dstX, dstY, dstW, dstH){
+    this.copyPixelsRotated(bmd, srcX, srcY, srcW, srcH, dstX, dstY, dstW, dstH, 0);
   }
 
-  copyPixelsRotated(bmd, src, dst, deg){
+  copyPixelsRotated(bmd, srcX, srcY, srcW, srcH, dstX, dstY, dstW, dstH, deg){
     deg = ((deg % 360) + 360) % 360;
     if (deg === 90){
       // TODO: this
@@ -7807,16 +7866,16 @@ class Screen {
       // TODO: this
     }
     else{
-      const x1 = this.worldToScreenX(dst.x);
-      const y1 = this.worldToScreenY(dst.y);
-      const x2 = this.worldToScreenX(dst.x + dst.w);
-      const y2 = this.worldToScreenY(dst.y + dst.h);
+      const x1 = this.worldToScreenX(dstX);
+      const y1 = this.worldToScreenY(dstY);
+      const x2 = this.worldToScreenX(dstX + dstW);
+      const y2 = this.worldToScreenY(dstY + dstH);
       this.ctx.drawImage(
         bmd.img,
-        src.x * bmd.scale,
-        src.y * bmd.scale,
-        src.w * bmd.scale,
-        src.h * bmd.scale,
+        srcX * bmd.scale,
+        srcY * bmd.scale,
+        srcW * bmd.scale,
+        srcH * bmd.scale,
         x1,
         y1,
         x2 - x1,
