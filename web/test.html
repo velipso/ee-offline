@@ -47,10 +47,34 @@ td {
   border-left: 1px solid #fff;
   padding: 6px;
 }
+#menu-closed {
+  display: block;
+  font-family: ee_nokiafc22;
+  font-size: 16px;
+  line-height: 5px;
+  overflow: none;
+  color: #fff;
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 30px;
+  height: 30px;
+  border: 2px solid #2ac;
+  border-radius: 10px;
+  background-color: #278;
+  padding: 0;
+}
+#menu-closed p {
+  text-align: center;
+  margin-left: 1px;
+  margin-top: 9px;
+}
 </style>
 </head>
 <body>
-  <div id="menu">
+  <div id="menu"></div>
+  <a id="menu-closed" href="#" style="display: none;" onclick="javascript: return showTestMenu();">
+    <p>-<br />-<br />-</p>
   </div>
   <script src="jszip.min.js"></script>
   <script src="pako_inflate.min.js"></script>

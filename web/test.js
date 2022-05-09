@@ -1,3 +1,4 @@
+let lastSimulator;
 
 class FakeInput {
   simulator;
@@ -53,6 +54,7 @@ class Simulator {
   spawn;
 
   constructor(template, customMappings){
+    lastSimulator = this;
     this.input = new Input();
     this.world = new World();
     this.player = new FakePlayer(this);
@@ -132,6 +134,10 @@ class Simulator {
 
   simulateTicks(ticks){
     this.ee.advanceTime(ticks * Config.physics_ms_per_tick);
+  }
+
+  draw(){
+    this.ee.draw();
   }
 }
 
@@ -290,6 +296,7 @@ class TestSuite {
           throw e;
       }
 
+      const simulator = lastSimulator;
       const tr = document.createElement('tr');
       tr.appendChild(TD(`${i + 1}`));
       tr.appendChild(TD(test.name));
@@ -302,6 +309,15 @@ class TestSuite {
       else
         totalPass++;
       tr.appendChild(td);
+      const btnTd = TD('');
+      tr.appendChild(btnTd);
+      const btn = document.createElement('button');
+      btn.appendChild(document.createTextNode('Show'));
+      btnTd.appendChild(btn);
+      btn.addEventListener('click', () => {
+        simulator.draw();
+        hideTestMenu();
+      });
       table.appendChild(tr);
       await new Promise(resolve => setTimeout(resolve, 0));
     }
@@ -312,7 +328,10 @@ class TestSuite {
     const td = TD('Total Pass:');
     td.style.textAlign = 'right';
     tr.appendChild(td);
-    tr.appendChild(TD(`${totalPass} / ${TestSuite.tests.length}`));
+    const td2 = TD(`${totalPass} / ${TestSuite.tests.length}`);
+    td2.colSpan = 2;
+    td2.style.textAlign = 'center';
+    tr.appendChild(td2);
   }
 }
 
@@ -325,6 +344,18 @@ async function runTests(){
   };
   defaultScreen.drawBanner('Running tests...');
   await TestSuite.run();
+}
+
+function showTestMenu(){
+  document.getElementById('menu').style.display = '';
+  document.getElementById('menu-closed').style.display = 'none';
+  return false;
+}
+
+function hideTestMenu(){
+  document.getElementById('menu').style.display = 'none';
+  document.getElementById('menu-closed').style.display = '';
+  return false;
 }
 
 const describe = TestSuite.describe;
