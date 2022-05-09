@@ -4584,8 +4584,8 @@ class EverybodyEdits {
     let lastTick = Date.now();
     const tick = () => {
       const now = Date.now();
-      const dt = Math.min(15 * Config.physics_ms_per_tick, now - this.lastTick);
-      this.lastTick = now;
+      const dt = Math.min(15 * Config.physics_ms_per_tick, now - lastTick);
+      lastTick = now;
       this.advanceTime(dt);
       this.draw();
       if (this.running)
@@ -4921,7 +4921,7 @@ class World extends BlObject {
     this.lookup = new Lookup(width, height);
     this.gravity = typeof gravity === 'number' ? gravity : 1;
     const layers = [];
-    for (let l = 0; l < 3; l++){
+    for (let l = 0; l < 2; l++){
       const cols = [];
       for (let a = 0; a < height; a++){
         const row = [];
