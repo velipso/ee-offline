@@ -4316,7 +4316,7 @@ class ItemManager {
 
   static getRotateableSprite(type){
     switch (type){
-      case ItemId.GLOWYLINE_BLUE_SLOPE:         return ItemManager.sprGlowylineBlueSlope;
+      case ItemId.GLOWY_LINE_BLUE_SLOPE:        return ItemManager.sprGlowylineBlueSlope;
       case ItemId.GLOWY_LINE_BLUE_STRAIGHT:     return ItemManager.sprGlowylineBlueStraight;
       case ItemId.GLOWY_LINE_GREEN_SLOPE:       return ItemManager.sprGlowylineGreenSlope;
       case ItemId.GLOWY_LINE_GREEN_STRAIGHT:    return ItemManager.sprGlowylineGreenStraight;
