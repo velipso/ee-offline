@@ -44,6 +44,14 @@ class FakePlayer {
       y: this.simulator.ee.state.player.y
     };
   }
+
+  get x() {
+    return this.simulator.ee.state.player.x;
+  }
+
+  get y() {
+    return this.simulator.ee.state.player.y;
+  }
 }
 
 class Simulator {
@@ -333,6 +341,7 @@ class TestSuite {
       btn.addEventListener('click', () => {
         let sim = simulator.clone();
         let events = JSON.parse(JSON.stringify(simulator.events));
+        console.log(events);
         const totalTime = events.filter(k => k.kind === 'simulateMs').reduce((v, k) => v + k.ms, 0);
         let timeLeft = totalTime;
         sim.draw();
