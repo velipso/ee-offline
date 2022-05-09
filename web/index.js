@@ -7945,6 +7945,13 @@ class Screen {
     this.ctx.fillText(text, this.cnv.width / 2, this.cnv.height / 2);
   }
 
+  drawStatus(text){
+    this.ctx.font = (20 * this.dpr) + 'px sans-serif';
+    this.ctx.fillStyle = '#fff';
+    this.ctx.textAlign = 'center';
+    this.ctx.fillText(text, this.cnv.width / 2, 30 * this.dpr);
+  }
+
   drawLoading(current, total){
     this.drawBanner('Loading... (' + current + '/' + total + ')');
   }
@@ -8038,6 +8045,8 @@ async function loadResources(){
     e.preventDefault();
     e.stopPropagation();
     defaultInput.down(e.code);
+    if (typeof window.onTestKey === 'function') // hack for tests
+      window.onTestKey(e.code);
   });
 
   window.addEventListener('keyup', e => {

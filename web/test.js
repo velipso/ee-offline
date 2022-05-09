@@ -8,6 +8,7 @@ class FakeInput {
   }
 
   update(key, keyDown){
+    this.simulator.events.push({kind: 'updateInput', key, keyDown});
     if (keyDown)
       this.simulator.input.down(key);
     else
@@ -52,8 +53,13 @@ class Simulator {
   player;
   goal;
   spawn;
+  events = [];
+  template;
+  customMappings;
 
   constructor(template, customMappings){
+    this.template = template;
+    this.customMappings = customMappings;
     lastSimulator = this;
     this.input = new Input();
     this.world = new World();
@@ -89,10 +95,10 @@ class Simulator {
         switch (ch){
           case 'blank'      : break;
           case 'basic-white': placeTile = 1088; break;
-          case 'dot'        : placeTile =    4; break;
+          case 'arrow-left' : placeTile =    1; break;
           case 'arrow-up'   : placeTile =    2; break;
           case 'arrow-right': placeTile =    3; break;
-          case 'arrow-left' : placeTile =    1; break;
+          case 'dot'        : placeTile =    4; break;
           case 'boost-up'   : placeTile =  116; break;
           case 'boost-right': placeTile =  115; break;
           case 'boost-down' : placeTile =  117; break;
@@ -103,6 +109,7 @@ class Simulator {
             if (this.goal)
               throw new Error('Cannot set goal twice');
             this.goal = {x, y};
+            placeTile = 5;
             break;
           case 'player':
             if (this.spawn)
@@ -114,7 +121,7 @@ class Simulator {
         }
         if (placeTile){
           this.world.setTileComplex(
-            ItemManager.bricks[placeTile].layer,
+            placeTile >= 500 && placeTile < 1000 ? 1 : 0,
             x, y,
             placeTile,
             properties
@@ -129,15 +136,24 @@ class Simulator {
   }
 
   simulateMs(ms){
+    this.events.push({kind: 'simulateMs', ms});
     this.ee.advanceTime(ms);
   }
 
+  updateInput(key, keyDown){
+    this.player.input.update(key, keyDown);
+  }
+
   simulateTicks(ticks){
-    this.ee.advanceTime(ticks * Config.physics_ms_per_tick);
+    this.simulateMs(ticks * Config.physics_ms_per_tick);
   }
 
   draw(){
     this.ee.draw();
+  }
+
+  clone(){
+    return new Simulator(this.template, this.customMappings);
   }
 }
 
@@ -315,7 +331,51 @@ class TestSuite {
       btn.appendChild(document.createTextNode('Show'));
       btnTd.appendChild(btn);
       btn.addEventListener('click', () => {
-        simulator.draw();
+        let sim = simulator.clone();
+        let events = JSON.parse(JSON.stringify(simulator.events));
+        const totalTime = events.filter(k => k.kind === 'simulateMs').reduce((v, k) => v + k.ms, 0);
+        let timeLeft = totalTime;
+        sim.draw();
+        defaultScreen.drawStatus(`Hit Space ${totalTime - timeLeft}/${totalTime}`);
+        window.onTestKey = key => {
+          if (key === 'Space' && timeLeft > 0){
+            let dt = Math.min(timeLeft, Config.physics_ms_per_tick);
+            timeLeft -= dt;
+            let done = false;
+            while (events.length > 0 && !done){
+              switch (events[0].kind){
+                case 'simulateMs':
+                  if (events[0].ms > dt){
+                    sim.simulateMs(dt);
+                    events[0].ms -= dt;
+                    done = true;
+                  }
+                  else{
+                    sim.simulateMs(events[0].ms);
+                    dt -= events[0].ms;
+                    events.shift();
+                  }
+                  break;
+                case 'updateInput':
+                  sim.updateInput(events[0].key, events[0].keyDown);
+                  events.shift();
+                  break;
+                default:
+                  throw new Error(`Unknown event type: ${events[0].kind}`);
+              }
+            }
+          }
+          if (key === 'KeyR'){
+            sim = simulator.clone();
+            events = JSON.parse(JSON.stringify(simulator.events));
+            timeLeft = totalTime;
+          }
+          sim.draw();
+          defaultScreen.drawStatus(timeLeft <= 0
+            ? 'Hit R to restart'
+            : `Hit Space ${totalTime - timeLeft}/${totalTime}`
+          );
+        };
         hideTestMenu();
       });
       table.appendChild(tr);
