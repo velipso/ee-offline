@@ -131,7 +131,7 @@ class Simulator {
     }
 
     if (this.spawn)
-      this.world.spawnPoints = [this.spawn];
+      this.world.spawnPoints = [[[this.spawn.x, this.spawn.y]]];
     this.ee = new EverybodyEdits(defaultScreen, this.input, this.world);
   }
 
