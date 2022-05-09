@@ -4921,8 +4921,8 @@ class BlSprite extends BlObject {
 
   drawPoint(target, pointX, pointY, frame){
     this.frame = frame || 0;
+    /*TODO: draw sprite shadow
     if (this.shadow){
-      /* TODO: draw sprite shadow
       target.copyPixelsRotated(
         this.sprImageShadow,
         this.shadowRect.x,
@@ -4935,9 +4935,8 @@ class BlSprite extends BlObject {
         this.height + 2,
         this.rotatedDeg
       );
-      */
     }
-    else{
+    else*/{
       target.copyPixelsRotated(
         this.bmd,
         this.rect.x,
