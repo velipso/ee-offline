@@ -1119,13 +1119,14 @@ class ItemBrickPackage {
       shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
   }
 
-  addGrass(id, layer, artOffset, miniMapColor, tags){
+  addGrass(id, layer, artOffset, tags){
     const base = ItemManager.blocksBMD;
     const payVaultId = '';
     const description = '';
     const tab = ItemTab.BLOCK;
     const requiresOwnership = false;
     const shadow = true;
+    const miniMapColor = 0xff456313;
     const requiresAdmin = false;
     const requiresPurchase = false;
     const selectorBG = 0;
@@ -1163,7 +1164,7 @@ class ItemBrickPackage {
       shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
   }
 
-  addSecret(id, layer, base, description, shadow, artOffset, miniMapColor, tags){
+  addSecrets(id, layer, base, description, shadow, artOffset, miniMapColor, tags){
     const payVaultId = '';
     const tab = ItemTab.BLOCK;
     const requiresOwnership = false;
@@ -1189,7 +1190,7 @@ class ItemBrickPackage {
       shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
   }
 
-  addMineral(id, artOffset, miniMapColor, tags){
+  addMinerals(id, artOffset, miniMapColor, tags){
     const layer = ItemLayer.FOREGROUND;
     const base = ItemManager.blocksBMD;
     const payVaultId = 'brickminiral';
@@ -1204,7 +1205,7 @@ class ItemBrickPackage {
       shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
   }
 
-  addXmas2011(id, artOffset, miniMapColor, tags){
+  addXmas2011(id, artOffset, tags){
     const layer = ItemLayer.FOREGROUND;
     const base = ItemManager.blocksBMD;
     const payVaultId = 'brickxmas2011';
@@ -1212,6 +1213,7 @@ class ItemBrickPackage {
     const tab = ItemTab.BLOCK;
     const requiresOwnership = false;
     const shadow = true;
+    const miniMapColor = -1;
     const requiresAdmin = false;
     const requiresPurchase = false;
     const selectorBG = 0;
@@ -1232,14 +1234,14 @@ class ItemBrickPackage {
       shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
   }
 
-  addKey(id, artOffset, miniMapColor, tags){
+  addKeys(id, artOffset, miniMapColor, tags){
     const layer = ItemLayer.DECORATION;
     const base = ItemManager.blocksBMD;
     const payVaultId = '';
     const description = 'hit to activate key doors and gates for everyone for 6 seconds';
     const tab = ItemTab.ACTION;
     const requiresOwnership = false;
-    const shadow = true;
+    const shadow = false;
     const requiresAdmin = false;
     const requiresPurchase = false;
     const selectorBG = 0;
@@ -1247,7 +1249,7 @@ class ItemBrickPackage {
       shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
   }
 
-  addGate(id, artOffset, miniMapColor, tags){
+  addGates(id, artOffset, miniMapColor, tags){
     const layer = ItemLayer.DECORATION;
     const base = ItemManager.blocksBMD;
     const payVaultId = '';
@@ -1262,7 +1264,7 @@ class ItemBrickPackage {
       shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
   }
 
-  addDoor(id, artOffset, miniMapColor, tags){
+  addDoors(id, artOffset, miniMapColor, tags){
     const layer = ItemLayer.DECORATION;
     const base = ItemManager.blocksBMD;
     const payVaultId = '';
@@ -1277,7 +1279,7 @@ class ItemBrickPackage {
       shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
   }
 
-  addCoin(id, layer, base, payVaultId, shadow, artOffset, miniMapColor, requiresAdmin, requiresPurchase, tags){
+  addCoins(id, layer, base, payVaultId, shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase){
     const description = '';
     const tab = ItemTab.ACTION;
     const requiresOwnership = false;
@@ -1286,11 +1288,369 @@ class ItemBrickPackage {
       shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
   }
 
-  addPortal(id, payVaultId, description, requiresOwnership, artOffset, miniMapColor, tags){
+  addTools(id, layer, base, payVaultId, description, requiresOwnership, artOffset, tags){
+    const tab = ItemTab.ACTION;
+    const shadow = false;
+    const miniMapColor = 0x00000000;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addCrown(id, layer, base, payVaultId, description, shadow, artOffset, miniMapColor, tags){
+    const tab = ItemTab.ACTION;
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addBoost(id, artOffset, tags){
+    const layer = ItemLayer.DECORATION;
+    const base = ItemManager.blocksBMD;
+    const payVaultId = 'brickboost';
+    const description = '';
+    const tab = ItemTab.ACTION;
+    const requiresOwnership = false;
+    const shadow = false;
+    const miniMapColor = 0x00000000;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addClimbable(id, base, payVaultId, shadow, artOffset, tags){
+    const layer = ItemLayer.DECORATION;
+    const description = '';
+    const tab = ItemTab.ACTION;
+    const requiresOwnership = false;
+    const miniMapColor = 0x00000000;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addSwitches(id, base, payVaultId, shadow, artOffset, miniMapColor, tags){
+    const layer = ItemLayer.DECORATION;
+    const description = '';
+    const tab = ItemTab.ACTION;
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addDeath(id, artOffset, tags){
+    const layer = ItemLayer.DECORATION;
+    const base = ItemManager.blocksBMD;
+    const payVaultId = 'brickdeathdoor';
+    const description = '';
+    const tab = ItemTab.ACTION;
+    const requiresOwnership = false;
+    const shadow = false;
+    const miniMapColor = 0xffa9a9a9;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addZombie(id, base, description, artOffset, miniMapColor, tags){
+    const layer = ItemLayer.DECORATION;
+    const payVaultId = 'brickeffectzombie';
+    const tab = ItemTab.ACTION;
+    const requiresOwnership = false;
+    const shadow = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addTeams(id, base, description, artOffset, tags){
+    const layer = ItemLayer.DECORATION;
+    const payVaultId = 'brickeffectteam';
+    const tab = ItemTab.ACTION;
+    const requiresOwnership = false;
+    const shadow = false;
+    const miniMapColor = 0x00000000;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addTimed(id, shadow, artOffset, tags){
+    const layer = ItemLayer.DECORATION;
+    const base = ItemManager.specialBlocksBMD;
+    const payVaultId = 'bricktimeddoor';
+    const description = '';
+    const tab = ItemTab.ACTION;
+    const requiresOwnership = false;
+    const miniMapColor = -1;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addMusic(id, payVaultId, artOffset, tags){
+    const layer = ItemLayer.DECORATION;
+    const base = ItemManager.blocksBMD;
+    const description = 'plays a sound when touched';
+    const tab = ItemTab.ACTION;
+    const requiresOwnership = false;
+    const shadow = false;
+    const miniMapColor = 0x00000000;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addHazards(id, layer, payVaultId, artOffset, tags){
+    const base = ItemManager.specialBlocksBMD;
+    const description = 'kills the player';
+    const tab = ItemTab.ACTION;
+    const requiresOwnership = false;
+    const shadow = false;
+    const miniMapColor = 0x00000000;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addLiquids(id, base, payVaultId, description, artOffset, tags){
+    const layer = ItemLayer.ABOVE;
+    const tab = ItemTab.ACTION;
+    const requiresOwnership = false;
+    const shadow = false;
+    const miniMapColor = 0x00000000;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addPortals(id, payVaultId, description, requiresOwnership, artOffset, miniMapColor, tags){
     const layer = ItemLayer.DECORATION;
     const base = ItemManager.specialBlocksBMD;
     const tab = ItemTab.ACTION;
     const shadow = true;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addDiamond(){
+    const id = 241;
+    const layer = ItemLayer.DECORATION;
+    const base = ItemManager.decoBlocksBMD;
+    const payVaultId = 'brickdiamond';
+    const description = 'changes the player\'s smiley to diamond';
+    const tab = ItemTab.ACTION;
+    const requiresOwnership = true;
+    const shadow = true;
+    const artOffset = 113;
+    const miniMapColor = -1;
+    const tags = ['Luxury','Smiley','Expensive','Gray','Animated','Shiny','Grey'];
+    const requiresAdmin = false;
+    const requiresPurchase = true;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addCake(){
+    const id = 337;
+    const layer = ItemLayer.DECORATION;
+    const base = ItemManager.specialBlocksBMD;
+    const payVaultId = 'brickcake';
+    const description = 'changes the player\'s smiley to party hat';
+    const tab = ItemTab.ACTION;
+    const requiresOwnership = true;
+    const shadow = true;
+    const artOffset = 298;
+    const miniMapColor = 0x00000000;
+    const tags = ['Party','Birthday','Smiley','Hat','Animated','Food'];
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addHologram(){
+    const id = 397;
+    const layer = ItemLayer.DECORATION;
+    const base = ItemManager.specialBlocksBMD;
+    const payVaultId = 'brickhologram';
+    const description = 'changes the player\'s smiley to hologram';
+    const tab = ItemTab.ACTION;
+    const requiresOwnership = true;
+    const shadow = true;
+    const artOffset = 279;
+    const miniMapColor = 0x6666ffff;
+    const tags = ['Sci-fi','Blue','Transparent','Smiley','Future','Animated'];
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addXmas2010(id, artOffset, tags){
+    const layer = ItemLayer.ABOVE;
+    const base = ItemManager.decoBlocksBMD;
+    const payVaultId = 'brickchristmas2010';
+    const description = '';
+    const tab = ItemTab.DECORATIVE;
+    const requiresOwnership = false;
+    const shadow = false;
+    const miniMapColor = 0x00000000;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addNewYear2010(id, artOffset, tags){
+    const layer = ItemLayer.DECORATION;
+    const base = ItemManager.decoBlocksBMD;
+    const payVaultId = 'mixednewyear2010';
+    const description = '';
+    const tab = ItemTab.DECORATIVE;
+    const requiresOwnership = false;
+    const shadow = true;
+    const miniMapColor = 0x00000000;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addSpring2011(id, artOffset, tags){
+    const layer = ItemLayer.ABOVE;
+    const base = ItemManager.decoBlocksBMD;
+    const payVaultId = 'brickspring2011';
+    const description = '';
+    const tab = ItemTab.DECORATIVE;
+    const requiresOwnership = false;
+    const shadow = false;
+    const miniMapColor = 0x00000000;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addPrizes(id, payVaultId, description, artOffset, tags){
+    const layer = ItemLayer.ABOVE;
+    const base = ItemManager.decoBlocksBMD;
+    const tab = ItemTab.DECORATIVE;
+    const requiresOwnership = false;
+    const shadow = false;
+    const miniMapColor = 0x00000000;
+    const requiresAdmin = false;
+    const requiresPurchase = true;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addEaster2012(id, artOffset, tags){
+    const layer = ItemLayer.ABOVE;
+    const base = ItemManager.decoBlocksBMD;
+    const payVaultId = 'brickeaster2012';
+    const description = '';
+    const tab = ItemTab.DECORATIVE;
+    const requiresOwnership = false;
+    const shadow = false;
+    const miniMapColor = 0x00000000;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addBasicBg(id, artOffset, tags){
+    const layer = ItemLayer.BACKGROUND;
+    const base = ItemManager.bgBlocksBMD;
+    const payVaultId = '';
+    const description = '';
+    const tab = ItemTab.BACKGROUND;
+    const requiresOwnership = false;
+    const shadow = false;
+    const miniMapColor = -1;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addBetaBg(id, artOffset, tags){
+    const layer = ItemLayer.BACKGROUND;
+    const base = ItemManager.bgBlocksBMD;
+    const payVaultId = 'pro';
+    const description = '';
+    const tab = ItemTab.BACKGROUND;
+    const requiresOwnership = false;
+    const shadow = true;
+    const miniMapColor = -1;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addBrickBg(id, shadow, artOffset, miniMapColor, tags){
+    const layer = ItemLayer.BACKGROUND;
+    const base = ItemManager.bgBlocksBMD;
+    const payVaultId = '';
+    const description = '';
+    const tab = ItemTab.BACKGROUND;
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addCheckerBg(id, shadow, artOffset, tags){
+    const layer = ItemLayer.BACKGROUND;
+    const base = ItemManager.bgBlocksBMD;
+    const payVaultId = '';
+    const description = '';
+    const tab = ItemTab.BACKGROUND;
+    const requiresOwnership = false;
+    const miniMapColor = -1;
     const requiresAdmin = false;
     const requiresPurchase = false;
     const selectorBG = 0;
@@ -1304,8 +1664,23 @@ class ItemBrickPackage {
     const payVaultId = '';
     const description = '';
     const tab = ItemTab.BACKGROUND;
-    const miniMapColor = -1;
     const requiresOwnership = false;
+    const miniMapColor = -1;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addNormal(id, shadow, artOffset, tags){
+    const layer = ItemLayer.BACKGROUND;
+    const base = ItemManager.bgBlocksBMD;
+    const payVaultId = '';
+    const description = '';
+    const tab = ItemTab.BACKGROUND;
+    const requiresOwnership = false;
+    const miniMapColor = -1;
     const requiresAdmin = false;
     const requiresPurchase = false;
     const selectorBG = 0;
@@ -1319,9 +1694,9 @@ class ItemBrickPackage {
     const payVaultId = '';
     const description = '';
     const tab = ItemTab.BACKGROUND;
-    const miniMapColor = -1;
     const requiresOwnership = false;
     const shadow = false;
+    const miniMapColor = -1;
     const requiresAdmin = false;
     const requiresPurchase = false;
     const selectorBG = 0;
@@ -1335,9 +1710,9 @@ class ItemBrickPackage {
     const payVaultId = 'brickbgcanvas';
     const description = '';
     const tab = ItemTab.BACKGROUND;
-    const miniMapColor = -1;
     const requiresOwnership = false;
     const shadow = false;
+    const miniMapColor = -1;
     const requiresAdmin = false;
     const requiresPurchase = false;
     const selectorBG = 0;
@@ -1345,7 +1720,72 @@ class ItemBrickPackage {
       shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
   }
 
-  addScifi(id, layer, base, tab, artOffset, miniMapColor, tags){
+  addCarnival(id, artOffset, tags){
+    const layer = ItemLayer.BACKGROUND;
+    const base = ItemManager.bgBlocksBMD;
+    const payVaultId = 'brickbgcarnival';
+    const description = '';
+    const tab = ItemTab.BACKGROUND;
+    const requiresOwnership = false;
+    const shadow = false;
+    const miniMapColor = -1;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addCandy(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = 'brickcandy';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addSummer2011(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = 'bricksummer2011';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addHalloween2011(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = 'brickhw2011';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addXmas2011Deco(id, artOffset, tags){
+    const layer = ItemLayer.DECORATION;
+    const base = ItemManager.decoBlocksBMD;
+    const payVaultId = 'brickxmas2011';
+    const description = '';
+    const tab = ItemTab.DECORATIVE;
+    const requiresOwnership = false;
+    const shadow = true;
+    const miniMapColor = 0x00000000;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addSciFi(id, layer, base, tab, artOffset, miniMapColor, tags){
     const payVaultId = 'brickscifi';
     const description = '';
     const requiresOwnership = false;
@@ -1368,11 +1808,153 @@ class ItemBrickPackage {
       shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
   }
 
+  addWindows(id, artOffset, tags){
+    const layer = ItemLayer.ABOVE;
+    const base = ItemManager.decoBlocksBMD;
+    const payVaultId = '';
+    const description = '';
+    const tab = ItemTab.DECORATIVE;
+    const requiresOwnership = false;
+    const shadow = false;
+    const miniMapColor = 0x00000000;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addPirate(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = 'brickpirate';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addStone(id, layer, base, tab, shadow, artOffset, tags){
+    const payVaultId = 'brickstone';
+    const description = '';
+    const requiresOwnership = false;
+    const miniMapColor = -1;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addDojo(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = 'brickninja';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addWildWest(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = 'brickcowboy';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addPlastic(id, artOffset, tags){
+    const layer = ItemLayer.DECORATION;
+    const base = ItemManager.blocksBMD;
+    const payVaultId = 'brickplastic';
+    const description = '';
+    const tab = ItemTab.BLOCK;
+    const requiresOwnership = false;
+    const shadow = true;
+    const miniMapColor = -1;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addWater(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = '';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addSand(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = 'bricksand';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addSummer2012(id, artOffset, tags){
+    const layer = ItemLayer.ABOVE;
+    const base = ItemManager.decoBlocksBMD;
+    const payVaultId = 'bricksummer2012';
+    const description = '';
+    const tab = ItemTab.DECORATIVE;
+    const requiresOwnership = false;
+    const shadow = false;
+    const miniMapColor = 0x00000000;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
   addCloud(id, layer, base, tab, artOffset, miniMapColor, tags){
     const payVaultId = '';
     const description = '';
     const requiresOwnership = false;
-    const shadow = true;
+    const shadow = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addIndustrial(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = 'brickindustrial';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addClay(id, artOffset, tags){
+    const layer = ItemLayer.BACKGROUND;
+    const base = ItemManager.bgBlocksBMD;
+    const payVaultId = '';
+    const description = '';
+    const tab = ItemTab.BACKGROUND;
+    const requiresOwnership = false;
+    const shadow = false;
+    const miniMapColor = -1;
     const requiresAdmin = false;
     const requiresPurchase = false;
     const selectorBG = 0;
@@ -1384,6 +1966,101 @@ class ItemBrickPackage {
     const payVaultId = 'brickmedieval';
     const description = '';
     const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addPipes(id, artOffset, tags){
+    const layer = ItemLayer.FOREGROUND;
+    const base = ItemManager.blocksBMD;
+    const payVaultId = '';
+    const description = '';
+    const tab = ItemTab.BLOCK;
+    const requiresOwnership = false;
+    const shadow = true;
+    const miniMapColor = -1;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addOuterSpace(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = '';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addDesert(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = '';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addNeon(id, artOffset, tags){
+    const layer = ItemLayer.BACKGROUND;
+    const base = ItemManager.bgBlocksBMD;
+    const payVaultId = 'brickneon';
+    const description = '';
+    const tab = ItemTab.BACKGROUND;
+    const requiresOwnership = false;
+    const shadow = true;
+    const miniMapColor = -1;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addMonster(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = 'brickmonster';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addFog(id, artOffset, tags){
+    const layer = ItemLayer.ABOVE;
+    const base = ItemManager.decoBlocksBMD;
+    const payVaultId = 'brickfog';
+    const description = '';
+    const tab = ItemTab.DECORATIVE;
+    const requiresOwnership = false;
+    const shadow = false;
+    const miniMapColor = 0x00000000;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addHalloween2012(id, layer, shadow, artOffset, tags){
+    const base = ItemManager.decoBlocksBMD;
+    const payVaultId = 'brickhw2012';
+    const description = '';
+    const tab = ItemTab.DECORATIVE;
+    const requiresOwnership = false;
+    const miniMapColor = 0x00000000;
     const requiresAdmin = false;
     const requiresPurchase = false;
     const selectorBG = 0;
@@ -1406,15 +2083,160 @@ class ItemBrickPackage {
       shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
   }
 
+  addJungle(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = '';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addXmas2012(id, layer, base, tab, artOffset, miniMapColor, tags){
+    const payVaultId = 'brickxmas2012';
+    const description = '';
+    const requiresOwnership = false;
+    const shadow = true;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addLava(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = 'bricklava';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addSwamp(id, layer, base, tab, artOffset, miniMapColor, tags){
+    const payVaultId = 'brickswamp';
+    const description = '';
+    const requiresOwnership = false;
+    const shadow = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addMarble(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = 'bricksparta';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addLabel(){
+    const id = 1000;
+    const layer = ItemLayer.DECORATION;
+    const base = ItemManager.decoBlocksBMD;
+    const payVaultId = '';
+    const description = '';
+    const tab = ItemTab.ACTION;
+    const requiresOwnership = false;
+    const shadow = true;
+    const artOffset = 265;
+    const miniMapColor = 0x00000000;
+    const tags = ['Text','Words','ModText'];
+    const requiresAdmin = true;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addSign(){
+    const id = 385;
+    const layer = ItemLayer.ABOVE;
+    const base = ItemManager.specialBlocksBMD;
+    const payVaultId = 'bricksign';
+    const description = 'players will see a custom message when they touch this block';
+    const tab = ItemTab.ACTION;
+    const requiresOwnership = false;
+    const shadow = true;
+    const artOffset = 513;
+    const miniMapColor = 0x00000000;
+    const tags = ['Morphable','Write','Text','Wood','Info'];
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addFarm(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = 'brickfarm';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addAutumn2014(id, layer, base, tab, shadow, artOffset, tags){
+    const payVaultId = 'brickautumn2014';
+    const description = '';
+    const requiresOwnership = false;
+    const miniMapColor = -1;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addXmas2014(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = 'brickchristmas2014';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
   addOneWay(id, artOffset, tags){
     const layer = ItemLayer.DECORATION;
     const base = ItemManager.specialBlocksBMD;
     const payVaultId = 'brickoneway';
     const description = '';
     const tab = ItemTab.BLOCK;
-    const miniMapColor = -1;
     const requiresOwnership = false;
     const shadow = false;
+    const miniMapColor = -1;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addValentines2015(id, artOffset, tags){
+    const layer = ItemLayer.DECORATION;
+    const base = ItemManager.decoBlocksBMD;
+    const payVaultId = 'brickvalentines2015';
+    const description = '';
+    const tab = ItemTab.DECORATIVE;
+    const requiresOwnership = false;
+    const shadow = true;
+    const miniMapColor = 0x00000000;
     const requiresAdmin = false;
     const requiresPurchase = false;
     const selectorBG = 0;
@@ -1426,7 +2248,240 @@ class ItemBrickPackage {
     const layer = ItemLayer.FOREGROUND;
     const base = ItemManager.blocksBMD;
     const tab = ItemTab.BLOCK;
+    const requiresOwnership = false;
+    const shadow = true;
     const miniMapColor = -1;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addEffect(id, base, payVaultId, description, artOffset, tags){
+    const layer = ItemLayer.DECORATION;
+    const tab = ItemTab.ACTION;
+    const requiresOwnership = false;
+    const shadow = false;
+    const miniMapColor = 0x00000000;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addGold(id, layer, base, description, tab, shadow, artOffset, miniMapColor){
+    const payVaultId = 'goldmember';
+    const requiresOwnership = true;
+    const tags = [];
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addCave(id, artOffset, tags){
+    const layer = ItemLayer.BACKGROUND;
+    const base = ItemManager.bgBlocksBMD;
+    const payVaultId = 'brickcave';
+    const description = '';
+    const tab = ItemTab.BACKGROUND;
+    const requiresOwnership = false;
+    const shadow = false;
+    const miniMapColor = -1;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addSummer2015(id, layer, shadow, artOffset, tags){
+    const base = ItemManager.decoBlocksBMD;
+    const payVaultId = 'bricksummer2015';
+    const description = '';
+    const tab = ItemTab.DECORATIVE;
+    const requiresOwnership = false;
+    const miniMapColor = 0x00000000;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addEnvironment(id, layer, base, tab, shadow, artOffset, tags){
+    const payVaultId = '';
+    const description = '';
+    const requiresOwnership = false;
+    const miniMapColor = -1;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addDomestic(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = 'brickdomestic';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addHalloween2015(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = 'brickhalloween2015';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addArctic(id, layer, base, tab, shadow, artOffset, tags){
+    const payVaultId = '';
+    const description = '';
+    const requiresOwnership = false;
+    const miniMapColor = -1;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addNewYear2015(id, base, artOffset, tags){
+    const layer = ItemLayer.DECORATION;
+    const payVaultId = 'bricknewyear2015';
+    const description = '';
+    const tab = ItemTab.DECORATIVE;
+    const requiresOwnership = false;
+    const shadow = true;
+    const miniMapColor = 0x00000000;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addIce(){
+    const id = 1064;
+    const layer = ItemLayer.DECORATION;
+    const base = ItemManager.specialBlocksBMD;
+    const payVaultId = 'brickice2';
+    const description = '';
+    const tab = ItemTab.ACTION;
+    const requiresOwnership = false;
+    const shadow = true;
+    const artOffset = 501;
+    const miniMapColor = -1;
+    const tags = ['Slippery','Physics','Slide'];
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addFairytale(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = 'brickfairytale';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addSpring2016(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = 'brickspring2016';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addSummer2016(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = 'bricksummer2016';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addMine(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = 'brickmine';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addRestaurant(id, base, artOffset, tags){
+    const layer = ItemLayer.DECORATION;
+    const payVaultId = 'brickrestaurant';
+    const description = '';
+    const tab = ItemTab.DECORATIVE;
+    const requiresOwnership = false;
+    const shadow = true;
+    const miniMapColor = 0x00000000;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addTextile(id, artOffset, tags){
+    const layer = ItemLayer.BACKGROUND;
+    const base = ItemManager.bgBlocksBMD;
+    const payVaultId = 'bricktextile';
+    const description = '';
+    const tab = ItemTab.BACKGROUND;
+    const requiresOwnership = false;
+    const shadow = true;
+    const miniMapColor = -1;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addHalloween2016(id, layer, base, tab, artOffset, miniMapColor, tags){
+    const payVaultId = 'brickhalloween2016';
+    const description = '';
+    const requiresOwnership = false;
+    const shadow = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addConstruction(id, layer, base, tab, artOffset, miniMapColor, tags){
+    const payVaultId = '';
+    const description = '';
     const requiresOwnership = false;
     const shadow = true;
     const requiresAdmin = false;
@@ -1436,15 +2491,151 @@ class ItemBrickPackage {
       shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
   }
 
-  addTile(id, layer, base, tab, artOffset, tags){
-    const payVaultId = 'bricktiles';
+  addXmas2016(id, base, tab, artOffset, miniMapColor, tags){
+    const layer = ItemLayer.DECORATION;
+    const payVaultId = 'brickchristmas2016';
     const description = '';
-    const miniMapColor = -1;
     const requiresOwnership = false;
     const shadow = true;
     const requiresAdmin = false;
     const requiresPurchase = false;
     const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addTiles(id, layer, base, tab, artOffset, tags){
+    const payVaultId = 'bricktiles';
+    const description = '';
+    const requiresOwnership = false;
+    const shadow = true;
+    const miniMapColor = -1;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addStPatricks2017(id, layer, artOffset, tags){
+    const base = ItemManager.decoBlocksBMD;
+    const payVaultId = 'brickstpatricks2017';
+    const description = '';
+    const tab = ItemTab.DECORATIVE;
+    const requiresOwnership = false;
+    const shadow = true;
+    const miniMapColor = 0x00000000;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addHalfBlocks(id, artOffset, tags){
+    const layer = ItemLayer.DECORATION;
+    const base = ItemManager.specialBlocksBMD;
+    const payVaultId = 'brickhalfblocks';
+    const description = '';
+    const tab = ItemTab.BLOCK;
+    const requiresOwnership = false;
+    const shadow = true;
+    const miniMapColor = -1;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addWinter2018(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = 'brickwinter2018';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addGarden(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = 'brickgarden';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addFireworks(){
+    const id = 1581;
+    const layer = ItemLayer.DECORATION;
+    const base = ItemManager.specialBlocksBMD;
+    const payVaultId = 'brickfirework';
+    const description = '';
+    const tab = ItemTab.DECORATIVE;
+    const requiresOwnership = false;
+    const shadow = false;
+    const artOffset = 741;
+    const miniMapColor = 0x00000000;
+    const tags = ['Fireworks','Purple','White','Red','Blue','Green','Yellow','Magenta','Gold','Morphable','Seasonal','Holiday'];
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addToxic(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = 'bricktoxic';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addSpecial(id, layer, payVaultId, requiresOwnership, shadow, artOffset){
+    const base = ItemManager.decoBlocksBMD;
+    const description = '';
+    const tab = ItemTab.DECORATIVE;
+    const miniMapColor = -1;
+    const tags = [];
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addDungeon(id, layer, base, tab, shadow, artOffset, miniMapColor, tags){
+    const payVaultId = 'brickdungeon';
+    const description = '';
+    const requiresOwnership = false;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 0;
+    return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
+      shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
+  }
+
+  addShadows(id, artOffset, tags){
+    const layer = ItemLayer.DECORATION;
+    const base = ItemManager.shadowBlocksBMD;
+    const payVaultId = '';
+    const description = '';
+    const tab = ItemTab.DECORATIVE;
+    const requiresOwnership = false;
+    const shadow = false;
+    const miniMapColor = 0x00000000;
+    const requiresAdmin = false;
+    const requiresPurchase = false;
+    const selectorBG = 610;
     return this.createAndAddBrick(id, layer, base, payVaultId, description, tab, requiresOwnership,
       shadow, artOffset, miniMapColor, tags, requiresAdmin, requiresPurchase, selectorBG);
   }
@@ -1750,378 +2941,1153 @@ class ItemManager {
     // Brick Packages
     //
     ItemManager.brickPackages = [
-      new ItemBrickPackage('basic', 'Basic Blocks', ['Primary', 'Simple', 'Standard', 'Default'])
-        .addBasic(1088, 260,         -1, ['White', 'Light'])
-        .addBasic(   9,   9, 0xff6e6e6e, ['Grey', 'Gray', 'Taupe'])
-        .addBasic( 182, 156, 0xff282828, ['Black', 'Dark', 'Coal', 'Road'])
-        .addBasic(  12,  12, 0xffa83554, ['Red', 'Magenta', 'Vermillion', 'Ruby'])
-        .addBasic(1018, 205,         -1, ['Orange', 'Persimmon', 'Copper'])
-        .addBasic(  13,  13, 0xff93a835, ['Yellow', 'Lime', 'Chartreuse', 'Light green', 'Citrine', 'Citrus'])
-        .addBasic(  14,  14, 0xff42a836, ['Green', 'Kelly', 'Emerald', 'Grass'])
-        .addBasic(  15,  15, 0xff359ea6, ['Blue', 'Cyan', 'Light Blue', 'Aquamarine', 'Sky Blue'])
-        .addBasic(  10,  10, 0xff3552a8, ['Blue', 'Dark Blue', 'Cobalt'])
-        .addBasic(  11,  11, 0xff9735a7, ['Purple', 'Pink', 'Plum', 'Violet']),
+      new ItemBrickPackage('basic', 'Basic Blocks', ['Primary','Simple','Standard','Default'])
+        .addBasic(1088, 260, -1        , ['White','Light']                                              )
+        .addBasic(9   , 9  , 0xff6e6e6e, ['Grey','Gray','Taupe']                                        )
+        .addBasic(182 , 156, 0xff282828, ['Black','Dark','Coal','Road']                                 )
+        .addBasic(12  , 12 , 0xffa83554, ['Red','Magenta','Vermillion','Ruby']                          )
+        .addBasic(1018, 205, -1        , ['Orange','Persimmon','Copper']                                )
+        .addBasic(13  , 13 , 0xff93a835, ['Yellow','Lime','Chartreuse','Light green','Citrine','Citrus'])
+        .addBasic(14  , 14 , 0xff42a836, ['Green','Kelly','Emerald','Grass']                            )
+        .addBasic(15  , 15 , 0xff359ea6, ['Blue','Cyan','Light Blue','Aquamarine','Sky Blue']           )
+        .addBasic(10  , 10 , 0xff3552a8, ['Blue','Dark Blue','Cobalt']                                  )
+        .addBasic(11  , 11 , 0xff9735a7, ['Purple','Pink','Plum','Violet']                              ),
       new ItemBrickPackage('beta', 'Beta Access', ['Exclusive'])
-        .addBeta(1089, 261, 0xffe5e5e5, ['White', 'Light'])
-        .addBeta(  42,  42, 0xff999999, ['Grey', 'Gray', 'Taupe'])
-        .addBeta(1021, 208, 0xff474747, ['Black', 'Dark', 'Onyx'])
-        .addBeta(  40,  40, 0xffcf6650, ['Red', 'Ruby', 'Garnet'])
-        .addBeta(1020, 207, 0xffce7e50, ['Orange', 'Copper'])
-        .addBeta(  41,  41, 0xffd2a945, ['Yellow', 'Gold', 'Jasmine'])
-        .addBeta(  38,  38, 0xff4ac882, ['Green', 'Emerald', 'Malachite'])
-        .addBeta(1019, 206, 0xff49c2c6, ['Blue', 'Cyan', 'Light blue', 'Aquamarine', 'Turquoise'])
-        .addBeta(  39,  39, 0xff4d84c6, ['Blue', 'Sapphire'])
-        .addBeta(  37,  37, 0xffce62cf, ['Purple', 'Pink', 'Magenta', 'Violet', 'Amethyst']),
-      new ItemBrickPackage('brick', 'Brick Blocks', ['Standard', 'Wall'])
-        .addBrick(1090, 262, 0xff888888, ['White', 'Light'])
-        .addBrick(1022, 209, 0xff4c4c4c, ['Gray', 'Grey', 'Concrete', 'Stone'])
-        .addBrick(1024, 211,         -1, ['Black', 'Dark', 'Coal'])
-        .addBrick(  20,  20, 0xff6f2429, ['Red', 'Maroon', 'Hell'])
-        .addBrick(  16,  16, 0xff8b3e09, ['Brown', 'Orange', 'Soil', 'Dirt', 'Mahogany'])
-        .addBrick(  21,  21, 0xff6f5d24, ['Beige', 'Tan', 'Olive', 'Brown', 'Ecru', 'Yellow'])
-        .addBrick(  19,  19, 0xff438310, ['Green', 'Grass'])
-        .addBrick(  17,  17, 0xff246f4d, ['Blue', 'Cyan', 'Turquoise', 'Teal', 'Skobeloff', 'Dark Green'])
-        .addBrick(1023, 210,         -1, ['Blue', 'Dark', 'Zaffre'])
-        .addBrick(  18,  18, 0xff4e246f, ['Purple', 'Dark', 'Violet']),
-      new ItemBrickPackage('metal', 'Metal Blocks', ['Ore', 'Standard'])
-        .addMetal(29, 29, 0xffa1a3a5, ['Silver', 'White', 'Iron', 'Platinum'])
-        .addMetal(30, 30, 0xffdf7a41, ['Orange', 'Bronze', 'Amber'])
-        .addMetal(31, 31, 0xfff0a927, ['Yellow', 'Gold', 'Jasmine']),
-      new ItemBrickPackage('grass', 'Grass Blocks', ['Environment', 'Nature', 'Standard', 'Soil', 'Ground', 'Dirt', 'Flora'])
-        .addGrass(34, ItemLayer.DECORATION, 34, 0xff456313, ['Left', 'Soil'])
-        .addGrass(35, ItemLayer.FOREGROUND, 35, 0xff456313, ['Middle', 'Soil'])
-        .addGrass(36, ItemLayer.DECORATION, 36, 0xff456313, ['Right', 'Soil']),
+        .addBeta(1089, 261, 0xffe5e5e5, ['White','Light']                                    )
+        .addBeta(42  , 42 , 0xff999999, ['Grey','Gray','Taupe']                              )
+        .addBeta(1021, 208, 0xff474747, ['Black','Dark','Onyx']                              )
+        .addBeta(40  , 40 , 0xffcf6650, ['Red','Ruby','Garnet']                              )
+        .addBeta(1020, 207, 0xffce7e50, ['Orange','Copper']                                  )
+        .addBeta(41  , 41 , 0xffd2a945, ['Yellow','Gold','Jasmine']                          )
+        .addBeta(38  , 38 , 0xff4ac882, ['Green','Emerald','Malachite']                      )
+        .addBeta(1019, 206, 0xff49c2c6, ['Blue','Cyan','Light blue','Aquamarine','Turquoise'])
+        .addBeta(39  , 39 , 0xff4d84c6, ['Blue','Sapphire']                                  )
+        .addBeta(37  , 37 , 0xffce62cf, ['Purple','Pink','Magenta','Violet','Amethyst']      ),
+      new ItemBrickPackage('brick', 'Brick Blocks', ['Standard','Wall'])
+        .addBrick(1090, 262, 0xff888888, ['White','Light']                                          )
+        .addBrick(1022, 209, 0xff4c4c4c, ['Gray','Grey','Concrete','Stone']                         )
+        .addBrick(1024, 211, -1        , ['Black','Dark','Coal']                                    )
+        .addBrick(20  , 20 , 0xff6f2429, ['Red','Maroon','Hell']                                    )
+        .addBrick(16  , 16 , 0xff8b3e09, ['Brown','Orange','Soil','Dirt','Mahogany']                )
+        .addBrick(21  , 21 , 0xff6f5d24, ['Beige','Tan','Olive','Brown','Ecru','Yellow']            )
+        .addBrick(19  , 19 , 0xff438310, ['Green','Grass']                                          )
+        .addBrick(17  , 17 , 0xff246f4d, ['Blue','Cyan','Turquoise','Teal','Skobeloff','Dark Green'])
+        .addBrick(1023, 210, -1        , ['Blue','Dark','Zaffre']                                   )
+        .addBrick(18  , 18 , 0xff4e246f, ['Purple','Dark','Violet']                                 ),
+      new ItemBrickPackage('metal', 'Metal Blocks', ['Ore','Standard'])
+        .addMetal(29, 29, 0xffa1a3a5, ['Silver','White','Iron','Platinum'])
+        .addMetal(30, 30, 0xffdf7a41, ['Orange','Bronze','Amber']         )
+        .addMetal(31, 31, 0xfff0a927, ['Yellow','Gold','Jasmine']         ),
+      new ItemBrickPackage('grass', 'Grass Blocks', ['Environment','Nature','Standard','Soil','Ground','Dirt','Flora'])
+        .addGrass(34, ItemLayer.DECORATION, 34, ['Left','Soil']  )
+        .addGrass(35, ItemLayer.FOREGROUND, 35, ['Middle','Soil'])
+        .addGrass(36, ItemLayer.DECORATION, 36, ['Right','Soil'] ),
       new ItemBrickPackage('generic', 'Generic Blocks', ['Special'])
-        .addGeneric(  22,  22, 0xff895b12, ['Caution', 'Warning', 'Hazard', 'Stripes', 'Yellow', 'Black', 'Standard'])
-        .addGeneric(1057, 235,         -1, ['Neutral', 'Yellow', 'Body', 'No face'])
-        .addGeneric(  32,  32, 0xffcf9022, ['Face', 'Smiley', 'Yellow', 'Standard'])
-        .addGeneric(1058, 236,         -1, ['Caution', 'Warning', 'Hazard', 'Stripes', 'Black', 'Yellow'])
-        .addGeneric(  33,  33, 0xff000000, ['Black', 'Dark', 'Standard']),
-      new ItemBrickPackage('factory', 'Factory Package')
-        .addFactory(45, 45, 0xff72614b, ['X', 'Crate', 'Metal', 'Box', 'Wood'])
-        .addFactory(46, 46, 0xff6e6b60, ['Concrete', 'Grey', 'Gray', 'Stone', 'Slate', 'X'])
-        .addFactory(47, 47, 0xff8e734f, ['Wood', 'Tree', 'Wooden', 'House', 'Planks', 'Flooring', 'Parquet'])
-        .addFactory(48, 48, 0xff7f4f2b, ['X', 'Crate', 'Wooden', 'Box', 'Wood', 'Storage'])
-        .addFactory(49, 49, 0xff757575, ['Silver', 'Metal', 'Scales']),
-      new ItemBrickPackage('secrets', 'Secret Bricks', ['Hidden', 'Invisible'])
-        .addSecret( 44, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , 'completely black, makes minimap invisible', true ,  44, 0x01000000, ['Black', 'Pure', 'Old', 'Solid'])
-        .addSecret( 50, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ''                                         , true , 139, 0x00000000, ['Appear'])
-        .addSecret(243, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ''                                         , true , 140, 0x01000000, ['Blank', 'Hidden'])
-        .addSecret(136, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ''                                         , false, 141, 0x00000000, ['Disappear']),
-      new ItemBrickPackage('glass', 'Glass bricks', ['Bright', 'Light', 'Shine', 'Polish', 'Neon'])
-        .addGlass(51, 51, 0xfff89299, ['Red', 'Light red', 'Pink', 'Ruby'])
-        .addGlass(58, 58, 0xfff6ba94, ['Orange', 'Light orange', 'Topaz'])
-        .addGlass(57, 57, 0xfff8da8c, ['Yellow', 'Light yellow', 'Jasmine'])
-        .addGlass(56, 56, 0xff92fbaa, ['Green', 'Light green', 'Emerald'])
-        .addGlass(55, 55, 0xff95dcf6, ['Cyan', 'Light blue', 'Diamond'])
-        .addGlass(54, 54, 0xff7e99f6, ['Blue', 'Sapphire'])
-        .addGlass(53, 53, 0xffa789f6, ['Purple', 'Violet', 'Amethyst'])
-        .addGlass(52, 52, 0xffe98bf6, ['Pink', 'Magenta', 'Purple', 'Quartz']),
-      new ItemBrickPackage('minerals', 'Minerals', ['Neon', 'Pure', 'Bright'])
-        .addMineral(70, 70, 0xffee0000, ['Red', 'Ruby'])
-        .addMineral(76, 76, 0xffee7700, ['Orange', 'Topaz'])
-        .addMineral(75, 75, 0xffeeee00, ['Yellow', 'Jasmine'])
-        .addMineral(74, 74, 0xff00ee00, ['Green', 'Lime', 'Emerald', 'Peridot'])
-        .addMineral(73, 73, 0xff00eeee, ['Cyan', 'Light blue', 'Aquamarine', 'Turquoise'])
-        .addMineral(72, 72, 0xff0000ee, ['Blue', 'Indigo', 'Sapphire', 'Lapis'])
-        .addMineral(71, 71, 0xffee00ee, ['Pink', 'Magenta', 'Purple', 'Amethyst']),
-      new ItemBrickPackage('christmas 2011', 'Christmas 2011 bricks', ['Holiday', 'Wrapping Paper', 'Gift', 'Present'])
-        .addXmas2011(78, 78, -1, ['Yellow'])
-        .addXmas2011(79, 79, -1, ['White'])
-        .addXmas2011(80, 80, -1, ['Red'])
-        .addXmas2011(81, 81, -1, ['Blue'])
-        .addXmas2011(82, 82, -1, ['Green']),
-      new ItemBrickPackage('gravity', 'Gravity Modifying Arrows', ['Physics', 'Motion', 'Action', 'Standard'])
-        .addGravity(   0, ItemLayer.BACKGROUND, ItemManager.blocksBMD       ,   0, 0xff000000, ['Clear', 'Empty', 'Delete', 'Nothing', 'Erase'])
-        .addGravity(   1, ItemLayer.DECORATION, ItemManager.blocksBMD       ,   1, 0x00000000, ['Left', 'Arrow'])
-        .addGravity(   2, ItemLayer.DECORATION, ItemManager.blocksBMD       ,   2, 0x00000000, ['Up', 'Arrow'])
-        .addGravity(   3, ItemLayer.DECORATION, ItemManager.blocksBMD       ,   3, 0x00000000, ['Right', 'Arrow'])
-        .addGravity(1518, ItemLayer.DECORATION, ItemManager.blocksBMD       , 285, 0x00000000, ['Down', 'Arrow'])
-        .addGravity(   4, ItemLayer.DECORATION, ItemManager.blocksBMD       ,   4, 0x00000000, ['Dot'])
-        .addGravity( 459, ItemLayer.DECORATION, ItemManager.blocksBMD       , 233, 0x00000000, ['Slow', 'Dot', 'Climbable', 'Physics'])
-        .addGravity( 411, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, 312, 0x00000000, ['Invisible', 'Left', 'Arrow'])
-        .addGravity( 412, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, 317, 0x00000000, ['Invisible', 'Up', 'Arrow'])
-        .addGravity( 413, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, 322, 0x00000000, ['Invisible', 'Right', 'Arrow'])
-        .addGravity(1519, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, 652, 0x00000000, ['Invisible', 'Down', 'Arrow'])
-        .addGravity( 414, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, 327, 0x00000000, ['Invisible', 'Dot'])
-        .addGravity( 460, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, 466, 0x00000000, ['Slow', 'Dot', 'Climbable', 'Physics', 'Invisible']),
-      new ItemBrickPackage('keys', 'Key Blocks', ['Key', 'Lock', 'Button', 'Action', 'Standard'])
-        .addKey(  6,   6, 0xff2c1a1a, ['Red', 'Key', 'Magenta'])
-        .addKey(  7,   7, 0xff1a2c1a, ['Green', 'Key'])
-        .addKey(  8,   8, 0xff1a1a2c, ['Blue', 'Key'])
-        .addKey(408, 189, 0xff0c2d3d, ['Cyan', 'Teal'])
-        .addKey(409, 190, 0xff400c40, ['Pink', 'Violet', 'Purple'])
-        .addKey(410, 191, 0xff2c330a, ['Yellow', 'Key']),
-      new ItemBrickPackage('gates', 'Gate Blocks', ['Key', 'Lock', 'Action', 'Standard'])
-        .addGate(  26,  26, 0xff9c2d46, ['Red', 'Magenta'])
-        .addGate(  27,  27, 0xff379c30, ['Green'])
-        .addGate(  28,  28, 0xff2d449c, ['Blue'])
-        .addGate(1008, 195, 0xff2d8d99, ['Cyan', 'Teal'])
-        .addGate(1009, 196, 0xff912d99, ['Pink', 'Purple', 'Violet'])
-        .addGate(1010, 197, 0xff97922d, ['Yellow']),
-      new ItemBrickPackage('doors', 'Door Blocks', ['Key', 'Lock', 'Action', 'Standard'])
-        .addDoor(  23,  23, 0xff9c2d46, ['Red', 'Magenta'])
-        .addDoor(  24,  24, 0xff379c30, ['Green'])
-        .addDoor(  25,  25, 0xff2d449c, ['Blue'])
-        .addDoor(1005, 192, 0xff2d8d99, ['Cyan', 'Teal'])
-        .addDoor(1006, 193, 0xff912d99, ['Pink', 'Purple', 'Violet'])
-        .addDoor(1007, 194, 0xff97922d, ['Yellow']),
-      new ItemBrickPackage('coins', 'Coin Blocks')
-        .addCoin(100, ItemLayer.ABOVE     , ItemManager.specialBlocksBMD, ''      , false,   0, 0x00000000, false, false, ['Gold', 'G-Coins', 'Yellow', 'Money', 'Primary', 'Collect', 'Magic', 'Value', 'Standard'])
-        .addCoin(101, ItemLayer.ABOVE     , ItemManager.specialBlocksBMD, ''      , false,  13, 0x00000000, false, false, ['Blue', 'B-Coin', 'Secondary', 'Money', 'Optional', 'Collect', 'Magic', 'Value', 'Standard'])
-        .addCoin(110, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, 'hidden', false,  26, 0x00000000, true , true , [])
-        .addCoin(111, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, 'hidden', false,  39, 0x00000000, true , true , [])
-        .addCoin(165, ItemLayer.DECORATION, ItemManager.blocksBMD       , ''      , false, 139, 0xffb88e15, false, false, ['Gate', 'Yellow', 'Gold', 'Primary', 'Lock'])
-        .addCoin( 43, ItemLayer.DECORATION, ItemManager.blocksBMD       , ''      , true ,  43, 0xffb88e15, false, false, ['Door', 'Yellow', 'Gold', 'Primary', 'Lock'])
-        .addCoin(214, ItemLayer.DECORATION, ItemManager.blocksBMD       , ''      , true , 186, 0xff1c60f4, false, false, ['Gate', 'Blue', 'Optional', 'Lock'])
-        .addCoin(213, ItemLayer.DECORATION, ItemManager.blocksBMD       , ''      , true , 185, 0xff1c60f4, false, false, ['Door', 'Blue', 'Optional', 'Lock']),
-      // TODO: tools
-      // TODO: crown
-      // TODO: boost
-      // TODO: climbable
-      // TODO: switches
-      // TODO: death
-      // TODO: zombie
-      // TODO: teams
-      // TODO: timed
-      // TODO: music
-      // TODO: hazards
-      // TODO: liquids
+        .addGeneric(22  , 22 , 0xff895b12, ['Caution','Warning','Hazard','Stripes','Yellow','Black','Standard'])
+        .addGeneric(1057, 235, -1        , ['Neutral','Yellow','Body','No face']                               )
+        .addGeneric(32  , 32 , 0xffcf9022, ['Face','Smiley','Yellow','Standard']                               )
+        .addGeneric(1058, 236, -1        , ['Caution','Warning','Hazard','Stripes','Black','Yellow']           )
+        .addGeneric(33  , 33 , 0xff000000, ['Black','Dark','Standard']                                         ),
+      new ItemBrickPackage('factory', 'Factory Package', [])
+        .addFactory(45, 45, 0xff72614b, ['X','Crate','Metal','Box','Wood']                            )
+        .addFactory(46, 46, 0xff6e6b60, ['Concrete','Grey','Gray','Stone','Slate','X']                )
+        .addFactory(47, 47, 0xff8e734f, ['Wood','Tree','Wooden','House','Planks','Flooring','Parquet'])
+        .addFactory(48, 48, 0xff7f4f2b, ['X','Crate','Wooden','Box','Wood','Storage']                 )
+        .addFactory(49, 49, 0xff757575, ['Silver','Metal','Scales']                                   ),
+      new ItemBrickPackage('secrets', 'Secret Bricks', ['Hidden','Invisible'])
+        .addSecrets(44 , ItemLayer.FOREGROUND, ItemManager.blocksBMD       , 'completely black, makes minimap invisible', true , 44 , 0x01000000, ['Black','Pure','Old','Solid'])
+        .addSecrets(50 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ''                                         , true , 139, 0x00000000, ['Appear']                    )
+        .addSecrets(243, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ''                                         , true , 140, 0x01000000, ['Blank','Hidden']            )
+        .addSecrets(136, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ''                                         , false, 141, 0x00000000, ['Disappear']                 ),
+      new ItemBrickPackage('glass', 'Glass bricks', ['Bright','Light','Shine','Polish','Neon'])
+        .addGlass(51, 51, 0xfff89299, ['Red','Light red','Pink','Ruby']   )
+        .addGlass(58, 58, 0xfff6ba94, ['Orange','Light orange','Topaz']   )
+        .addGlass(57, 57, 0xfff8da8c, ['Yellow','Light yellow','Jasmine'] )
+        .addGlass(56, 56, 0xff92fbaa, ['Green','Light green','Emerald']   )
+        .addGlass(55, 55, 0xff95dcf6, ['Cyan','Light blue','Diamond']     )
+        .addGlass(54, 54, 0xff7e99f6, ['Blue','Sapphire']                 )
+        .addGlass(53, 53, 0xffa789f6, ['Purple','Violet','Amethyst']      )
+        .addGlass(52, 52, 0xffe98bf6, ['Pink','Magenta','Purple','Quartz']),
+      new ItemBrickPackage('minerals', 'Minerals', ['Neon','Pure','Bright'])
+        .addMinerals(70, 70, 0xffee0000, ['Red','Ruby']                                )
+        .addMinerals(76, 76, 0xffee7700, ['Orange','Topaz']                            )
+        .addMinerals(75, 75, 0xffeeee00, ['Yellow','Jasmine']                          )
+        .addMinerals(74, 74, 0xff00ee00, ['Green','Lime','Emerald','Peridot']          )
+        .addMinerals(73, 73, 0xff00eeee, ['Cyan','Light blue','Aquamarine','Turquoise'])
+        .addMinerals(72, 72, 0xff0000ee, ['Blue','Indigo','Sapphire','Lapis']          )
+        .addMinerals(71, 71, 0xffee00ee, ['Pink','Magenta','Purple','Amethyst']        ),
+      new ItemBrickPackage('christmas 2011', 'Christmas 2011 bricks', ['Holiday','Wrapping Paper','Gift','Present'])
+        .addXmas2011(78, 78, ['Yellow'])
+        .addXmas2011(79, 79, ['White'] )
+        .addXmas2011(80, 80, ['Red']   )
+        .addXmas2011(81, 81, ['Blue']  )
+        .addXmas2011(82, 82, ['Green'] ),
+      new ItemBrickPackage('gravity', 'Gravity Modifying Arrows', ['Physics','Motion','Action','Standard'])
+        .addGravity(0   , ItemLayer.BACKGROUND, ItemManager.blocksBMD       , 0  , 0xff000000, ['Clear','Empty','Delete','Nothing','Erase']    )
+        .addGravity(1   , ItemLayer.DECORATION, ItemManager.blocksBMD       , 1  , 0x00000000, ['Left','Arrow']                                )
+        .addGravity(2   , ItemLayer.DECORATION, ItemManager.blocksBMD       , 2  , 0x00000000, ['Up','Arrow']                                  )
+        .addGravity(3   , ItemLayer.DECORATION, ItemManager.blocksBMD       , 3  , 0x00000000, ['Right','Arrow']                               )
+        .addGravity(1518, ItemLayer.DECORATION, ItemManager.blocksBMD       , 285, 0x00000000, ['Down','Arrow']                                )
+        .addGravity(4   , ItemLayer.DECORATION, ItemManager.blocksBMD       , 4  , 0x00000000, ['Dot']                                         )
+        .addGravity(459 , ItemLayer.DECORATION, ItemManager.blocksBMD       , 233, 0x00000000, ['Slow','Dot','Climbable','Physics']            )
+        .addGravity(411 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, 312, 0x00000000, ['Invisible','Left','Arrow']                    )
+        .addGravity(412 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, 317, 0x00000000, ['Invisible','Up','Arrow']                      )
+        .addGravity(413 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, 322, 0x00000000, ['Invisible','Right','Arrow']                   )
+        .addGravity(1519, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, 652, 0x00000000, ['Invisible','Down','Arrow']                    )
+        .addGravity(414 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, 327, 0x00000000, ['Invisible','Dot']                             )
+        .addGravity(460 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, 466, 0x00000000, ['Slow','Dot','Climbable','Physics','Invisible']),
+      new ItemBrickPackage('keys', 'Key Blocks', ['Key','Lock','Button','Action','Standard'])
+        .addKeys(6  , 6  , 0xff2c1a1a, ['Red','Key','Magenta']   )
+        .addKeys(7  , 7  , 0xff1a2c1a, ['Green','Key']           )
+        .addKeys(8  , 8  , 0xff1a1a2c, ['Blue','Key']            )
+        .addKeys(408, 189, 0xff0c2d3d, ['Cyan','Teal']           )
+        .addKeys(409, 190, 0xff400c40, ['Pink','Violet','Purple'])
+        .addKeys(410, 191, 0xff2c330a, ['Yellow','Key']          ),
+      new ItemBrickPackage('gates', 'Gate Blocks', ['Key','Lock','Action','Standard'])
+        .addGates(26  , 26 , 0xff9c2d46, ['Red','Magenta']         )
+        .addGates(27  , 27 , 0xff379c30, ['Green']                 )
+        .addGates(28  , 28 , 0xff2d449c, ['Blue']                  )
+        .addGates(1008, 195, 0xff2d8d99, ['Cyan','Teal']           )
+        .addGates(1009, 196, 0xff912d99, ['Pink','Purple','Violet'])
+        .addGates(1010, 197, 0xff97922d, ['Yellow']                ),
+      new ItemBrickPackage('doors', 'Door Blocks', ['Key','Lock','Action','Standard'])
+        .addDoors(23  , 23 , 0xff9c2d46, ['Red','Magenta']         )
+        .addDoors(24  , 24 , 0xff379c30, ['Green']                 )
+        .addDoors(25  , 25 , 0xff2d449c, ['Blue']                  )
+        .addDoors(1005, 192, 0xff2d8d99, ['Cyan','Teal']           )
+        .addDoors(1006, 193, 0xff912d99, ['Pink','Purple','Violet'])
+        .addDoors(1007, 194, 0xff97922d, ['Yellow']                ),
+      new ItemBrickPackage('coins', 'Coin Blocks', [])
+        .addCoins(100, ItemLayer.ABOVE     , ItemManager.specialBlocksBMD, ''      , false, 0  , 0x00000000, ['Gold','G-Coins','Yellow','Money','Primary','Collect','Magic','Value','Standard']   , false, false)
+        .addCoins(101, ItemLayer.ABOVE     , ItemManager.specialBlocksBMD, ''      , false, 13 , 0x00000000, ['Blue','B-Coin','Secondary','Money','Optional','Collect','Magic','Value','Standard'], false, false)
+        .addCoins(110, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, 'hidden', false, 26 , 0x00000000, []                                                                                   , true , true )
+        .addCoins(111, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, 'hidden', false, 39 , 0x00000000, []                                                                                   , true , true )
+        .addCoins(165, ItemLayer.DECORATION, ItemManager.blocksBMD       , ''      , false, 139, 0xffb88e15, ['Gate','Yellow','Gold','Primary','Lock']                                            , false, false)
+        .addCoins(43 , ItemLayer.DECORATION, ItemManager.blocksBMD       , ''      , true , 43 , 0xffb88e15, ['Door','Yellow','Gold','Primary','Lock']                                            , false, false)
+        .addCoins(214, ItemLayer.DECORATION, ItemManager.blocksBMD       , ''      , true , 186, 0xff1c60f4, ['Gate','Blue','Optional','Lock']                                                    , false, false)
+        .addCoins(213, ItemLayer.DECORATION, ItemManager.blocksBMD       , ''      , true , 185, 0xff1c60f4, ['Door','Blue','Optional','Lock']                                                    , false, false),
+      new ItemBrickPackage('tools', 'Tool Blocks', [])
+        .addTools(255 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ''                , 'players spawn here'                                , false, 127, ['Spawn','Start','Beginning','Enter']              )
+        .addTools(1582, ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , 'brickworldportal', 'a spawn point targetable by world portals'         , true , 354, ['Spawn','Start','Beginning','Enter','World','Red'])
+        .addTools(360 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ''                , 'players respawn here when they die'                , false, 154, ['Checkpoint','Respawn','Safe','Enter','Save']     )
+        .addTools(466 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , ''                , 'resets the player\'s progress'                     , false, 288, ['Reset','Restart','Retry']                        )
+        .addTools(1516, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , 'brickgodblock'   , 'gives the player god mode privileges'              , true , 320, ['God']                                            )
+        .addTools(1583, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , 'brickmapblock'   , 'allows the player to use the minimap when disabled', true , 355, ['Map','Minimap']                                  ),
+      new ItemBrickPackage('crown', 'Crown', [])
+        .addCrown(5   , ItemLayer.DECORATION, ItemManager.blocksBMD        , ''              , 'awards the player a golden crown'                       , true , 5 , 0xff43391f, ['Crown','King','Gold','Action','Prize','Reward']          )
+        .addCrown(1095, ItemLayer.DECORATION, ItemManager.doorBlocksBMD    , 'brickcrowndoor', ''                                                       , true , 40, 0x00000000, ['Crown','Gate','Gold','Yellow','Lock']                    )
+        .addCrown(1094, ItemLayer.DECORATION, ItemManager.doorBlocksBMD    , 'brickcrowndoor', ''                                                       , true , 41, 0x00000000, ['Crown','Door','Gold','Yellow','Lock']                    )
+        .addCrown(121 , ItemLayer.ABOVE     , ItemManager.completeBlocksBMD, ''              , 'gives the player a silver crown, displays a win message', false, 0 , 0x00000000, ['Crown','Trophy','Win','Complete','Finish','End','Reward'])
+        .addCrown(1153, ItemLayer.DECORATION, ItemManager.doorBlocksBMD    , 'brickcrowndoor', ''                                                       , true , 42, 0x00000000, ['Crown','Gate','Silver','Lock']                           )
+        .addCrown(1152, ItemLayer.DECORATION, ItemManager.doorBlocksBMD    , 'brickcrowndoor', ''                                                       , true , 43, 0x00000000, ['Crown','Door','Silver','Lock']                           ),
+      new ItemBrickPackage('boost', 'Boost Arrows', ['Speed','Fast','Friction','Arrow','Motion','Action','Physics'])
+        .addBoost(114, 157, ['Left']        )
+        .addBoost(116, 159, ['Up','Above']  )
+        .addBoost(115, 158, ['Right']       )
+        .addBoost(117, 160, ['Down','Below']),
+      new ItemBrickPackage('climbable', 'Climbable Blocks', ['Transportation','No','Gravity','Slow'])
+        .addClimbable(118 , ItemManager.blocksBMD    , 'brickmedieval'  , true , 135, ['Chain','Vertical','Ninja']                                                         )
+        .addClimbable(1534, ItemManager.decoBlocksBMD, 'brickindustrial', true , 331, ['Ladder','Vertical','Metal','Industrial']                                           )
+        .addClimbable(120 , ItemManager.blocksBMD    , 'brickninja'     , true , 98 , ['Ladder','Vertical','Ninja']                                                        )
+        .addClimbable(98  , ItemManager.blocksBMD    , ''               , true , 174, ['Vine','Vertical','Jungle','Environment']                                           )
+        .addClimbable(99  , ItemManager.blocksBMD    , ''               , true , 175, ['Vine','Horizontal','Jungle','Environment']                                         )
+        .addClimbable(424 , ItemManager.decoBlocksBMD, 'brickcowboy'    , true , 266, ['Rope','Vertical','Medieval','Ninja']                                               )
+        .addClimbable(472 , ItemManager.blocksBMD    , 'brickfairytale' , false, 252, ['Ladder','Vine','Fairytale']                                                        )
+        .addClimbable(1146, ItemManager.blocksBMD    , 'brickgarden'    , true , 303, ['Ladder','Vine','Lattice','Fence','Brown','Leaf','Leaves','Lattice','Wood','Garden'])
+        .addClimbable(1563, ItemManager.blocksBMD    , 'brickgarden'    , true , 307, ['Ladder','Stalk','Vine','Vertical','Green','Bean','Garden']                         )
+        .addClimbable(1602, ItemManager.blocksBMD    , 'brickdungeon'   , true , 315, ['Halloween','Dungeon','Chain']                                                      ),
+      new ItemBrickPackage('switches', 'Switches', ['Lock','Action'])
+        .addSwitches(113 , ItemManager.specialBlocksBMD, 'brickswitchpurple', true , 310, 0x00000000, ['Switch','Lever','Button','Purple','Violet']              )
+        .addSwitches(1619, ItemManager.specialBlocksBMD, 'brickswitchpurple', true , 866, 0x00000000, ['Reset','Off','Switch','Lever','Button','Purple','Violet'])
+        .addSwitches(185 , ItemManager.doorBlocksBMD   , 'brickswitchpurple', false, 8  , 0xff64419a, ['Switch','Gate','Purple','Violet']                        )
+        .addSwitches(184 , ItemManager.doorBlocksBMD   , 'brickswitchpurple', false, 9  , 0xff64419a, ['Switch','Door','Purple','Violet']                        )
+        .addSwitches(467 , ItemManager.specialBlocksBMD, 'brickswitchorange', true , 422, 0x00000000, ['Switch','Lever','Button','Orange']                       )
+        .addSwitches(1620, ItemManager.specialBlocksBMD, 'brickswitchorange', true , 867, 0x00000000, ['Reset','Off','Switch','Lever','Button','Orange']         )
+        .addSwitches(1080, ItemManager.doorBlocksBMD   , 'brickswitchorange', false, 38 , 0xffd7642f, ['Switch','Gate','Orange']                                 )
+        .addSwitches(1079, ItemManager.doorBlocksBMD   , 'brickswitchorange', false, 39 , 0xffd7642f, ['Switch','Door','Orange']                                 ),
+      new ItemBrickPackage('death', 'Death Doors/Gates (+10)', ['Lock','Die','Skull','Curse'])
+        .addDeath(1012, 198, ['Gate','Off'])
+        .addDeath(1011, 199, ['Door','On'] ),
+      new ItemBrickPackage('zombie', 'Zombie Blocks', ['Blue','Grey','Gray'])
+        .addZombie(422, ItemManager.effectBlocksBMD, 'infects the player with a horrible disease', 5 , 0x00000000, ['Effect','Death','Slow'])
+        .addZombie(206, ItemManager.doorBlocksBMD  , ''                                          , 12, 0xff62747f, ['Gate']                 )
+        .addZombie(207, ItemManager.doorBlocksBMD  , ''                                          , 13, 0xff62747f, ['Door']                 ),
+      new ItemBrickPackage('teams', 'Team effect (+10)', ['Team','Grey','Gray'])
+        .addTeams(423 , ItemManager.effectBlocksBMD, 'sets the player\'s team to the specified color', 6 , ['Effect','Separation'])
+        .addTeams(1028, ItemManager.doorBlocksBMD  , ''                                              , 29, ['Gate','Lock','Off']  )
+        .addTeams(1027, ItemManager.doorBlocksBMD  , ''                                              , 22, ['Door','Lock','On']   ),
+      new ItemBrickPackage('timed', 'Timed Doors (+10)', ['Lock','Wait','Door','Gate','Grey','Gray'])
+        .addTimed(157, false, 337, ['Off'])
+        .addTimed(156, true , 332, ['On'] ),
+      new ItemBrickPackage('music', 'Music Blocks', ['Sound','Entertainment','Note','Melody','Instrument'])
+        .addMusic(77  , 'bricknode'  , 77 , ['Piano','Maestro'])
+        .addMusic(83  , 'brickdrums' , 83 , ['Drums']          )
+        .addMusic(1520, 'brickguitar', 286, ['Guitar']         ),
+      new ItemBrickPackage('hazards', 'Hazard Blocks', ['Kill','Die','Respawn','Death','Trap','Fatal','Deadly'])
+        .addHazards(361 , ItemLayer.DECORATION, 'brickspike'      , 157, ['Spikes','Morphable']                                                                                 )
+        .addHazards(1580, ItemLayer.DECORATION, 'brickspike'      , 739, ['Spikes','Floating','Centre','Center','Central','Mine','Hover']                                       )
+        .addHazards(1625, ItemLayer.DECORATION, 'brickspikesilver', 869, ['Spikes','Morphable']                                                                                 )
+        .addHazards(1626, ItemLayer.DECORATION, 'brickspikesilver', 872, ['Spikes','Floating','Centre','Center','Central','Mine','Hover']                                       )
+        .addHazards(1627, ItemLayer.DECORATION, 'brickspikeblack' , 874, ['Spikes','Morphable','Silver','Light','White','Gray','Grey']                                          )
+        .addHazards(1628, ItemLayer.DECORATION, 'brickspikeblack' , 877, ['Spikes','Floating','Centre','Center','Central','Mine','Hover','Silver','Light','White','Gray','Grey'])
+        .addHazards(1629, ItemLayer.DECORATION, 'brickspikered'   , 879, ['Spikes','Morphable','Black','Dark','Gray','Grey']                                                    )
+        .addHazards(1630, ItemLayer.DECORATION, 'brickspikered'   , 882, ['Spikes','Floating','Centre','Center','Central','Mine','Hover','Black','Dark','Gray','Grey']          )
+        .addHazards(1631, ItemLayer.DECORATION, 'brickspikegold'  , 884, ['Spikes','Morphable','Yellow','Gold']                                                                 )
+        .addHazards(1632, ItemLayer.DECORATION, 'brickspikegold'  , 887, ['Spikes','Floating','Centre','Center','Central','Mine','Hover','Yellow','Gold']                       )
+        .addHazards(1633, ItemLayer.DECORATION, 'brickspikegreen' , 889, ['Spikes','Morphable','Green']                                                                         )
+        .addHazards(1634, ItemLayer.DECORATION, 'brickspikegreen' , 892, ['Spikes','Floating','Centre','Center','Central','Mine','Hover','Green']                               )
+        .addHazards(1635, ItemLayer.DECORATION, 'brickspikeblue'  , 894, ['Spikes','Morphable','Blue']                                                                          )
+        .addHazards(1636, ItemLayer.DECORATION, 'brickspikeblue'  , 897, ['Spikes','Floating','Centre','Center','Central','Mine','Hover','Blue']                                )
+        .addHazards(368 , ItemLayer.ABOVE     , 'brickfire'       , 188, ['Fire','Burn','Flames','Animated','Hell']                                                             ),
+      new ItemBrickPackage('liquids', 'Liquid Blocks', ['Transportation','Swim','Fluid','Action','Environment'])
+        .addLiquids(119 , ItemManager.specialBlocksBMD, ''          , ''                                   , 196, ['Water','Blue','Up','Float']                                )
+        .addLiquids(416 , ItemManager.specialBlocksBMD, 'bricklava' , 'sets the player on fire and kills'  , 218, ['Lava','Hazard','Die','Orange','Death','Burn','Sink','Hell'])
+        .addLiquids(369 , ItemManager.mudBlocksBMD    , 'brickswamp', 'slows the player down'              , 0  , ['Mud','Swamp','Bog','Slow','Brown','Sink']                  )
+        .addLiquids(1585, ItemManager.specialBlocksBMD, 'bricktoxic', 'kills the player instantly on touch', 746, ['Toxic','Waste','Slow','Green']                             ),
       new ItemBrickPackage('portals', 'Portal Blocks', ['Teleport'])
-        .addPortal(381,'brickinvisibleportal','teleports the player to another portal', false, 138,0x00000000, ['Invisible', 'Secrets', 'Hidden'])
-        .addPortal(242,'brickportal'         ,'teleports the player to another portal', false,  52,        -1, ['Visible', 'Blue'])
-        .addPortal(374,'brickworldportal'    ,'teleports the player to another world' , true , 113,        -1, ['World', 'Red']),
-      // TODO: diamond
-      // TODO: cake
-      // TODO: hologram
-      // TODO: christmas 2010
-      // TODO: new year 2010
-      // TODO: spring 2011
-      // TODO: prizes
-      // TODO: easter 2012
-      // TODO: basicbg
-      // TODO: betabg
-      // TODO: brickbg
-      // TODO: checker
+        .addPortals(381, 'brickinvisibleportal', 'teleports the player to another portal', false, 138, 0x00000000, ['Invisible','Secrets','Hidden'])
+        .addPortals(242, 'brickportal'         , 'teleports the player to another portal', false, 52 , -1        , ['Visible','Blue']              )
+        .addPortals(374, 'brickworldportal'    , 'teleports the player to another world' , true , 113, -1        , ['World','Red']                 ),
+      new ItemBrickPackage('diamond', 'Diamond (+1)', ['Exclusive'])
+        .addDiamond(),
+      new ItemBrickPackage('cake', 'Cake', [])
+        .addCake(),
+      new ItemBrickPackage('hologram', 'Hologram', [])
+        .addHologram(),
+      new ItemBrickPackage('christmas 2010', 'Christmas 2010 Blocks', ['Holiday','Xmas','Winter'])
+        .addXmas2010(249, 121, ['Snow','Left','Corner','Snowdrift','Environment']              )
+        .addXmas2010(250, 122, ['Snow','Right','Corner','Snowdrift','Environment']             )
+        .addXmas2010(251, 123, ['Tree','Plant','Nature','Spruce','Environment']                )
+        .addXmas2010(252, 124, ['Tree','Snow','Plant','Lights','Spruce','Nature','Environment'])
+        .addXmas2010(253, 125, ['Fence','Snow','Wood']                                         )
+        .addXmas2010(254, 126, ['Fence','Wood']                                                ),
+      new ItemBrickPackage('new year 2010', 'New Year 2010', ['Holiday','Baubles','Ornament','Light','Bulb'])
+        .addNewYear2010(244, 116, ['Pink','Violet','Purple'])
+        .addNewYear2010(245, 117, ['Yellow']                )
+        .addNewYear2010(246, 118, ['Blue']                  )
+        .addNewYear2010(247, 119, ['Red']                   )
+        .addNewYear2010(248, 120, ['Green']                 ),
+      new ItemBrickPackage('spring 2011', 'Spring package 2011', ['Season','Nature','Plant','Environment'])
+        .addSpring2011(233, 105, ['Grass','Left','Grass','Short']                    )
+        .addSpring2011(234, 106, ['Grass','Middle','Short']                          )
+        .addSpring2011(235, 107, ['Grass','Right','Short']                           )
+        .addSpring2011(236, 108, ['Grass','Hedge','Left','Big','Tall Grass','Bush']  )
+        .addSpring2011(237, 109, ['Grass','Hedge','Middle','Big','Tall Grass','Bush'])
+        .addSpring2011(238, 110, ['Grass','Hedge','Right','Big','Tall Grass','Bush'] )
+        .addSpring2011(239, 111, ['Flower','Sun','Yellow','Flora']                   )
+        .addSpring2011(240, 112, ['Bush','Plant','Shrub','Flora']                    ),
+      new ItemBrickPackage('Prizes', 'Your Prizes', ['Prize'])
+        .addPrizes(223 , 'brickhwtrophy'          , 'trophy for the Halloween 2011 contest winners'             , 95 , ['Cup','Trophy','Halloween','Gold','Thanel'])
+        .addPrizes(478 , 'brickspringtrophybronze', 'prize for winning third place in the Spring 2016 contest'  , 298, ['Trophy','Bronze','Spring','Flower']       )
+        .addPrizes(479 , 'brickspringtrophysilver', 'prize for winning second place in the Spring 2016 contest ', 297, ['Trophy','Silver','Spring','Flower']       )
+        .addPrizes(480 , 'brickspringtrophygold'  , 'prize for winning first place in the Spring 2016 contest'  , 296, ['Trophy','Gold','Spring','Flower']         )
+        .addPrizes(484 , 'bricksummertrophybronze', 'prize for winning third place in the Summer 2016 contest'  , 301, ['Trophy','Bronze','Summer','Sun']          )
+        .addPrizes(485 , 'bricksummertrophysilver', 'prize for winning second place in the Summer 2016 contest ', 300, ['Trophy','Silver','Summer','Sun']          )
+        .addPrizes(486 , 'bricksummertrophygold'  , 'prize for winning first place in the Summer 2016 contest'  , 299, ['Trophy','Gold','Summer','Sun']            )
+        .addPrizes(1540, 'brickdesigntrophybronze', 'prize for winning third place in the Design contest'       , 338, ['Trophy','Bronze','Design']                )
+        .addPrizes(1541, 'brickdesigntrophysilver', 'prize for winning second place in the Design contest'      , 337, ['Trophy','Silver','Design']                )
+        .addPrizes(1542, 'brickdesigntrophygold'  , 'prize for winning first place in the Design contest'       , 336, ['Trophy','Gold','Design']                  ),
+      new ItemBrickPackage('easter 2012', 'Easter  decorations 2012', ['Holiday','Decor','Egg'])
+        .addEaster2012(256, 128, ['Cyan','Teal','Wavy']   )
+        .addEaster2012(257, 129, ['Pink','Wavy']          )
+        .addEaster2012(258, 130, ['Green','Line','Yellow'])
+        .addEaster2012(259, 131, ['Pink','Stripes']       )
+        .addEaster2012(260, 132, ['Green','Dots']         ),
+      new ItemBrickPackage('basic', 'Basic Background Blocks', [])
+        .addBasicBg(715, 209, ['White','Light']                   )
+        .addBasicBg(500, 0  , ['Gray','Grey']                     )
+        .addBasicBg(645, 139, ['Black','Dark','Shadow']           )
+        .addBasicBg(503, 3  , ['Red']                             )
+        .addBasicBg(644, 138, ['Orange']                          )
+        .addBasicBg(504, 4  , ['Yellow','Lime','Green']           )
+        .addBasicBg(505, 5  , ['Green','Backdrop']                )
+        .addBasicBg(506, 6  , ['Cyan','Teal','Turquoise','Blue']  )
+        .addBasicBg(501, 1  , ['Blue']                            )
+        .addBasicBg(502, 2  , ['Purple','Magenta','Pink','Violet']),
+      new ItemBrickPackage('beta', 'Beta Access', ['Exclusive'])
+        .addBetaBg(743, 237, ['White','Light']                                    )
+        .addBetaBg(744, 238, ['Grey','Gray','Taupe']                              )
+        .addBetaBg(745, 239, ['Black','Dark','Onyx']                              )
+        .addBetaBg(746, 240, ['Red','Ruby','Garnet']                              )
+        .addBetaBg(747, 241, ['Orange','Copper']                                  )
+        .addBetaBg(748, 242, ['Yellow','Gold','Jasmine']                          )
+        .addBetaBg(749, 243, ['Green','Emerald','Malachite']                      )
+        .addBetaBg(750, 244, ['Blue','Cyan','Light blue','Aquamarine','Turquoise'])
+        .addBetaBg(751, 245, ['Blue','Sapphire']                                  )
+        .addBetaBg(752, 246, ['Purple','Pink','Magenta','Violet','Amethyst']      ),
+      new ItemBrickPackage('brick', 'Brick Background Blocks', [])
+        .addBrickBg(716, false, 210, 0xff5b5b5b, ['White','Light']                 )
+        .addBrickBg(646, true , 140, 0xff282828, ['Gray','Grey']                   )
+        .addBrickBg(648, true , 142, 0xff0f0f0f, ['Black','Dark','Shadow']         )
+        .addBrickBg(511, false, 11 , -1        , ['Red']                           )
+        .addBrickBg(507, false, 7  , -1        , ['Orange','Brown','Dirt','Soil']  )
+        .addBrickBg(512, false, 12 , -1        , ['Yellow','Soil','Brown']         )
+        .addBrickBg(510, false, 10 , -1        , ['Green','Lime']                  )
+        .addBrickBg(508, false, 8  , -1        , ['Cyan','Teal','Turquoise','Blue'])
+        .addBrickBg(647, true , 141, -1        , ['Blue']                          )
+        .addBrickBg(509, false, 9  , -1        , ['Magenta','Purple','Violet']     ),
+      new ItemBrickPackage('checker', 'Checker Backgrounds', ['Checkered'])
+        .addCheckerBg(718, false, 212, ['White','Light']                   )
+        .addCheckerBg(513, false, 13 , ['Gray','Grey','Shadow']            )
+        .addCheckerBg(650, true , 144, ['Black','Dark','Shadow']           )
+        .addCheckerBg(516, false, 16 , ['Red','Pink']                      )
+        .addCheckerBg(649, true , 143, ['Orange']                          )
+        .addCheckerBg(517, false, 17 , ['Yellow','Lime']                   )
+        .addCheckerBg(518, false, 18 , ['Green']                           )
+        .addCheckerBg(519, false, 19 , ['Cyan','Teal','Turquoise','Blue']  )
+        .addCheckerBg(514, false, 14 , ['Blue']                            )
+        .addCheckerBg(515, false, 15 , ['Purple','Magenta','Pink','Violet']),
       new ItemBrickPackage('dark', 'Solid Dark Backgrounds', ['Solid'])
-        .addDark(719, false, 213, ['White', 'Light'])
-        .addDark(520, false,  20, ['Gray', 'Grey', 'Shadow'])
-        .addDark(652, true , 146, ['Black', 'Dark', 'Shadow'])
-        .addDark(523, false,  23, ['Red'])
-        .addDark(651, true , 145, ['Orange'])
-        .addDark(524, false,  24, ['Yellow', 'Lime'])
-        .addDark(525, false,  25, ['Green'])
-        .addDark(526, false,  26, ['Cyan', 'Teal', 'Turquoise', 'Blue'])
-        .addDark(521, false,  21, ['Blue'])
-        .addDark(522, false,  22, ['Purple', 'Magenta', 'Pink', 'Violet']),
-      // TODO: normal
-      new ItemBrickPackage('pastel', 'Pretty Pastel Backgrounds', ['Solid', 'Bright'])
-        .addPastel(532,  32, ['Pink', 'Red', 'Magenta'])
-        .addPastel(676, 170, ['Orange'])
-        .addPastel(527,  27, ['Yellow'])
-        .addPastel(529,  29, ['Yellow', 'Green', 'Lime'])
-        .addPastel(528,  28, ['Green'])
-        .addPastel(530,  30, ['Cyan', 'Light Blue', 'Sky'])
-        .addPastel(531,  31, ['Blue', 'Sky'])
-        .addPastel(677, 171, ['Purple']),
-      new ItemBrickPackage('canvas', 'Canvas Backgrounds', ['Rough', 'Textured'])
-        .addCanvas(538,  38, ['Gray', 'Grey'])
-        .addCanvas(671, 165, ['Red'])
-        .addCanvas(533,  33, ['Orange'])
-        .addCanvas(534,  34, ['Beige', 'Brown', 'Tan'])
-        .addCanvas(535,  35, ['Yellow'])
-        .addCanvas(536,  36, ['Green'])
-        .addCanvas(537,  37, ['Cyan', 'Light Blue', 'Water'])
-        .addCanvas(606, 106, ['Blue'])
-        .addCanvas(672, 166, ['Purple', 'Violet']),
-      // TODO: carnival
-      // TODO: candy
-      // TODO: summer 2011
-      // TODO: halloween 2011
-      // TODO: christmas 2011
-      new ItemBrickPackage('sci-fi', 'Sci-Fi Package', ['Future', 'Science Fiction', 'Alien', 'UFO'])
-        .addScifi(  84, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     ,  84,         -1, ['Red', 'Screen', 'Panel'])
-        .addScifi(  85, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     ,  85,         -1, ['Blue', 'Screen', 'Panel'])
-        .addScifi(1150, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , 308,         -1, ['Green', 'Screen', 'Panel'])
-        .addScifi(1151, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , 309,         -1, ['Yellow', 'Screen', 'Panel'])
-        .addScifi(1162, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , 317,         -1, ['Magenta','Pink','Purple','Screen','Panel'])
-        .addScifi(1163, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , 318,         -1, ['Cyan','Screen','Panel'])
-        .addScifi(  86, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     ,  86,         -1, ['Metal', 'Gray', 'Bumpy', 'Grey'])
-        .addScifi(  87, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     ,  87, 0xffffffff, ['Metal', 'White', 'Grey', 'Gray'])
-        .addScifi(  88, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     ,  88,         -1, ['Brown', 'Camouflauge', 'Leopard', 'Carpet'])
-        .addScifi(  89, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     ,  89,         -1, ['Platform', 'Red', 'One-way', 'One way'])
-        .addScifi(  90, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     ,  90,         -1, ['Platform', 'Blue', 'One-way', 'One way'])
-        .addScifi(  91, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     ,  91,         -1, ['Platform', 'Green', 'One-way', 'One way'])
-        .addScifi(1051, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , 234,         -1, ['Platform', 'Yellow', 'One-way', 'One way'])
-        .addScifi(1164, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , 319,         -1, ['Platform','Magenta','Pink','Purple','One-way','One way'])
-        .addScifi(1165, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , 320,         -1, ['Platform','Cyan','One-way','One way'])
-        .addScifi( 375, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 177, 0x00000000, ['Morphable', 'Laser', 'Neon', 'Blue', 'Flourescent', 'Corner'])
-        .addScifi( 376, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 181, 0x00000000, ['Morphable', 'Laser', 'Neon', 'Blue', 'Flourescent', 'Middle'])
-        .addScifi( 379, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 169, 0x00000000, ['Morphable', 'Laser', 'Neon', 'Green', 'Flourescent', 'Corner'])
-        .addScifi( 380, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 173, 0x00000000, ['Morphable', 'Laser', 'Neon', 'Green', 'Flourescent', 'Middle'])
-        .addScifi( 377, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 161, 0x00000000, ['Morphable', 'Laser', 'Neon', 'Yellow', 'Orange', 'Flourescent', 'Corner'])
-        .addScifi( 378, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 165, 0x00000000, ['Morphable', 'Laser', 'Neon', 'Yellow', 'Orange', 'Flourescent', 'Middle'])
-        .addScifi( 438, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 409, 0x00000000, ['Morphable', 'Laser', 'Neon', 'Red', 'Pink', 'Flourescent', 'Corner'])
-        .addScifi( 439, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 413, 0x00000000, ['Morphable', 'Laser', 'Neon', 'Red', 'Pink', 'Flourescent', 'Middle'])
-        .addScifi( 637, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, 131, 0xff737d81, ['Gray', 'Outline', 'Grey']),
-      new ItemBrickPackage('prison', 'Prison', ['Cell', 'Jail'])
-        .addPrison(261, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 133, 0x00000000, ['Bars', 'Metal'])
-        .addPrison( 92, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true ,  92,         -1, ['Wall', 'Brick', 'Grey', 'Gray', 'House'])
-        .addPrison(550, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true ,  50,         -1, ['Wall', 'Brick', 'Background', 'Grey', 'Gray', 'House'])
-        .addPrison(551, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true ,  51,         -1, ['Window', 'Light', 'Orange', 'Brick'])
-        .addPrison(552, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true ,  52,         -1, ['Window', 'Light', 'Blue', 'Brick'])
-        .addPrison(553, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true ,  53,         -1, ['Window', 'Dark', 'Vent', 'Brick', 'Grey', 'Gray', 'Drain']),
-      // TODO: windows
-      // TODO: pirate
-      // TODO: stone
-      // TODO: dojo
-      // TODO: wild west
-      // TODO: plastic
-      // TODO: water
-      // TODO: sand
-      // TODO: summer 2012
-      new ItemBrickPackage('cloud', 'Cloud Pack', ['Sky', 'Environment'])
-        .addCloud( 143, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , 120,         -1, ['Center', 'Middle', 'White'])
-        .addCloud( 311, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 182, 0x00000000, ['Top', 'Side', 'White'])
-        .addCloud( 312, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 183, 0x00000000, ['Bottom', 'Side', 'White'])
-        .addCloud( 313, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 184, 0x00000000, ['Left', 'Side', 'White'])
-        .addCloud( 314, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 185, 0x00000000, ['Right', 'Side', 'White'])
-        .addCloud( 315, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 186, 0x00000000, ['Top right', 'Corner', 'White'])
-        .addCloud( 316, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 187, 0x00000000, ['Top left', 'Corner', 'White'])
-        .addCloud( 317, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 188, 0x00000000, ['Bottom left', 'Corner', 'White'])
-        .addCloud( 318, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 189, 0x00000000, ['Bottom right', 'Corner', 'White'])
-        .addCloud(1126, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , 287,         -1, ['Center', 'Middle', 'Dark', 'Grey', 'Gray', 'Storm'])
-        .addCloud(1523, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 323, 0x00000000, ['Top', 'Side', 'Dark', 'Grey', 'Gray', 'Storm'])
-        .addCloud(1524, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 324, 0x00000000, ['Bottom', 'Side', 'Dark', 'Grey', 'Gray', 'Storm'])
-        .addCloud(1525, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 325, 0x00000000, ['Left', 'Side', 'Dark', 'Grey', 'Gray', 'Storm'])
-        .addCloud(1526, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 326, 0x00000000, ['Right', 'Side', 'Dark', 'Grey', 'Gray', 'Storm'])
-        .addCloud(1527, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 327, 0x00000000, ['Top right', 'Corner', 'Dark', 'Grey', 'Gray', 'Storm'])
-        .addCloud(1528, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 328, 0x00000000, ['Top left', 'Corner', 'Dark', 'Grey', 'Gray', 'Storm'])
-        .addCloud(1529, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 329, 0x00000000, ['Bottom left', 'Corner', 'Dark', 'Grey', 'Gray', 'Storm'])
-        .addCloud(1530, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 330, 0x00000000, ['Bottom right', 'Corner', 'Dark', 'Grey', 'Gray', 'Storm']),
-      // TODO: industrial
-      // TODO: clay
+        .addDark(719, false, 213, ['White','Light']                   )
+        .addDark(520, false, 20 , ['Gray','Grey','Shadow']            )
+        .addDark(652, true , 146, ['Black','Dark','Shadow']           )
+        .addDark(523, false, 23 , ['Red']                             )
+        .addDark(651, true , 145, ['Orange']                          )
+        .addDark(524, false, 24 , ['Yellow','Lime']                   )
+        .addDark(525, false, 25 , ['Green']                           )
+        .addDark(526, false, 26 , ['Cyan','Teal','Turquoise','Blue']  )
+        .addDark(521, false, 21 , ['Blue']                            )
+        .addDark(522, false, 22 , ['Purple','Magenta','Pink','Violet']),
+      new ItemBrickPackage('normal', 'Solid backrounds', ['Solid'])
+        .addNormal(717, false, 211, ['White','Light']                   )
+        .addNormal(610, true , 110, ['Gray','Grey','Shadow']            )
+        .addNormal(654, true , 148, ['Black','Dark','Shadow']           )
+        .addNormal(613, true , 113, ['Red']                             )
+        .addNormal(653, true , 147, ['Orange']                          )
+        .addNormal(614, true , 114, ['Yellow','Lime']                   )
+        .addNormal(615, true , 115, ['Green']                           )
+        .addNormal(616, true , 116, ['Cyan','Teal','Turquoise','Blue']  )
+        .addNormal(611, true , 111, ['Blue']                            )
+        .addNormal(612, true , 112, ['Purple','Magenta','Pink','Violet']),
+      new ItemBrickPackage('pastel', 'Pretty Pastel Backgrounds', ['Solid','Bright'])
+        .addPastel(532, 32 , ['Pink','Red','Magenta']   )
+        .addPastel(676, 170, ['Orange']                 )
+        .addPastel(527, 27 , ['Yellow']                 )
+        .addPastel(529, 29 , ['Yellow','Green','Lime']  )
+        .addPastel(528, 28 , ['Green']                  )
+        .addPastel(530, 30 , ['Cyan','Light Blue','Sky'])
+        .addPastel(531, 31 , ['Blue','Sky']             )
+        .addPastel(677, 171, ['Purple']                 ),
+      new ItemBrickPackage('canvas', 'Canvas Backgrounds', ['Rough','Textured'])
+        .addCanvas(538, 38 , ['Gray','Grey']              )
+        .addCanvas(671, 165, ['Red']                      )
+        .addCanvas(533, 33 , ['Orange']                   )
+        .addCanvas(534, 34 , ['Beige','Brown','Tan']      )
+        .addCanvas(535, 35 , ['Yellow']                   )
+        .addCanvas(536, 36 , ['Green']                    )
+        .addCanvas(537, 37 , ['Cyan','Light Blue','Water'])
+        .addCanvas(606, 106, ['Blue']                     )
+        .addCanvas(672, 166, ['Purple','Violet']          ),
+      new ItemBrickPackage('carnival', 'Carnival backgrounds', [])
+        .addCarnival(545, 45 , ['Stripes','Red','Yellow','McDonald\'s'])
+        .addCarnival(546, 46 , ['Stripes','Purple','Violet','Dark']    )
+        .addCarnival(547, 47 , ['Magenta','Pink']                      )
+        .addCarnival(548, 48 , ['Checker','Black','White','Double']    )
+        .addCarnival(549, 49 , ['Green']                               )
+        .addCarnival(558, 58 , ['Yellow']                              )
+        .addCarnival(563, 63 , ['Poland','Stripes','Red','White']      )
+        .addCarnival(607, 107, ['Blue','Solid']                        ),
+      new ItemBrickPackage('candy', 'CandyLand', ['Sweet','Sugar','Food'])
+        .addCandy(60  , ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 60 , -1        , ['Pink','Cotton Candy','Fairy Floss','Stripes','Pastel'])
+        .addCandy(1154, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 310, -1        , ['Blue','Cotton Candy','Fairy Floss','Stripes','Pastel'])
+        .addCandy(61  , ItemLayer.DECORATION, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 61 , -1        , ['Platform','Magenta','Pink','One-Way']                 )
+        .addCandy(62  , ItemLayer.DECORATION, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 62 , -1        , ['Platform','Red','One-Way','One way']                  )
+        .addCandy(63  , ItemLayer.DECORATION, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 63 , -1        , ['Platform','Cyan','One-Way','One way']                 )
+        .addCandy(64  , ItemLayer.DECORATION, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 64 , -1        , ['Platform','Green','One-Way','One way']                )
+        .addCandy(65  , ItemLayer.DECORATION, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 65 , -1        , ['Candy','Cane','Red','White','Stripes']                )
+        .addCandy(66  , ItemLayer.DECORATION, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 66 , -1        , ['Cake','Licorice','Hamburger','Sandwich','Stripes']    )
+        .addCandy(67  , ItemLayer.DECORATION, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 67 , -1        , ['Gingerbread','Chocolate','Brown','Cake','Dirt']       )
+        .addCandy(227 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 99 , 0x00000000, ['Cream','Small','Creme','Whipped Topping','White']     )
+        .addCandy(431 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 273, 0x00000000, ['Cream','Big','Creme','Whipped Topping','White']       )
+        .addCandy(432 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 274, 0x00000000, ['Gumdrop','Red']                                       )
+        .addCandy(433 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 275, 0x00000000, ['Gumdrop','Green']                                     )
+        .addCandy(434 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 276, 0x00000000, ['Gumdrop','Pink']                                      )
+        .addCandy(539 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, false, 39 , -1        , ['Stripes','Pink','Pastel']                             )
+        .addCandy(540 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, false, 40 , -1        , ['Stripes','Blue','Pastel']                             ),
+      new ItemBrickPackage('summer 2011', 'Summer package 2011', ['Season','Hot','Beach'])
+        .addSummer2011(59 , ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 59 , -1        , ['Sand','Environment']                                              )
+        .addSummer2011(228, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 100, 0x00000000, ['Umbrella','Parasol','Beach','Sun']                                )
+        .addSummer2011(229, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 101, 0x00000000, ['Left','Sand','Corner','Dune','Environment']                       )
+        .addSummer2011(230, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 102, 0x00000000, ['Right','Sand','Corner','Dune','Environment']                      )
+        .addSummer2011(231, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 103, 0x00000000, ['Rock','Stone','Environment']                                      )
+        .addSummer2011(232, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 104, 0x00000000, ['Bush','Nature','Plant','Yellow','Dead','Tumbleweed','Environment']),
+      new ItemBrickPackage('halloween 2011', 'Halloween pack', ['Scary','Holiday','Creepy'])
+        .addHalloween2011(68 , ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 68, -1        , ['Brick','Gray','Grey','Bloody','Wall','House']     )
+        .addHalloween2011(69 , ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 69, -1        , ['Basic','Gray','Grey']                             )
+        .addHalloween2011(224, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 96, 0x00000000, ['Grave','Tombstone','Headstone','Marker','Dead']   )
+        .addHalloween2011(225, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, true , 97, 0x00000000, ['Cobweb','Spider Web','Right','Corner']            )
+        .addHalloween2011(226, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, true , 98, 0x00000000, ['Cobweb','Spider Web','Left','Corner']             )
+        .addHalloween2011(541, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, false, 41, -1        , ['Stone','Gray','Grey']                             )
+        .addHalloween2011(542, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, false, 42, -1        , ['Brick','Gray','Grey','House']                     )
+        .addHalloween2011(543, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, false, 43, -1        , ['Brick','Damaged','Right','Ruins','Corner','House'])
+        .addHalloween2011(544, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, false, 44, -1        , ['Brick','Damaged','Left','Ruins','Corner','House'] ),
+      new ItemBrickPackage('christmas 2011', 'XMAS  decorations', ['2011','Xmas','Bauble','Ornament','Holiday'])
+        .addXmas2011Deco(218, 90, ['Red','Bulb','Round','Holiday','Circle']      )
+        .addXmas2011Deco(219, 91, ['Green','Bulb','Round','Holiday','Circle']    )
+        .addXmas2011Deco(220, 92, ['Blue','Bulb','Round','Holiday','Circle']     )
+        .addXmas2011Deco(221, 93, ['Circle','Wreath','Garland','Holiday','Green'])
+        .addXmas2011Deco(222, 94, ['Star','Yellow','Night','Sky']                ),
+      new ItemBrickPackage('sci-fi', 'Sci-Fi Package', ['Future','Science Fiction','Alien','UFO'])
+        .addSciFi(84  , ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , 84 , -1        , ['Red','Screen','Panel']                                             )
+        .addSciFi(85  , ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , 85 , -1        , ['Blue','Screen','Panel']                                            )
+        .addSciFi(1150, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , 308, -1        , ['Green','Screen','Panel']                                           )
+        .addSciFi(1151, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , 309, -1        , ['Yellow','Screen','Panel']                                          )
+        .addSciFi(1162, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , 317, -1        , ['Magenta','Pink','Purple','Screen','Panel']                         )
+        .addSciFi(1163, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , 318, -1        , ['Cyan','Screen','Panel']                                            )
+        .addSciFi(86  , ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , 86 , -1        , ['Metal','Gray','Bumpy','Grey']                                      )
+        .addSciFi(87  , ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , 87 , 0xffffffff, ['Metal','White','Grey','Gray']                                      )
+        .addSciFi(88  , ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , 88 , -1        , ['Brown','Camouflauge','Leopard','Carpet']                           )
+        .addSciFi(89  , ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , 89 , -1        , ['Platform','Red','One-way','One way']                               )
+        .addSciFi(90  , ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , 90 , -1        , ['Platform','Blue','One-way','One way']                              )
+        .addSciFi(91  , ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , 91 , -1        , ['Platform','Green','One-way','One way']                             )
+        .addSciFi(1051, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , 234, -1        , ['Platform','Yellow','One-way','One way']                            )
+        .addSciFi(1164, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , 319, -1        , ['Platform','Magenta','Pink','Purple','One-way','One way']           )
+        .addSciFi(1165, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , 320, -1        , ['Platform','Cyan','One-way','One way']                              )
+        .addSciFi(375 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 177, 0x00000000, ['Morphable','Laser','Neon','Blue','Flourescent','Corner']           )
+        .addSciFi(376 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 181, 0x00000000, ['Morphable','Laser','Neon','Blue','Flourescent','Middle']           )
+        .addSciFi(379 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 169, 0x00000000, ['Morphable','Laser','Neon','Green','Flourescent','Corner']          )
+        .addSciFi(380 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 173, 0x00000000, ['Morphable','Laser','Neon','Green','Flourescent','Middle']          )
+        .addSciFi(377 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 161, 0x00000000, ['Morphable','Laser','Neon','Yellow','Orange','Flourescent','Corner'])
+        .addSciFi(378 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 165, 0x00000000, ['Morphable','Laser','Neon','Yellow','Orange','Flourescent','Middle'])
+        .addSciFi(438 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 409, 0x00000000, ['Morphable','Laser','Neon','Red','Pink','Flourescent','Corner']     )
+        .addSciFi(439 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 413, 0x00000000, ['Morphable','Laser','Neon','Red','Pink','Flourescent','Middle']     )
+        .addSciFi(637 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, 131, 0xff737d81, ['Gray','Outline','Grey']                                            ),
+      new ItemBrickPackage('prison', 'Prison', ['Cell','Jail'])
+        .addPrison(261, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 133, 0x00000000, ['Bars','Metal']                                      )
+        .addPrison(92 , ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 92 , -1        , ['Wall','Brick','Grey','Gray','House']                )
+        .addPrison(550, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 50 , -1        , ['Wall','Brick','Background','Grey','Gray','House']   )
+        .addPrison(551, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 51 , -1        , ['Window','Light','Orange','Brick']                   )
+        .addPrison(552, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 52 , -1        , ['Window','Light','Blue','Brick']                     )
+        .addPrison(553, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 53 , -1        , ['Window','Dark','Vent','Brick','Grey','Gray','Drain']),
+      new ItemBrickPackage('windows', 'Colored Windows', ['Glass'])
+        .addWindows(262, 134, ['Transparent','Clear','Black','Dark']                  )
+        .addWindows(268, 140, ['Transparent','Red','Pink']                            )
+        .addWindows(269, 141, ['Transparent','Orange']                                )
+        .addWindows(270, 142, ['Transparent','Yellow']                                )
+        .addWindows(263, 135, ['Transparent','Green']                                 )
+        .addWindows(264, 136, ['Transparent','Turquoise','Cyan','Teal','Blue','Green'])
+        .addWindows(265, 137, ['Transparent','Blue']                                  )
+        .addWindows(266, 138, ['Transparent','Purple','Violet','Indigo']              )
+        .addWindows(267, 139, ['Transparent','Pink','Magenta']                        ),
+      new ItemBrickPackage('pirate', 'Pirate Pack', [])
+        .addPirate(93 , ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 93 , -1        , ['Wood','Planks','Board','Siding','Navy','House']               )
+        .addPirate(94 , ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 94 , -1        , ['Chest','Treasure','Loot','Booty','Navy']                      )
+        .addPirate(154, ItemLayer.DECORATION, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 131, 0x00000000, ['Platform','Wood','Ship','Navy','One Way','One-Way']           )
+        .addPirate(271, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, true , 143, 0x00000000, ['Wood','Decoration','Navy']                                    )
+        .addPirate(272, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, true , 144, 0x00000000, ['Skull','Head','Skeleton','Creepy','Death']                    )
+        .addPirate(435, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 277, 0x00000000, ['Cannon','Sea war','Gun','Ship','Navy']                        )
+        .addPirate(436, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 278, 0x00000000, ['Port Window','Porthole','Ship','Navy']                        )
+        .addPirate(554, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, false, 54 , -1        , ['Wood','Dark','Planks','Board','Ship','House','Siding','Navy'] )
+        .addPirate(555, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, false, 55 , -1        , ['Wood','Light','Planks','Board','Ship','House','Siding','Navy'])
+        .addPirate(559, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, false, 59 , -1        , ['Wood','Dark','Planks','Board','Ship','House','Siding','Navy'] )
+        .addPirate(560, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, false, 60 , -1        , ['Flag','Jolly Roger','Skull','Ship','Navy']                    ),
+      new ItemBrickPackage('stone', 'Stone Pack', ['Cave','Rocks','Environment','House'])
+        .addStone(95  , ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , true , 95 , ['Gray','Grey']              )
+        .addStone(1044, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , true , 226, ['Green','Limestone']        )
+        .addStone(1045, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , true , 227, ['Brown','Dirt']             )
+        .addStone(1046, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , true , 228, ['Blue']                     )
+        .addStone(561 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, false, 61 , ['Dark','Gray','Grey']       )
+        .addStone(562 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, false, 62 , ['Half','Dark','Gray','Grey'])
+        .addStone(688 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, false, 182, ['Green','Limestone']        )
+        .addStone(689 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, false, 183, ['Half','Limestone']         )
+        .addStone(690 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, false, 184, ['Brown']                    )
+        .addStone(691 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, false, 185, ['Half','Brown']             )
+        .addStone(692 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, false, 186, ['Blue']                     )
+        .addStone(693 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, false, 187, ['Half']                     ),
+      new ItemBrickPackage('dojo', 'Dojo Pack', ['Ninja','Asian','Japanese','Kung Fu'])
+        .addDojo(96 , ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 96 , 0x00000000, ['Platform','White','One-way','One way']                        )
+        .addDojo(97 , ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 97 , 0x00000000, ['Platform','Gray','Grey','One-way','One way']                  )
+        .addDojo(564, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, true , 64 , -1        , ['White']                                                       )
+        .addDojo(565, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, true , 65 , -1        , ['Grey','Gray']                                                 )
+        .addDojo(566, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, true , 66 , -1        , ['Roof','Blue','Tile','Shingles','House']                       )
+        .addDojo(567, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, true , 67 , -1        , ['Roof','Blue','Dark','Tile','Shingles','House']                )
+        .addDojo(667, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 161, -1        , ['Roof','Red','Tile','Shingles','House']                        )
+        .addDojo(668, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 162, -1        , ['Roof','Red','Dark','Tile','Shingles','House']                 )
+        .addDojo(669, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 163, -1        , ['Roof','Green','Tile','Shingles','House']                      )
+        .addDojo(670, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 164, -1        , ['Roof','Green','Dark','Tile','Shingles','House']               )
+        .addDojo(276, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 389, 0x00000000, ['Morphable','Fin','Left','Blue','Green','Red','Corner']        )
+        .addDojo(277, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 392, 0x00000000, ['Morphable','Fin','Right','Blue','Green','Red','Corner']       )
+        .addDojo(278, ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 150, 0x00000000, ['Window','Open','House']                                       )
+        .addDojo(279, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 395, 0x00000000, ['Morphable','Fin','Left','Dark','Blue','Green','Red','Corner'] )
+        .addDojo(280, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 398, 0x00000000, ['Morphable','Fin','Right','Dark','Blue','Green','Red','Corner'])
+        .addDojo(281, ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 153, 0x00000000, ['Window','Dark','Open','House']                                )
+        .addDojo(282, ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 154, 0x00000000, ['Character','Chinese']                                         )
+        .addDojo(283, ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 155, 0x00000000, ['Character','Chinese']                                         )
+        .addDojo(284, ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 156, 0x00000000, ['Yin Yang','Chinese','White','Black white']                    ),
+      new ItemBrickPackage('wild west', 'Wild West Pack', ['Cowboy','Western','House'])
+        .addWildWest(122 , ItemLayer.DECORATION, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 99 , 0x00000000, ['Brown','Wood','Platform','One way','One-Way']       )
+        .addWildWest(123 , ItemLayer.DECORATION, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 100, 0x00000000, ['Red','Wood','Platform','One way','One-Way']         )
+        .addWildWest(124 , ItemLayer.DECORATION, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 101, 0x00000000, ['Blue','Wood','Platform','One way','One-Way']        )
+        .addWildWest(125 , ItemLayer.DECORATION, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 102, 0x00000000, ['Dark','Brown','Wood','Platform','One way','One-Way'])
+        .addWildWest(126 , ItemLayer.DECORATION, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 103, 0x00000000, ['Dark','Red','Wood','Platform','One way','One-Way']  )
+        .addWildWest(127 , ItemLayer.DECORATION, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 104, 0x00000000, ['Dark','Blue','Wood','Platform','One way','One-Way'] )
+        .addWildWest(568 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 68 , -1        , ['Siding','Wood','Brown','Planks','Ship','Board']     )
+        .addWildWest(569 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 69 , -1        , ['Siding','Wood','Dark Brown','Planks','Ship','Board'])
+        .addWildWest(570 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 70 , -1        , ['Siding','Wood','Red','Planks','Board','Board']      )
+        .addWildWest(571 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 71 , -1        , ['Siding','Wood','Dark Red','Planks','Board']         )
+        .addWildWest(572 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 72 , -1        , ['Siding','Wood','Blue','Planks','Board']             )
+        .addWildWest(573 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 73 , -1        , ['Siding','Wood','Dark Blue','Planks','Board']        )
+        .addWildWest(285 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, true , 157, 0x00000000, ['Pole','White']                                      )
+        .addWildWest(286 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, true , 158, 0x00000000, ['Pole','Gray','Dark','Grey']                         )
+        .addWildWest(1521, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, true , 321, 0x00000000, ['Pole','White']                                      )
+        .addWildWest(1522, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, true , 322, 0x00000000, ['Pole','Gray','Dark','Grey']                         )
+        .addWildWest(287 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 159, 0x00000000, ['Door','Wood','Brown','Left']                        )
+        .addWildWest(288 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 160, 0x00000000, ['Door','Wood','Brown','Right']                       )
+        .addWildWest(289 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 161, 0x00000000, ['Door','Wood','Red','Left']                          )
+        .addWildWest(290 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 162, 0x00000000, ['Door','Wood','Red','Right']                         )
+        .addWildWest(291 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 163, 0x00000000, ['Door','Wood','Blue','Left']                         )
+        .addWildWest(292 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 164, 0x00000000, ['Door','Wood','Blue','Right']                        )
+        .addWildWest(293 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 165, 0x00000000, ['Window','Curtains']                                 )
+        .addWildWest(294 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 166, 0x00000000, ['Fence','Wood','Brown']                              )
+        .addWildWest(295 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 167, 0x00000000, ['Fence','Wood','Brown']                              )
+        .addWildWest(296 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 168, 0x00000000, ['Fence','Wood','Red']                                )
+        .addWildWest(297 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 169, 0x00000000, ['Fence','Wood','Red']                                )
+        .addWildWest(298 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 170, 0x00000000, ['Fence','Wood','Blue']                               )
+        .addWildWest(299 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 171, 0x00000000, ['Fence','Wood','Blue']                               ),
+      new ItemBrickPackage('plastic', 'Plastic Pack', ['Neon','Bright'])
+        .addPlastic(129, 106, ['Red']                       )
+        .addPlastic(135, 112, ['Orange']                    )
+        .addPlastic(130, 107, ['Yellow']                    )
+        .addPlastic(128, 105, ['Green','Light Green','Lime'])
+        .addPlastic(134, 111, ['Green']                     )
+        .addPlastic(131, 108, ['Light Blue','Cyan']         )
+        .addPlastic(132, 109, ['Blue','Indigo']             )
+        .addPlastic(133, 110, ['Purple','Magenta','Pink']   ),
+      new ItemBrickPackage('water', 'Water pack', ['Sea','Ocean','Nature','Environment'])
+        .addWater(300, ItemLayer.ABOVE     , ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 234, 0x00000000, ['Waves','Animated']       )
+        .addWater(574, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, true , 74 , 0xff75dae7, []                         )
+        .addWater(575, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, true , 75 , 0xff75dae7, ['Octopus','Squid']        )
+        .addWater(576, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, true , 76 , 0xff75dae7, ['Fish']                   )
+        .addWater(577, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, true , 77 , 0xff75dae7, ['Seahorse']               )
+        .addWater(578, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, true , 78 , 0xff75dae7, ['Seaweed','Plant','Algae']),
+      new ItemBrickPackage('sand', 'Sand Pack', ['Desert','Beach','Environment','Soil'])
+        .addSand(137, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 114, -1        , ['White','Beige']      )
+        .addSand(138, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 115, -1        , ['Grey','Gray']        )
+        .addSand(139, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 116, -1        , ['Yellow']             )
+        .addSand(140, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 117, -1        , ['Yellow','Orange']    )
+        .addSand(141, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 118, -1        , ['Brown','Light']      )
+        .addSand(142, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 119, -1        , ['Brown','Dark','Dirt'])
+        .addSand(579, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, false, 79 , -1        , ['Off-white']          )
+        .addSand(580, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, false, 80 , -1        , ['Gray','Grey']        )
+        .addSand(581, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, false, 81 , -1        , ['Yellow']             )
+        .addSand(582, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, false, 82 , -1        , ['Orange','Yellow']    )
+        .addSand(583, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, false, 83 , -1        , ['Brown','Light']      )
+        .addSand(584, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, false, 84 , -1        , ['Brown','Dark']       )
+        .addSand(301, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 172, 0x00000000, ['White']              )
+        .addSand(302, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 173, 0x00000000, ['Gray','Grey']        )
+        .addSand(303, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 174, 0x00000000, ['Yellow']             )
+        .addSand(304, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 175, 0x00000000, ['Yellow','Orange']    )
+        .addSand(305, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 176, 0x00000000, ['Brown','Light']      )
+        .addSand(306, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 177, 0x00000000, ['Brown','Dark']       ),
+      new ItemBrickPackage('summer 2012', 'Summer pack 2012', ['Season','Beach'])
+        .addSummer2012(307, 178, ['Beach','Ball','Toy','Ball']                            )
+        .addSummer2012(308, 179, ['Pail','Bucket','Toy','Sand']                           )
+        .addSummer2012(309, 180, ['Shovel','Dig','Toy','Sand']                            )
+        .addSummer2012(310, 181, ['Drink','Margarita','Umbrella','Cocktail','Glass','Cup']),
+      new ItemBrickPackage('cloud', 'Cloud Pack', ['Sky','Environment'])
+        .addCloud(143 , ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , 120, -1        , ['Center','Middle','White']                           )
+        .addCloud(311 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 182, 0x00000000, ['Top','Side','White']                                )
+        .addCloud(312 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 183, 0x00000000, ['Bottom','Side','White']                             )
+        .addCloud(313 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 184, 0x00000000, ['Left','Side','White']                               )
+        .addCloud(314 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 185, 0x00000000, ['Right','Side','White']                              )
+        .addCloud(315 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 186, 0x00000000, ['Top right','Corner','White']                        )
+        .addCloud(316 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 187, 0x00000000, ['Top left','Corner','White']                         )
+        .addCloud(317 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 188, 0x00000000, ['Bottom left','Corner','White']                      )
+        .addCloud(318 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 189, 0x00000000, ['Bottom right','Corner','White']                     )
+        .addCloud(1126, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , 287, -1        , ['Center','Middle','Dark','Grey','Gray','Storm']      )
+        .addCloud(1523, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 323, 0x00000000, ['Top','Side','Dark','Grey','Gray','Storm']           )
+        .addCloud(1524, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 324, 0x00000000, ['Bottom','Side','Dark','Grey','Gray','Storm']        )
+        .addCloud(1525, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 325, 0x00000000, ['Left','Side','Dark','Grey','Gray','Storm']          )
+        .addCloud(1526, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 326, 0x00000000, ['Right','Side','Dark','Grey','Gray','Storm']         )
+        .addCloud(1527, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 327, 0x00000000, ['Top right','Corner','Dark','Grey','Gray','Storm']   )
+        .addCloud(1528, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 328, 0x00000000, ['Top left','Corner','Dark','Grey','Gray','Storm']    )
+        .addCloud(1529, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 329, 0x00000000, ['Bottom left','Corner','Dark','Grey','Gray','Storm'] )
+        .addCloud(1530, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 330, 0x00000000, ['Bottom right','Corner','Dark','Grey','Gray','Storm']),
+      new ItemBrickPackage('industrial', 'Industrial Package', ['Factory'])
+        .addIndustrial(144 , ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 121, -1        , ['Diamond plating','Plate','Metal']                                 )
+        .addIndustrial(145 , ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 122, -1        , ['Wiring','Wires','Metal']                                          )
+        .addIndustrial(585 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 85 , -1        , ['Plate','Metal']                                                   )
+        .addIndustrial(586 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 86 , -1        , ['Gray','Steel','Plate','Metal']                                    )
+        .addIndustrial(587 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 87 , -1        , ['Blue','Cyan','Plate','Metal']                                     )
+        .addIndustrial(588 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 88 , -1        , ['Green','Plate','Metal']                                           )
+        .addIndustrial(589 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 89 , -1        , ['Yellow','Orange','Plate','Metal']                                 )
+        .addIndustrial(146 , ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 123, 0x00000000, ['Platform','One-Way','One Way','Metal']                            )
+        .addIndustrial(147 , ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 124, 0x00000000, ['Scissor','Scaffolding','X','Metal']                               )
+        .addIndustrial(1133, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 294, 0x00000000, ['Scissor','Scaffolding','X','Metal']                               )
+        .addIndustrial(148 , ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 125, 0x00000000, ['Lift','Table','Piston','Metal']                                   )
+        .addIndustrial(1134, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.BLOCK     , true , 712, 0x00000000, ['Lift','Table','Piston','Metal','Morphable']                       )
+        .addIndustrial(149 , ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 126, -1        , ['Tube','Plate','Piston','Metal']                                   )
+        .addIndustrial(1127, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 288, -1        , ['Tube','Plate','Piston','Metal']                                   )
+        .addIndustrial(1135, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.BLOCK     , true , 710, 0x00000000, ['Thick','Pipe','Metal','Morphable']                                )
+        .addIndustrial(150 , ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 127, -1        , ['Conveyor belt','Left','Metal']                                    )
+        .addIndustrial(151 , ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 128, -1        , ['Conveyor belt','Middle','Metal']                                  )
+        .addIndustrial(152 , ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 129, -1        , ['Conveyor belt','Middle','Metal']                                  )
+        .addIndustrial(153 , ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 130, -1        , ['Conveyor belt','Right','Metal']                                   )
+        .addIndustrial(319 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, true , 190, 0x00000000, ['Caution','Warning','Fire','Flame','Sign','Alert']                 )
+        .addIndustrial(320 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, true , 191, 0x00000000, ['Caution','Warning','Death','Toxin','Poison','Sign','Alert']       )
+        .addIndustrial(321 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, true , 192, 0x00000000, ['Caution','Warning','Electricity','Lightning','Sign','Alert']      )
+        .addIndustrial(322 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, true , 193, 0x00000000, ['Caution','Warning','No','Do not enter','X','Sign','Alert']        )
+        .addIndustrial(323 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, true , 194, 0x00000000, ['Caution','Warning','Horizontal','Stripes','Hazard','Pole','Alert'])
+        .addIndustrial(324 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, true , 195, 0x00000000, ['Caution','Warning','Vertical','Stripes','Hazard','Pole','Alert']  )
+        .addIndustrial(1535, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, true , 708, 0x00000000, ['Thin','Pipe','Metal','Morphable']                                 ),
+      new ItemBrickPackage('clay', 'Clay Backgrounds', ['House'])
+        .addClay(594, 94, ['White','Tile','Bathroom']             )
+        .addClay(595, 95, ['Brick','Tile','Bathroom']             )
+        .addClay(596, 96, ['Diamond','Chisel','Tile','Bathroom']  )
+        .addClay(597, 97, ['X','Cross','Chisel','Bathroom','Tile'])
+        .addClay(598, 98, ['Rough','Natural']                     ),
       new ItemBrickPackage('medieval', 'Medieval', ['Castle'])
-        .addMedieval(158, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 132, 0x00000000, ['Platform', 'Stone'])
-        .addMedieval(159, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 133,         -1, ['Brick', 'Stone'])
-        .addMedieval(160, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 134,         -1, ['Brick', 'Arrow slit', 'Stone', 'Window'])
-        .addMedieval(599, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false,  99,         -1, ['Anvil', 'Blacksmith'])
-        .addMedieval(325, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, true , 196, 0x00000000, ['Brick', 'Stone', 'House'])
-        .addMedieval(326, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 197,         -1, ['Top', 'Display', 'Stone'])
-        .addMedieval(162, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 136, 0x00000000, ['Parapet', 'Stone'])
-        .addMedieval(163, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 137, 0x00000000, ['Barrel', 'Keg'])
-        .addMedieval(437, ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 279, 0x00000000, ['Window', 'Wood', 'House'])
-        .addMedieval(600, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 100,         -1, ['Wood', 'Planks', 'Vertical', 'Brown', 'House'])
-        .addMedieval(590, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false,  90,         -1, ['Straw', 'Hay', 'Roof', 'House'])
-        .addMedieval(591, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false,  91,         -1, ['Roof', 'Shingles', 'Scales', 'Red', 'House'])
-        .addMedieval(592, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false,  92,         -1, ['Roof', 'Shingles', 'Scales', 'Green', 'House'])
-        .addMedieval(556, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false,  56,         -1, ['Roof', 'Shingles', 'Scales', 'Brown', 'House'])
-        .addMedieval(593, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false,  93,         -1, ['Gray', 'Dry wall', 'Stucco', 'Grey', 'House', 'Beige'])
-        .addMedieval(440, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 417, 0x00000000, ['Scaffolding', 'Wood', 'Morphable', 'Fence', 'House', 'Design'])
-        .addMedieval(330, ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, true , 201, 0x00000000, ['Shield', 'Warrior', 'Weapon'])
-        .addMedieval(275, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, true , 365, 0x00000000, ['Axe', 'Morphable', 'Warrior', 'Weapon'])
-        .addMedieval(329, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, true , 377, 0x00000000, ['Sword', 'Morphable', 'Warrior', 'Weapon'])
-        .addMedieval(273, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, true , 373, 0x00000000, ['Shield', 'Morphable', 'Blue', 'Green', 'Yellow', 'Red', 'Circle'])
-        .addMedieval(328, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, true , 405, 0x00000000, ['Shield', 'Morphable', 'Blue', 'Green', 'Yellow', 'Red'])
-        .addMedieval(327, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, true , 369, 0x00000000, ['Banner', 'Morphable', 'Blue', 'Green', 'Yellow', 'Red', 'Flag']),
-      // TODO: pipes
-      // TODO: outer space
-      // TODO: desert
-      // TODO: neon
-      // TODO: monster
-      // TODO: fog
-      // TODO: halloween 2012
+        .addMedieval(158, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 132, 0x00000000, ['Platform','Stone']                                         )
+        .addMedieval(159, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 133, -1        , ['Brick','Stone']                                            )
+        .addMedieval(160, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 134, -1        , ['Brick','Arrow slit','Stone','Window']                      )
+        .addMedieval(599, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 99 , -1        , ['Anvil','Blacksmith']                                       )
+        .addMedieval(325, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, true , 196, 0x00000000, ['Brick','Stone','House']                                    )
+        .addMedieval(326, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 197, -1        , ['Top','Display','Stone']                                    )
+        .addMedieval(162, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 136, 0x00000000, ['Parapet','Stone']                                          )
+        .addMedieval(163, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 137, 0x00000000, ['Barrel','Keg']                                             )
+        .addMedieval(437, ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 279, 0x00000000, ['Window','Wood','House']                                    )
+        .addMedieval(600, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 100, -1        , ['Wood','Planks','Vertical','Brown','House']                 )
+        .addMedieval(590, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 90 , -1        , ['Straw','Hay','Roof','House']                               )
+        .addMedieval(591, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 91 , -1        , ['Roof','Shingles','Scales','Red','House']                   )
+        .addMedieval(592, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 92 , -1        , ['Roof','Shingles','Scales','Green','House']                 )
+        .addMedieval(556, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 56 , -1        , ['Roof','Shingles','Scales','Brown','House']                 )
+        .addMedieval(593, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 93 , -1        , ['Gray','Dry wall','Stucco','Grey','House','Beige']          )
+        .addMedieval(440, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 417, 0x00000000, ['Scaffolding','Wood','Morphable','Fence','House','Design']  )
+        .addMedieval(330, ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, true , 201, 0x00000000, ['Shield','Warrior','Weapon']                                )
+        .addMedieval(275, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, true , 365, 0x00000000, ['Axe','Morphable','Warrior','Weapon']                       )
+        .addMedieval(329, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, true , 377, 0x00000000, ['Sword','Morphable','Warrior','Weapon']                     )
+        .addMedieval(273, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, true , 373, 0x00000000, ['Shield','Morphable','Blue','Green','Yellow','Red','Circle'])
+        .addMedieval(328, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, true , 405, 0x00000000, ['Shield','Morphable','Blue','Green','Yellow','Red']         )
+        .addMedieval(327, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, true , 369, 0x00000000, ['Banner','Morphable','Blue','Green','Yellow','Red','Flag']  ),
+      new ItemBrickPackage('pipes', 'Pipes', ['Orange'])
+        .addPipes(166, 140, ['Left']      )
+        .addPipes(167, 141, ['Horizontal'])
+        .addPipes(168, 142, ['Right']     )
+        .addPipes(169, 143, ['Up']        )
+        .addPipes(170, 144, ['Vertical']  )
+        .addPipes(171, 145, ['Down']      ),
+      new ItemBrickPackage('outer space', 'Outer Space', ['Ship','Aliens','UFO','Sci-Fi','Science Fiction','Void'])
+        .addOuterSpace(172 , ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 146, -1        , ['White','Metal','Plate']                                               )
+        .addOuterSpace(173 , ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 147, -1        , ['Blue','Metal','Plate']                                                )
+        .addOuterSpace(174 , ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 148, -1        , ['Green','Metal','Plate']                                               )
+        .addOuterSpace(175 , ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 149, -1        , ['Red','Magenta','Metal','Plate','Pink']                                )
+        .addOuterSpace(176 , ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 150, 0xffffab44, ['Sand','Mars','Orange']                                                )
+        .addOuterSpace(1029, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 214, -1        , ['Moon','Rock','Stone','Metal','Grey','Gray']                           )
+        .addOuterSpace(601 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 101, -1        , ['White','Grey','Gray','Metal']                                         )
+        .addOuterSpace(602 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 102, -1        , ['Blue','Metal']                                                        )
+        .addOuterSpace(603 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 103, -1        , ['Green','Metal']                                                       )
+        .addOuterSpace(604 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 104, -1        , ['Red','Metal']                                                         )
+        .addOuterSpace(332 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 203, 0x00000000, ['Sign','Panel','Computer','Green']                                     )
+        .addOuterSpace(333 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 204, 0x00000000, ['Red','Dot','Light','Lamp','Circle']                                   )
+        .addOuterSpace(334 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 205, 0x00000000, ['Blue','Dot','Light','Lamp','Circle']                                  )
+        .addOuterSpace(1567, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 352, 0x00000000, ['Green','Dot','Light','Lamp','Circle']                                 )
+        .addOuterSpace(1568, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 353, 0x00000000, ['Yellow','Dot','Light','Lamp','Circle']                                )
+        .addOuterSpace(1623, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 366, 0x00000000, ['Magenta','Pink','Purple','Dot','Light','Lamp','Circle','Orb','Button'])
+        .addOuterSpace(1624, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 367, 0x00000000, ['Cyan','Dot','Light','Lamp','Circle','Orb','Button']                   )
+        .addOuterSpace(335 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 206, 0x00000000, ['Computer','Control panel','System']                                   )
+        .addOuterSpace(428 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 270, 0x00000000, ['Star','Shiny','Red','Light','Night','Sky','Big']                      )
+        .addOuterSpace(429 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 271, 0x00000000, ['Star','Shiny','Blue','Light','Night','Sky','Medium']                  )
+        .addOuterSpace(430 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 272, 0x00000000, ['Star','Shiny','Yellow','Light','Night','Sky','Small']                 )
+        .addOuterSpace(331 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 202, 0x00000000, ['Rock','Hard','Gray','Grey','Boulder','Stone','Environment']           ),
+      new ItemBrickPackage('desert', 'Desert Pack', ['Environment'])
+        .addDesert(177, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 151, 0xffdd943b, ['Mars','Orange','Sandstone','Ground','Soil','Dirt','Rocky','Space'])
+        .addDesert(178, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 152, 0xffc68534, ['Mars','Orange','Sandstone','Ground','Soil','Dirt','Rocky','Space'])
+        .addDesert(179, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 153, 0xff916127, ['Mars','Orange','Sandstone','Ground','Soil','Dirt','Rocky','Space'])
+        .addDesert(180, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 154, -1        , ['Mars','Orange','Sandstone','Ground','Soil','Dirt','Rocky','Space'])
+        .addDesert(181, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 155, -1        , ['Mars','Orange','Sandstone','Ground','Soil','Dirt','Rocky','Space'])
+        .addDesert(336, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 207, 0x00000000, ['Rock','Orange','Sandstone','Boulder','Space']                     )
+        .addDesert(425, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 267, 0x00000000, ['Cactus','Nature','Plant','Western']                               )
+        .addDesert(426, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 268, 0x00000000, ['Bush','Cactus','Nature','Plant','Western']                        )
+        .addDesert(427, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 269, 0x00000000, ['Tree','Nature','Plant','Bush','Western','Bonsai']                 )
+        .addDesert(699, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, false, 193, -1        , ['Brown','Dirt','Soil','Sandstone']                                 )
+        .addDesert(700, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, false, 194, -1        , ['Brown','Dirt','Soil','Sandstone']                                 )
+        .addDesert(701, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, false, 195, -1        , ['Brown','Dirt','Soil','Sandstone']                                 ),
+      new ItemBrickPackage('neon', 'Neon Backgrounds', ['Solid'])
+        .addNeon(675, 169, ['Magenta','Pink','Red']     )
+        .addNeon(673, 167, ['Orange','Fire']            )
+        .addNeon(697, 191, ['Yellow']                   )
+        .addNeon(674, 168, ['Green','Jungle']           )
+        .addNeon(698, 192, ['Cyan']                     )
+        .addNeon(605, 105, ['Blue','Night','Sky','Dark']),
+      new ItemBrickPackage('monster', 'Monster', ['Creature'])
+        .addMonster(608, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, true , 108, 0xffa0a061, ['Green','Grass']                                )
+        .addMonster(609, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, true , 109, 0xff707044, ['Green','Dark','Grass']                         )
+        .addMonster(663, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, true , 157, -1        , ['Red','Pink','Scales']                          )
+        .addMonster(664, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 158, -1        , ['Red','Pink','Dark','Scales']                   )
+        .addMonster(665, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 159, -1        , ['Purple','Scales','Violet']                     )
+        .addMonster(666, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 160, -1        , ['Purple','Scales','Dark','Violet']              )
+        .addMonster(338, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 385, 0x00000000, ['Teeth','Tooth','Creepy','Morphable','Scary']   )
+        .addMonster(339, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 381, 0x00000000, ['Teeth','Tooth','Creepy','Morphable','Scary']   )
+        .addMonster(340, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 401, 0x00000000, ['Teeth','Tooth','Creepy','Morphable','Scary']   )
+        .addMonster(274, ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 146, 0x00000000, ['Eye','Purple','Circle','Creepy','Ball','Scary'])
+        .addMonster(341, ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 211, 0x00000000, ['Eye','Yellow','Circle','Creepy','Ball','Scary'])
+        .addMonster(342, ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 212, 0x00000000, ['Eye','Blue','Circle','Creepy','Ball','Scary']  ),
+      new ItemBrickPackage('fog', 'Fog', ['Mist','Transparent','Damp','Environment'])
+        .addFog(343, 213, ['Center','Middle']      )
+        .addFog(344, 214, ['Bottom','Side']        )
+        .addFog(345, 215, ['Top','Side']           )
+        .addFog(346, 216, ['Left','Side']          )
+        .addFog(347, 217, ['Right','Side']         )
+        .addFog(348, 218, ['Top Right','Corner']   )
+        .addFog(349, 219, ['Top Left','Corner']    )
+        .addFog(350, 220, ['Bottom Left','Corner'] )
+        .addFog(351, 221, ['Bottom Right','Corner']),
+      new ItemBrickPackage('halloween 2012', 'Halloween 2012', ['Holiday','Spooky'])
+        .addHalloween2012(352, ItemLayer.ABOVE     , true , 222, ['Head','Transfer','Lamp','Top']                                 )
+        .addHalloween2012(353, ItemLayer.DECORATION, false, 223, ['Antenna','Tesla coil','Middle']                                )
+        .addHalloween2012(354, ItemLayer.DECORATION, true , 224, ['Wire','Blue','Red','Electricity','Wiring','Power','Vertical']  )
+        .addHalloween2012(355, ItemLayer.DECORATION, true , 225, ['Wire','Blue','Red','Electricity','Wiring','Power','Horizontal'])
+        .addHalloween2012(356, ItemLayer.ABOVE     , false, 226, ['Lightning','Storm','Electricity','Environment']                ),
       new ItemBrickPackage('checker', 'Checker Blocks', ['Checkered'])
-        .addChecker(1091, 263, 0xffbfbfbf, ['White', 'Light'])
-        .addChecker( 186, 161, 0xff6b6b6b, ['Gray', 'Grey'])
-        .addChecker(1026, 213,         -1, ['Black', 'Dark', 'Gray', 'Grey'])
-        .addChecker( 189, 164, 0xffa8193f, ['Red', 'Magenta'])
-        .addChecker(1025, 212,         -1, ['Orange'])
-        .addChecker( 190, 165, 0xffabb333, ['Yellow', 'Lime'])
-        .addChecker( 191, 166, 0xff45a337, ['Green'])
-        .addChecker( 192, 167, 0xff3cb2ac, ['Cyan', 'Blue'])
-        .addChecker( 187, 162, 0xff2f5391, ['Blue'])
-        .addChecker( 188, 163, 0xff803d91, ['Purple', 'Magenta', 'Pink', 'Violet']),
-      // TODO: jungle
-      // TODO: christmas 2012
-      // TODO: lava
-      // TODO: swamp
-      // TODO: marble
-      // TODO: admin
-      // TODO: sign
-      // TODO: farm
-      // TODO: autumn 2014
-      // TODO: christmas 2014
+        .addChecker(1091, 263, 0xffbfbfbf, ['White','Light']                   )
+        .addChecker(186 , 161, 0xff6b6b6b, ['Gray','Grey']                     )
+        .addChecker(1026, 213, -1        , ['Black','Dark','Gray','Grey']      )
+        .addChecker(189 , 164, 0xffa8193f, ['Red','Magenta']                   )
+        .addChecker(1025, 212, -1        , ['Orange']                          )
+        .addChecker(190 , 165, 0xffabb333, ['Yellow','Lime']                   )
+        .addChecker(191 , 166, 0xff45a337, ['Green']                           )
+        .addChecker(192 , 167, 0xff3cb2ac, ['Cyan','Blue']                     )
+        .addChecker(187 , 162, 0xff2f5391, ['Blue']                            )
+        .addChecker(188 , 163, 0xff803d91, ['Purple','Magenta','Pink','Violet']),
+      new ItemBrickPackage('jungle', 'Jungle', [])
+        .addJungle(193, ItemLayer.DECORATION, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 168, 0x00000000, ['Idol','Face','Brick','No show','Statue','Totem','Ruins']              )
+        .addJungle(194, ItemLayer.DECORATION, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 169, 0x00000000, ['Platform','Old','Mossy','Ruins','Stone']                              )
+        .addJungle(195, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 170, 0xff99997a, ['Brick','Grey','Gray','Ruins','Stone']                                 )
+        .addJungle(196, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 171, 0xffac7061, ['Brick','Red','Pink','Ruins','Stone']                                  )
+        .addJungle(197, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 172, 0xff62889a, ['Brick','Blue','Ruins','Stone']                                        )
+        .addJungle(198, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 173, 0xff878441, ['Brick','Yellow','Olive','Ruins','Stone','Green']                      )
+        .addJungle(617, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 117, 0xff666651, ['Brick','Grey','Gray','Ruins','Stone']                                 )
+        .addJungle(618, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 118, 0xff774e44, ['Brick','Red','Pink','Ruins','Stone']                                  )
+        .addJungle(619, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 119, 0xff415a66, ['Brick','Blue','Ruins','Stone']                                        )
+        .addJungle(620, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 120, 0xff6b6834, ['Brick','Yellow','Olive','Ruins','Stone','Green']                      )
+        .addJungle(199, ItemLayer.DECORATION, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 176, 0x00000000, ['Pot','Jar','Clay','Ruins','Urn']                                      )
+        .addJungle(621, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 121, 0xff688403, ['Leaves','Green','Grass','Environment','Nature']                       )
+        .addJungle(622, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 122, 0xff587003, ['Leaves','Green','Grass','Environment','Nature']                       )
+        .addJungle(623, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 123, 0xff425402, ['Leaves','Green','Grass','Environment','Nature']                       )
+        .addJungle(357, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 227, 0x00000000, ['Bush','Plant','Nature','Environment']                                 )
+        .addJungle(358, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 228, 0x00000000, ['Rock','Pot','Jar','Basket','Ruins','Clay']                            )
+        .addJungle(359, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 229, 0x00000000, ['Idol','Statue','Gold','Trophy','Artifact','Artefact','Yellow','Ruins']),
+      new ItemBrickPackage('christmas 2012', 'Christmas 2012', ['Xmas','Holiday'])
+        .addXmas2012(624, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, 124, 0xffd88a19, ['Wrapping paper','Yellow','Stripes']               )
+        .addXmas2012(625, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, 125, 0xff54840d, ['Wrapping paper','Green','Stripes']                )
+        .addXmas2012(626, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, 126, 0xff1f39d8, ['Wrapping paper','Blue','Purple','Dots','Spots']   )
+        .addXmas2012(362, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 230, 0x00000000, ['Ribbon','Blue','Vertical']                        )
+        .addXmas2012(363, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 231, 0x00000000, ['Ribbon','Blue','Horizontal']                      )
+        .addXmas2012(364, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 232, 0x00000000, ['Ribbon','Blue','Cross','Middle']                  )
+        .addXmas2012(365, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 233, 0x00000000, ['Ribbon','Purple','Vertical','Magenta','Red']      )
+        .addXmas2012(366, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 234, 0x00000000, ['Ribbon','Purple','Horizontal','Magenta','Red']    )
+        .addXmas2012(367, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 235, 0x00000000, ['Ribbon','Purple','Cross','Middle','Magenta','Red']),
+      new ItemBrickPackage('lava', 'Lava', ['Hell','Hot','Environment','Heat'])
+        .addLava(202, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 177, 0xffffce3e, ['Yellow']              )
+        .addLava(203, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 178, 0xfffa970e, ['Orange']              )
+        .addLava(204, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 179, 0xffff5f00, ['Orange','Red']        )
+        .addLava(627, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 127, 0xffcca333, ['Yellow']              )
+        .addLava(628, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 128, 0xffc6750b, ['Orange']              )
+        .addLava(629, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 129, 0xffb73a00, ['Red','Orange']        )
+        .addLava(415, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 264, 0x00000000, ['Fire','Glow','Orange']),
+      new ItemBrickPackage('swamp', 'Swamp', [])
+        .addSwamp(370, ItemLayer.ABOVE     , ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 249, 0x00000000, ['Mud','Bubbles','Gas','Nature','Environment','Animated'])
+        .addSwamp(371, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, 236, 0x00000000, ['Grass','Thick','Nature','Plant','Environment']         )
+        .addSwamp(372, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, 237, 0x00000000, ['Wood','Nature','Log','Environment']                    )
+        .addSwamp(373, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, 238, 0x00000000, ['Danger','Sign','Caution','Radioactive','Nuclear']      )
+        .addSwamp(557, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, 57 , -1        , ['Mud','Quicksand','Environment','Soil']                 )
+        .addSwamp(630, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, 130, 0xff605a24, ['Green','Grass','Environment','Soil']                   ),
+      new ItemBrickPackage('marble', 'Sparta', ['Rome','Sparta','House','Greece','Roman'])
+        .addMarble(382, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, true , 239, 0x00000000, ['Column','Top','Ancient']                               )
+        .addMarble(383, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, true , 240, 0x00000000, ['Column','Middle','Ancient']                            )
+        .addMarble(384, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, true , 241, 0x00000000, ['Column','Bottom','Ancient']                            )
+        .addMarble(208, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 180, 0xffcdd1d3, ['Brick','White','Ancient','Grey','Gray']                )
+        .addMarble(209, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 181, 0xffc1dcb9, ['Brick','Green','Ancient']                              )
+        .addMarble(210, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 182, 0xffe5c6cf, ['Brick','Red','Pink','Ancient']                         )
+        .addMarble(211, ItemLayer.DECORATION, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 183, 0x00000000, ['Column','Platform','Top','Ancient','One-Way','One Way'])
+        .addMarble(638, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, false, 132, 0xff777b7d, ['Brick','White','Ancient','Grey','Gray']                )
+        .addMarble(639, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, false, 133, 0xff70816f, ['Brick','Green','Ancient']                              )
+        .addMarble(640, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, false, 134, 0xff83767b, ['Brick','Red','Pink','Ancient']                         ),
+      new ItemBrickPackage('Label', 'Admin Blocks', [])
+        .addLabel(),
+      new ItemBrickPackage('sign', 'Signs (+1)', [])
+        .addSign(),
+      new ItemBrickPackage('farm', 'Farm', [])
+        .addFarm(386 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 243, -1        , ['Wheat','Nature','Plant','Environment'])
+        .addFarm(387 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 244, -1        , ['Corn','Nature','Plant','Environment'] )
+        .addFarm(388 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, true , 245, -1        , ['Fence','Wood','Left']                 )
+        .addFarm(1531, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, true , 332, -1        , ['Fence','Wood','Center','Middle']      )
+        .addFarm(389 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, true , 246, -1        , ['Fence','Wood','Right']                )
+        .addFarm(212 , ItemLayer.DECORATION, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 184, 0xffccbe75, ['Hay','Yellow','Haybale','Straw']      ),
+      new ItemBrickPackage('autumn 2014', 'Autumn 2014', ['Nature','Environment','Season','Fall'])
+        .addAutumn2014(390, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 247, ['Leaves','Left','Orange']             )
+        .addAutumn2014(391, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 248, ['Leaves','Right','Orange']            )
+        .addAutumn2014(392, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 249, ['Grass','Left']                       )
+        .addAutumn2014(393, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 250, ['Grass','Middle']                     )
+        .addAutumn2014(394, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 251, ['Grass','Right']                      )
+        .addAutumn2014(395, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 252, ['Acorn','Nut','Brown']                )
+        .addAutumn2014(396, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 253, ['Pumpkin','Halloween','Food','Orange'])
+        .addAutumn2014(641, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 135, ['Leaves','Yellow']                    )
+        .addAutumn2014(642, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 136, ['Leaves','Orange']                    )
+        .addAutumn2014(643, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 137, ['Leaves','Red']                       ),
+      new ItemBrickPackage('christmas 2014', 'Christmas 2014', ['Xmas','Holiday'])
+        .addXmas2014(215, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 187, -1        , ['Snow','Environment']                                                    )
+        .addXmas2014(216, ItemLayer.DECORATION, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 188, -1        , ['Ice','Snow','Platform','Icicle','Top','Environment','One-Way','One Way'])
+        .addXmas2014(398, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 254, -1        , ['Snow','Fluff','Left','Snowdrift','Environment']                         )
+        .addXmas2014(399, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 255, -1        , ['Snow','Fluff','Middle','Snowdrift','Environment']                       )
+        .addXmas2014(400, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 256, -1        , ['Snow','Fluff','Right','Snowdrift','Environment']                        )
+        .addXmas2014(401, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 257, 0x00000000, ['Candy cane','Stripes']                                                  )
+        .addXmas2014(402, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, true , 258, 0x00000000, ['Tinsel','Nature','Garland','Top']                                       )
+        .addXmas2014(403, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, true , 259, 0x00000000, ['Stocking','Sock','Red','Holiday']                                       )
+        .addXmas2014(404, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, true , 260, 0x00000000, ['Bow','Ribbon','Red']                                                    ),
       new ItemBrickPackage('one-way', 'One-way Blocks', ['Platform'])
-        .addOneWay(ItemId.ONEWAY_WHITE , 566, ['One way', 'White', 'Light', 'Morphable', 'One-way'])
-        .addOneWay(ItemId.ONEWAY_GRAY  , 472, ['One way', 'Gray', 'Grey', 'Morphable', 'One-way'])
-        .addOneWay(ItemId.ONEWAY_BLACK , 488, ['One way', 'Black', 'Dark', 'Morphable', 'One-way'])
-        .addOneWay(ItemId.ONEWAY_RED   , 480, ['One way', 'Red', 'Morphable', 'One-way'])
-        .addOneWay(ItemId.ONEWAY_ORANGE, 272, ['One way', 'Orange', 'Morphable', 'One-way'])
-        .addOneWay(ItemId.ONEWAY_YELLOW, 268, ['One way', 'Yellow', 'Morphable', 'One-way'])
-        .addOneWay(ItemId.ONEWAY_GREEN , 484, ['One way', 'Green', 'Morphable', 'One-way'])
-        .addOneWay(ItemId.ONEWAY_CYAN  , 264, ['One way', 'Cyan', 'Blue', 'Morphable', 'One-way'])
-        .addOneWay(ItemId.ONEWAY_BLUE  , 476, ['One way', 'Blue', 'Dark', 'Morphable', 'One-way'])
-        .addOneWay(ItemId.ONEWAY_PINK  , 276, ['One way', 'Purple', 'Pink', 'Morphable', 'One-way']),
-      // TODO: valentines 2015
-      new ItemBrickPackage('magic', 'Magic Blocks' , ['Rare'])
-        .addMagic(1013, 'brickmagic' , 'the first magic block'  , 200, ['Green', 'Emerald', 'Peridot'])
-        .addMagic(1014, 'brickmagic2', 'the second magic block' , 201, ['Purple', 'Violet', 'Amethyst'])
-        .addMagic(1015, 'brickmagic3', 'the third magic block'  , 202, ['Yellow', 'Orange', 'Amber', 'Topaz'])
-        .addMagic(1016, 'brickmagic4', 'the fourth magic block' , 203, ['Blue', 'Sapphire'])
-        .addMagic(1017, 'brickmagic5', 'the fifth magic block'  , 204, ['Red', 'Ruby', 'Garnet'])
-        .addMagic(1132, 'brickmagic6', 'the sixth magic block'  , 293, ['Cyan', 'Aquamarine', 'Turquoise'])
-        .addMagic(1142, 'brickmagic7', 'the seventh magic block', 299, ['White', 'Opal', 'Pearl'])
-        .addMagic(1161, 'brickmagic8', 'the eighth magic block' , 316, ['Black', 'Onyx']),
-      // TODO: effect
-      // TODO: gold
-      // TODO: cave
-      // TODO: summer 2015
-      // TODO: environment
-      // TODO: domestic
-      // TODO: halloween 2015
-      // TODO: arctic
-      // TODO: new year 2015
-      // TODO: ice
-      // TODO: fairytale
-      // TODO: spring 2016
-      // TODO: summer 2016
-      // TODO: mine
-      // TODO: restaurant
-      // TODO: textile
-      // TODO: halloween 2016
-      // TODO: construction
-      // TODO: christmas 2016
+        .addOneWay(1092, 566, ['One way','White','Light','Morphable','One-way'])
+        .addOneWay(1052, 472, ['One way','Gray','Grey','Morphable','One-way']  )
+        .addOneWay(1056, 488, ['One way','Black','Dark','Morphable','One-way'] )
+        .addOneWay(1054, 480, ['One way','Red','Morphable','One-way']          )
+        .addOneWay(1002, 272, ['One way','Orange','Morphable','One-way']       )
+        .addOneWay(1003, 268, ['One way','Yellow','Morphable','One-way']       )
+        .addOneWay(1055, 484, ['One way','Green','Morphable','One-way']        )
+        .addOneWay(1001, 264, ['One way','Cyan','Blue','Morphable','One-way']  )
+        .addOneWay(1053, 476, ['One way','Blue','Dark','Morphable','One-way']  )
+        .addOneWay(1004, 276, ['One way','Purple','Pink','Morphable','One-way']),
+      new ItemBrickPackage('valentines 2015', 'Valentines 2015', ['Kiss','Holiday','Love','Heart','<3'])
+        .addValentines2015(405, 261, ['Red']          )
+        .addValentines2015(406, 262, ['Purple','Pink'])
+        .addValentines2015(407, 263, ['Pink']         ),
+      new ItemBrickPackage('magic', 'Magic Blocks', ['Rare'])
+        .addMagic(1013, 'brickmagic' , 'the first magic block'  , 200, ['Green','Emerald','Peridot']      )
+        .addMagic(1014, 'brickmagic2', 'the second magic block' , 201, ['Purple','Violet','Amethyst']     )
+        .addMagic(1015, 'brickmagic3', 'the third magic block'  , 202, ['Yellow','Orange','Amber','Topaz'])
+        .addMagic(1016, 'brickmagic4', 'the fourth magic block' , 203, ['Blue','Sapphire']                )
+        .addMagic(1017, 'brickmagic5', 'the fifth magic block'  , 204, ['Red','Ruby','Garnet']            )
+        .addMagic(1132, 'brickmagic6', 'the sixth magic block'  , 293, ['Cyan','Aquamarine','Turquoise']  )
+        .addMagic(1142, 'brickmagic7', 'the seventh magic block', 299, ['White','Opal','Pearl']           )
+        .addMagic(1161, 'brickmagic8', 'the eighth magic block' , 316, ['Black','Onyx']                   ),
+      new ItemBrickPackage('effect', 'Effect Blocks', ['Powers','Action','Physics'])
+        .addEffect(417 , ItemManager.effectBlocksBMD , 'brickeffectjump'      , 'jump effect: players jump twice or half as high'                               , 0  , ['Jump','Boost','High','Low']                               )
+        .addEffect(418 , ItemManager.effectBlocksBMD , 'brickeffectfly'       , 'fly effect: players can levitate by holding space'                             , 1  , ['Fly','Hover','Levitate']                                  )
+        .addEffect(419 , ItemManager.effectBlocksBMD , 'brickeffectspeed'     , 'speed effect: players move 50% faster or slower'                               , 2  , ['Speed','Fast','Run','Slow']                               )
+        .addEffect(453 , ItemManager.effectBlocksBMD , 'brickeffectlowgravity', 'low gravity effect: player gravity is reduced'                                 , 13 , ['Gravity','Moon','Low gravity','Space','Slow fall','Float'])
+        .addEffect(420 , ItemManager.effectBlocksBMD , 'brickeffectprotection', 'protection effect: players are safe from hazards and cured from curses/zombies', 3  , ['Invincible','Health','Plus','Immortal','Protection']      )
+        .addEffect(421 , ItemManager.effectBlocksBMD , 'brickeffectcurse'     , 'players die after X seconds, spreads on contact, maximum of 3 curses at a time', 4  , ['Curse','Skull','Skeleton','Timed','Death','Die','Kill']   )
+        .addEffect(461 , ItemManager.effectBlocksBMD , 'brickeffectmultijump' , 'multijump effect: players can jump X times'                                    , 15 , ['Double','Jump','Twice','Powers','Action','Physics']       )
+        .addEffect(1517, ItemManager.specialBlocksBMD, 'brickeffectgravity'   , 'gravity effect: player gravity is rotated'                                     , 657, ['Gravity','Reverse','Action','Physics']                    )
+        .addEffect(1584, ItemManager.effectBlocksBMD , 'brickeffectpoison'    , 'poison effect: players die after X seconds, does not spread'                   , 23 , ['Poison','Toxic','Action','Timed','Death','Die','Kill']    )
+        .addEffect(1618, ItemManager.effectBlocksBMD , 'brickeffectreset'     , 'reset effect: resets all non-timed effects'                                    , 26 , ['Reset','Action','Physics']                                ),
+      new ItemBrickPackage('gold', 'Gold Membership Blocks', ['Shiny','Yellow'])
+        .addGold(1065, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ''                                   , ItemTab.BLOCK     , true , 242, -1        )
+        .addGold(1066, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ''                                   , ItemTab.BLOCK     , true , 243, -1        )
+        .addGold(1067, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ''                                   , ItemTab.BLOCK     , true , 244, -1        )
+        .addGold(1068, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ''                                   , ItemTab.BLOCK     , true , 245, -1        )
+        .addGold(1069, ItemLayer.DECORATION, ItemManager.blocksBMD    , ''                                   , ItemTab.BLOCK     , true , 246, 0x00000000)
+        .addGold(709 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ''                                   , ItemTab.BACKGROUND, false, 198, -1        )
+        .addGold(710 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ''                                   , ItemTab.BACKGROUND, false, 199, -1        )
+        .addGold(711 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ''                                   , ItemTab.BACKGROUND, false, 200, -1        )
+        .addGold(201 , ItemLayer.DECORATION, ItemManager.doorBlocksBMD, 'allows white-border smilies to pass', ItemTab.ACTION    , false, 10 , -1        )
+        .addGold(200 , ItemLayer.DECORATION, ItemManager.doorBlocksBMD, 'allows gold-border smilies to pass' , ItemTab.ACTION    , false, 11 , -1        ),
+      new ItemBrickPackage('cave', 'Cave Backgrounds', ['Environment'])
+        .addCave(766, 259, ['Dark','Grey','Gray']            )
+        .addCave(767, 260, ['Dark','Grey','Gray']            )
+        .addCave(768, 261, ['Dark','Grey','Gray','Black']    )
+        .addCave(662, 156, ['Dark','Red']                    )
+        .addCave(660, 154, ['Dark','Orange','Brown']         )
+        .addCave(661, 155, ['Dark','Yellow','Olive']         )
+        .addCave(659, 153, ['Dark','Green']                  )
+        .addCave(656, 150, ['Dark','Cyan']                   )
+        .addCave(657, 151, ['Dark','Blue','Night','Sky']     )
+        .addCave(655, 149, ['Dark','Purple']                 )
+        .addCave(658, 152, ['Dark','Pink','Magenta','Violet']),
+      new ItemBrickPackage('summer 2015', 'Summer 2015', ['Season'])
+        .addSummer2015(441, ItemLayer.ABOVE     , true , 280, ['Life preserver','Life saver','Circle','Life buoy','Ring'])
+        .addSummer2015(442, ItemLayer.DECORATION, true , 281, ['Anchor','Metal','Ship','Water']                          )
+        .addSummer2015(443, ItemLayer.ABOVE     , false, 282, ['Rope','Left','Dock']                                     )
+        .addSummer2015(444, ItemLayer.ABOVE     , false, 283, ['Rope','Right','Dock']                                    )
+        .addSummer2015(445, ItemLayer.ABOVE     , false, 284, ['Tree','Nature','Palm','Plant','Environment']             ),
+      new ItemBrickPackage('environment', 'Environment', ['Nature'])
+        .addEnvironment(1030, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , true , 215, ['Wood','Tree','Brown']                )
+        .addEnvironment(1031, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , true , 216, ['Leaves','Grass','Green','Plant']     )
+        .addEnvironment(1032, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , true , 217, ['Bamboo','Wood','Yellow']             )
+        .addEnvironment(1033, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , true , 218, ['Obsidian','Rock','Ice','Grey','Gray'])
+        .addEnvironment(1034, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , true , 219, ['Fire','Lava','Hot']                  )
+        .addEnvironment(678 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, false, 172, ['Wood','Tree','Brown']                )
+        .addEnvironment(679 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, false, 173, ['Leaves','Grass','Green']             )
+        .addEnvironment(680 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, false, 174, ['Bamboo','Wood']                      )
+        .addEnvironment(681 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, false, 175, ['Obsidian','Rock','Ice','Grey','Gray'])
+        .addEnvironment(682 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, false, 176, ['Fire','Lava','Hot','Molten']         ),
+      new ItemBrickPackage('domestic', 'Domestic', ['House'])
+        .addDomestic(1035, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 220, -1        , ['Tile','Double','Floor','Parquet','Checkered']                        )
+        .addDomestic(1036, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 221, -1        , ['Wood','Brown','Floor']                                               )
+        .addDomestic(1037, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 222, -1        , ['Red','Carpet']                                                       )
+        .addDomestic(1038, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 223, -1        , ['Blue','Carpet']                                                      )
+        .addDomestic(1039, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 224, -1        , ['Green','Carpet','Grass']                                             )
+        .addDomestic(1040, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 225, -1        , ['White','Marble','Box','Square']                                      )
+        .addDomestic(683 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 177, -1        , ['Wallpaper','Yellow','Dark yellow','Brown']                           )
+        .addDomestic(684 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 178, -1        , ['Wallpaper','Brown','Dark brown']                                     )
+        .addDomestic(685 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 179, -1        , ['Wallpaper','Red','Dark red']                                         )
+        .addDomestic(686 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 180, -1        , ['Wallpaper','Blue','Dark blue']                                       )
+        .addDomestic(687 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 181, -1        , ['Wallpaper','Green','Dark green','Stripes']                           )
+        .addDomestic(446 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 285, 0x00000000, ['Light','Lampshade']                                                  )
+        .addDomestic(447 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 425, 0x00000000, ['Light','Bulb','Morphable']                                           )
+        .addDomestic(448 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, true , 429, 0x00000000, ['Pipe','Tube','Mario','Corner','Morphable']                           )
+        .addDomestic(1536, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 715, 0x00000000, ['Pipe','Tube','Mario','Morphable']                                    )
+        .addDomestic(1537, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 717, 0x00000000, ['Pipe','Tube','Mario','Corner','Morphable']                           )
+        .addDomestic(1539, ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, true , 335, 0x00000000, ['Pipe','Tube','Mario','Corner']                                       )
+        .addDomestic(449 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 433, 0x00000000, ['Picture','Painting','Frame','Morphable']                             )
+        .addDomestic(450 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 437, 0x00000000, ['Flower','Nature','Plant','Vase']                                     )
+        .addDomestic(451 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 441, 0x00000000, ['Television','TV','Morphable','Screen','CRT','Box','LCD','Electronic'])
+        .addDomestic(452 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 445, 0x00000000, ['Window','Morphable']                                                 )
+        .addDomestic(1041, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.BLOCK     , false, 449, -1        , ['Half block','Yellow','Morphable','Gold']                             )
+        .addDomestic(1042, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.BLOCK     , false, 453, -1        , ['Half block','Brown','Morphable','Wood']                              )
+        .addDomestic(1043, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.BLOCK     , false, 457, -1        , ['Half block','White','Morphable','Marble']                            )
+        .addDomestic(1538, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 720, 0x00000000, ['Picture','Painting','Frame','Morphable']                             ),
+      new ItemBrickPackage('halloween 2015', 'Halloween 2015', ['Holiday','House','Scary','Creepy'])
+        .addHalloween2015(1047, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 229, -1        , ['Mossy','Green','Brick','Old','Sewer','Ghost']                 )
+        .addHalloween2015(1048, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 230, -1        , ['Siding','Light gray']                                         )
+        .addHalloween2015(1049, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 231, -1        , ['Mossy','Gray','Green','Grey','Roof','Catacomb','Brick','Tomb'])
+        .addHalloween2015(1050, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 232, 0x00000000, ['Platform','Gray','Grey','Stone','Corner','One Way','One-Way'] )
+        .addHalloween2015(454 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 286, 0x00000000, ['Bush','Nature','Plant','Dead','Shrub','Environment']          )
+        .addHalloween2015(455 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 287, 0x00000000, ['Fence','Spikes']                                              )
+        .addHalloween2015(456 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 461, 0x00000000, ['Window','Morphable','Wood','Arched']                          )
+        .addHalloween2015(457 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 463, 0x00000000, ['Window','Morphable','Round','Circle','Wood']                  )
+        .addHalloween2015(458 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 465, 0x00000000, ['Light','Morphable','Lamp','Lantern']                          )
+        .addHalloween2015(694 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 188, -1        , ['Mossy','Green','Brick','Stone','Sewer']                       )
+        .addHalloween2015(695 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 189, -1        , ['Sliding','Gray','Grey','Slabs','Sewer']                       )
+        .addHalloween2015(696 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 190, -1        , ['Mossy','Gray','Grey','Roof','Catacomb','Tomb']                ),
+      new ItemBrickPackage('arctic', 'Arctic', ['Snow','Cold','Blue','Frozen','Freeze'])
+        .addArctic(1059, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , true , 237, ['Ice']   )
+        .addArctic(1060, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , true , 238, []        )
+        .addArctic(1061, ItemLayer.DECORATION, ItemManager.blocksBMD  , ItemTab.BLOCK     , true , 239, ['Left']  )
+        .addArctic(1062, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , true , 240, ['Middle'])
+        .addArctic(1063, ItemLayer.DECORATION, ItemManager.blocksBMD  , ItemTab.BLOCK     , true , 241, ['Right'] )
+        .addArctic(702 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, false, 196, []        )
+        .addArctic(703 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, false, 197, []        ),
+      new ItemBrickPackage('new year 2015', 'New Year 2015', ['Holiday'])
+        .addNewYear2015(462, ItemManager.decoBlocksBMD   , 289, ['Glass','Wine','Drink']         )
+        .addNewYear2015(463, ItemManager.decoBlocksBMD   , 290, ['Bottle','Champagne','Drink']   )
+        .addNewYear2015(464, ItemManager.specialBlocksBMD, 492, ['Balloon','Morphable']          )
+        .addNewYear2015(465, ItemManager.specialBlocksBMD, 497, ['String','Morphable','Streamer']),
+      new ItemBrickPackage('ice', 'Ice', [])
+        .addIce(),
+      new ItemBrickPackage('fairytale', 'Fairytale', ['Mythical','Fiction'])
+        .addFairytale(1070, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 247, -1        , ['Cobblestone','Pebbles']                                    )
+        .addFairytale(1071, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 248, -1        , ['Orange','Tree']                                            )
+        .addFairytale(1072, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 249, -1        , ['Green','Moss']                                             )
+        .addFairytale(1073, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 250, -1        , ['Blue','Cloud']                                             )
+        .addFairytale(1074, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 251, -1        , ['Red','Mushroom','Spotted']                                 )
+        .addFairytale(468 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, true , 291, 0x00000000, ['Green','Plant','Vine']                                     )
+        .addFairytale(469 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, true , 292, 0x00000000, ['Mushroom','Orange']                                        )
+        .addFairytale(1622, ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, true , 365, 0x00000000, ['Mushroom','Red','Spotted']                                 )
+        .addFairytale(470 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, true , 293, 0x00000000, ['Dew Drop','Transparent','Water']                           )
+        .addFairytale(704 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 201, -1        , ['Orange','Mist','Fog','Swirl']                              )
+        .addFairytale(705 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 202, -1        , ['Green','Mist','Fog','Swirl']                               )
+        .addFairytale(706 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 203, -1        , ['Blue','Mist','Fog','Swirl']                                )
+        .addFairytale(707 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 204, -1        , ['Pink','Mist','Fog','Swirl']                                )
+        .addFairytale(1075, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.BLOCK     , false, 522, -1        , ['Half block','Gemstone','Crystal','Orange']                 )
+        .addFairytale(1076, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.BLOCK     , false, 526, -1        , ['Half block','Gemstone','Crystal','Green']                  )
+        .addFairytale(1077, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.BLOCK     , false, 530, -1        , ['Half block','Gemstone','Crystal','Blue']                   )
+        .addFairytale(1078, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.BLOCK     , false, 534, -1        , ['Half block','Gemstone','Crystal','Pink']                   )
+        .addFairytale(471 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, true , 538, 0x00000000, ['Morphable','Green','Blue','Orange','Pink','Plant','Flower']),
+      new ItemBrickPackage('spring 2016', 'Spring 2016', [])
+        .addSpring2016(1081, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 253, -1        , ['Dirt','Brown','Soil','Nature']                                )
+        .addSpring2016(1082, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 254, -1        , ['Hedge','Green','Leaf','Nature','Plant']                       )
+        .addSpring2016(473 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 294, 0x00000000, ['Dirt','Brown','Soil','Slope','Left']                          )
+        .addSpring2016(474 , ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 295, 0x00000000, ['Dirt','Brown','Soil','Slope','Right']                         )
+        .addSpring2016(475 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 541, 0x00000000, ['Daisy','Flower','Plant','Nature','White','Blue','Pink']       )
+        .addSpring2016(476 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 544, 0x00000000, ['Tulip','Flower','Plant','Nature','Red','Yellow','Pink']       )
+        .addSpring2016(477 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 547, 0x00000000, ['Daffodil','Flower','Plant','Nature','Yellow','White','Orange']),
+      new ItemBrickPackage('summer 2016', 'Summer 2016', [])
+        .addSummer2016(1083, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 255, -1        , ['Thatched','Straw','Seasonal','Beige','Tan']                                                )
+        .addSummer2016(1084, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 256, -1        , ['Planks','Wood','Seasonal','Purple']                                                        )
+        .addSummer2016(1085, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 257, -1        , ['Planks','Wood','Seasonal','Yellow']                                                        )
+        .addSummer2016(1086, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 258, -1        , ['Planks','Wood','Seasonal','Teal']                                                          )
+        .addSummer2016(1087, ItemLayer.DECORATION, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 259, 0x00000000, ['Platform','Dock','Wood','Seasonal','One Way','One-Way','Brown']                            )
+        .addSummer2016(708 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 205, -1        , ['Thatched','Straw','Seasonal','Beige','Tan']                                                )
+        .addSummer2016(712 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 206, -1        , ['Planks','Wood','Seasonal','Purple']                                                        )
+        .addSummer2016(713 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 207, -1        , ['Planks','Wood','Seasonal','Yellow']                                                        )
+        .addSummer2016(714 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 208, -1        , ['Planks','Wood','Seasonal','Teal']                                                          )
+        .addSummer2016(481 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 550, 0x00000000, ['Flag','Seasonal','Red','Yellow','Green','Cyan','Blue','Purple']                            )
+        .addSummer2016(482 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 556, 0x00000000, ['Awning','Striped','Seasonal','White','Red','Yellow','Green','Cyan','Blue','Purple']        )
+        .addSummer2016(483 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 562, 0x00000000, ['Ice Cream','Food','Vanilla','Chocolate','Strawberry','Mint','Beige','Brown','Pink','Green']),
+      new ItemBrickPackage('mine', 'Mine', [])
+        .addMine(1093, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 264, -1        , ['Stone','Brown','Tan','Rock']                                      )
+        .addMine(720 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, true , 219, -1        , ['Stone','Brown','Tan','Rock','Dark']                               )
+        .addMine(495 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, true , 307, 0x00000000, ['Stalagmite','Stone','Brown','Tan','Rock']                         )
+        .addMine(496 , ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, true , 308, 0x00000000, ['Stalagtite','Stone','Brown','Tan','Rock']                         )
+        .addMine(497 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, true , 570, 0x00000000, ['Crystal','Gemstone','Red','Yellow','Green','Cyan','Blue','Purple'])
+        .addMine(498 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 576, 0x00000000, ['Torch','Fire','Animated']                                         ),
+      new ItemBrickPackage('restaurant', 'Restaurant', [])
+        .addRestaurant(487, ItemManager.decoBlocksBMD   , 302, ['Hamburger','Sandwich','Food']                                 )
+        .addRestaurant(488, ItemManager.decoBlocksBMD   , 303, ['Hot Dog','Sausage','Food']                                    )
+        .addRestaurant(489, ItemManager.decoBlocksBMD   , 304, ['Sub','Sandwich','Ham','Food']                                 )
+        .addRestaurant(490, ItemManager.decoBlocksBMD   , 305, ['Soda','Drink','Beverage','Red']                               )
+        .addRestaurant(491, ItemManager.decoBlocksBMD   , 306, ['French Fries','Chips','Food','Red','Yellow']                  )
+        .addRestaurant(492, ItemManager.specialBlocksBMD, 588, ['Glass','Cup','Drink','Water','Milk','Orange Juice','Beverage'])
+        .addRestaurant(493, ItemManager.specialBlocksBMD, 592, ['Plate','Chicken','Ham','Fish','Food']                         )
+        .addRestaurant(494, ItemManager.specialBlocksBMD, 597, ['Bowl','Salad','Spaghetti','Pasta','Ice Cream','Food']         ),
+      new ItemBrickPackage('textile', 'Textile', [])
+        .addTextile(721, 214, ['Cloth','Fabric','Pattern','White','Green','Plaid','Checker']      )
+        .addTextile(722, 215, ['Cloth','Fabric','Pattern','White','Blue','Chevron','Zigzag']      )
+        .addTextile(723, 216, ['Cloth','Fabric','Pattern','White','Pink','Polka Dots','Spots']    )
+        .addTextile(724, 217, ['Cloth','Fabric','Pattern','White','Yellow','Stripes','Horizontal'])
+        .addTextile(725, 218, ['Cloth','Fabric','Pattern','White','Red','Plaid','Diamond']        ),
+      new ItemBrickPackage('halloween 2016', 'Halloween 2016', [])
+        .addHalloween2016(499 , ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 601, 0x00000000, ['Branch','Root','Wood','Slope','Black','Rotatable','Morphable','Seasonal','Holiday'])
+        .addHalloween2016(1500, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 605, 0x00000000, ['Pumpkin','Jack o Lantern','Orange','Morphable','Seasonal','Holiday']               )
+        .addHalloween2016(1501, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, 309, 0x00000000, ['Grass','Plant','Purple','Seasonal','Holiday']                                      )
+        .addHalloween2016(1502, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 612, 0x00000000, ['Eyes','Orange','Purple','Green','Yellow','Morphable','Seasonal','Holiday']         )
+        .addHalloween2016(726 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, 220, -1        , ['Tree','Wood','Black','Seasonal','Holiday']                                         )
+        .addHalloween2016(727 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, 221, -1        , ['Leaves','Plant','Purple','Seasonal','Holiday']                                     ),
+      new ItemBrickPackage('construction', 'Construction', [])
+        .addConstruction(1096, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , 265, -1        , ['Plywood','Wood','Brown','Tan']                                     )
+        .addConstruction(1097, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , 266, -1        , ['Gravel','Stone','Gray','Grey']                                     )
+        .addConstruction(1098, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , 267, -1        , ['Cement','Stone','Beige']                                           )
+        .addConstruction(1099, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , 268, -1        , ['Beam','Metal','Red','Horizontal']                                  )
+        .addConstruction(1130, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , 291, -1        , ['Beam','Metal','Red','Horizontal']                                  )
+        .addConstruction(1128, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , 289, -1        , ['Beam','Metal','Red','Horizontal']                                  )
+        .addConstruction(1129, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , 290, -1        , ['Beam','Metal','Red','Vertical']                                    )
+        .addConstruction(1131, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , 292, -1        , ['Beam','Metal','Red','Vertical']                                    )
+        .addConstruction(1100, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , 269, -1        , ['Beam','Metal','Red','Vertical']                                    )
+        .addConstruction(1503, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 310, 0x00000000, ['Sawhorse','Orange','White','Caution','Sign','Stripes','Horizontal'])
+        .addConstruction(1504, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 311, 0x00000000, ['Cone','Orange','White']                                            )
+        .addConstruction(1505, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 312, 0x00000000, ['Sign','Orange','Caution','Warning']                                )
+        .addConstruction(1532, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 333, 0x00000000, ['Sign','Red','Caution','Warning','Stop']                            )
+        .addConstruction(1533, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, 334, 0x00000000, ['Red','Fire','Hydrant']                                             )
+        .addConstruction(728 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, 222, -1        , ['Plywood','Wood','Brown','Tan']                                     )
+        .addConstruction(729 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, 223, -1        , ['Gravel','Stone','Gray','Grey']                                     )
+        .addConstruction(730 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, 224, -1        , ['Cement','Stone','Beige']                                           )
+        .addConstruction(731 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, 225, -1        , ['Beam','Metal','Red','Horizontal']                                  )
+        .addConstruction(755 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, 249, -1        , ['Beam','Metal','Red','Horizontal']                                  )
+        .addConstruction(753 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, 247, -1        , ['Beam','Metal','Red','Horizontal']                                  )
+        .addConstruction(754 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, 248, -1        , ['Beam','Metal','Red','Vertical']                                    )
+        .addConstruction(756 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, 250, -1        , ['Beam','Metal','Red','Vertical']                                    )
+        .addConstruction(732 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, 226, -1        , ['Beam','Metal','Red','Vertical']                                    ),
+      new ItemBrickPackage('christmas 2016', 'Christmas 2016', [])
+        .addXmas2016(1101, ItemManager.blocksBMD       , ItemTab.BLOCK     , 270, -1        , ['Half block','Present','Gift','Holiday','Wrapping paper','Ribbon','Bow','Red']              )
+        .addXmas2016(1102, ItemManager.blocksBMD       , ItemTab.BLOCK     , 271, -1        , ['Half block','Present','Gift','Holiday','Wrapping paper','Ribbon','Bow','Green']            )
+        .addXmas2016(1103, ItemManager.blocksBMD       , ItemTab.BLOCK     , 272, -1        , ['Half block','Present','Gift','Holiday','Wrapping paper','Ribbon','Bow','White']            )
+        .addXmas2016(1104, ItemManager.blocksBMD       , ItemTab.BLOCK     , 273, -1        , ['Half block','Present','Gift','Holiday','Wrapping paper','Ribbon','Bow','Blue']             )
+        .addXmas2016(1105, ItemManager.blocksBMD       , ItemTab.BLOCK     , 274, -1        , ['Half block','Present','Gift','Holiday','Wrapping paper','Ribbon','Bow','Yellow']           )
+        .addXmas2016(1507, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 631, 0x00000000, ['Light','String','Wire','Bulb','Holiday','Morphable','Red','Green','Yellow','Blue','Purple'])
+        .addXmas2016(1506, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 636, 0x00000000, ['Light','String','Wire','Bulb','Holiday','Morphable','Red','Green','Yellow','Blue','Purple'])
+        .addXmas2016(1508, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, 313, 0x00000000, ['Bell','Bow','Holiday','Yellow','Gold']                                                     )
+        .addXmas2016(1509, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, 314, 0x00000000, ['Holly Berries','Holiday','Nature','Plant','Red','Green']                                   )
+        .addXmas2016(1510, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, 640, 0x00000000, ['Candle','Fire','Flame','Holiday','Animated','Red']                                         ),
       new ItemBrickPackage('tiles', 'Tiles', ['Tile'])
-        .addTile(1106, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 275, ['White'])
-        .addTile(1107, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 276, ['Gray', 'Grey'])
-        .addTile(1108, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 277, ['Black', 'Gray', 'Grey'])
-        .addTile(1109, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 278, ['Red'])
-        .addTile(1110, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 279, ['Orange'])
-        .addTile(1111, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 280, ['Yellow'])
-        .addTile(1112, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 281, ['Green'])
-        .addTile(1113, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 282, ['Cyan'])
-        .addTile(1114, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 283, ['Blue'])
-        .addTile(1115, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 284, ['Purple'])
-        .addTile( 733, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 227, ['White'])
-        .addTile( 734, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 228, ['Gray', 'Grey'])
-        .addTile( 735, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 229, ['Black', 'Gray', 'Grey'])
-        .addTile( 736, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 230, ['Red'])
-        .addTile( 737, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 231, ['Orange'])
-        .addTile( 738, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 232, ['Yellow'])
-        .addTile( 739, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 233, ['Green'])
-        .addTile( 740, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 234, ['Cyan'])
-        .addTile( 741, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 235, ['Blue'])
-        .addTile( 742, ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 236, ['Purple']),
-      // TODO: St. Patricks 2017
-      // TODO: half blocks
-      // TODO: winter 2018
-      // TODO: garden
-      // TODO: fireworks
-      // TODO: toxic
-      // TODO: special
-      // TODO: dungeon
-      // TODO: shadows
+        .addTiles(1106, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 275, ['White']              )
+        .addTiles(1107, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 276, ['Gray','Grey']        )
+        .addTiles(1108, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 277, ['Black','Gray','Grey'])
+        .addTiles(1109, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 278, ['Red']                )
+        .addTiles(1110, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 279, ['Orange']             )
+        .addTiles(1111, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 280, ['Yellow']             )
+        .addTiles(1112, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 281, ['Green']              )
+        .addTiles(1113, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 282, ['Cyan']               )
+        .addTiles(1114, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 283, ['Blue']               )
+        .addTiles(1115, ItemLayer.FOREGROUND, ItemManager.blocksBMD  , ItemTab.BLOCK     , 284, ['Purple']             )
+        .addTiles(733 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 227, ['White']              )
+        .addTiles(734 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 228, ['Gray','Grey']        )
+        .addTiles(735 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 229, ['Black','Gray','Grey'])
+        .addTiles(736 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 230, ['Red']                )
+        .addTiles(737 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 231, ['Orange']             )
+        .addTiles(738 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 232, ['Yellow']             )
+        .addTiles(739 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 233, ['Green']              )
+        .addTiles(740 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 234, ['Cyan']               )
+        .addTiles(741 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 235, ['Blue']               )
+        .addTiles(742 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD, ItemTab.BACKGROUND, 236, ['Purple']             ),
+      new ItemBrickPackage('St. Patricks 2017', 'St. Patricks 2017', [])
+        .addStPatricks2017(1511, ItemLayer.ABOVE     , 315, ['Shamrock','Clover','Green','Plant','Nature'])
+        .addStPatricks2017(1512, ItemLayer.ABOVE     , 316, ['Pot of Gold']                               )
+        .addStPatricks2017(1513, ItemLayer.DECORATION, 317, ['Horseshoe','Gold']                          )
+        .addStPatricks2017(1514, ItemLayer.DECORATION, 318, ['Rainbow','Left']                            )
+        .addStPatricks2017(1515, ItemLayer.DECORATION, 319, ['Rainbow','Right']                           ),
+      new ItemBrickPackage('Half Blocks', 'Half Blocks', [])
+        .addHalfBlocks(1116, 668, ['White']              )
+        .addHalfBlocks(1117, 672, ['Gray','Grey']        )
+        .addHalfBlocks(1118, 676, ['Black','Gray','Grey'])
+        .addHalfBlocks(1119, 680, ['Red']                )
+        .addHalfBlocks(1120, 684, ['Orange']             )
+        .addHalfBlocks(1121, 688, ['Yellow']             )
+        .addHalfBlocks(1122, 692, ['Green']              )
+        .addHalfBlocks(1123, 696, ['Cyan']               )
+        .addHalfBlocks(1124, 700, ['Blue']               )
+        .addHalfBlocks(1125, 704, ['Purple']             ),
+      new ItemBrickPackage('Winter 2018', 'Winter 2018', ['Winter'])
+        .addWinter2018(1136, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 295, -1        , ['Ice','Brick','Cyan','Snow']                                  )
+        .addWinter2018(1137, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 296, -1        , ['Snow','Pile','Grey','Gray','White']                          )
+        .addWinter2018(1138, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 297, -1        , ['Glacier','Snow','Ice','Cyan','Blue']                         )
+        .addWinter2018(1139, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 298, -1        , ['Slate','Grey','Gray']                                        )
+        .addWinter2018(1140, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.BLOCK     , true , 732, -1        , ['Half Block','Morphable','Snow','Pile','Grey','Gray','White'] )
+        .addWinter2018(1141, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.BLOCK     , true , 736, -1        , ['Half Block','Morphable','Glacier','Snow','Ice','Cyan','Blue'])
+        .addWinter2018(1543, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 339, 0x00000000, ['Snow','Pile','Small','White','Grey','Gray']                  )
+        .addWinter2018(1544, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 340, 0x00000000, ['Snow','Pile','Left','White','Grey','Gray']                   )
+        .addWinter2018(1545, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 341, 0x00000000, ['Snow','Pile','Right','White','Grey','Gray']                  )
+        .addWinter2018(1546, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, true , 342, 0x00000000, ['Snowman','Hat','Carrot','Scarf','White','Grey','Gray']       )
+        .addWinter2018(1547, ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, true , 343, 0x00000000, ['Tree','Wood','Snow','Brown','White']                         )
+        .addWinter2018(1548, ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 344, 0x00000000, ['Snowflake','Large','Sky']                                    )
+        .addWinter2018(1549, ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 345, 0x00000000, ['Snowflake','Small','Sky']                                    )
+        .addWinter2018(757 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, true , 251, -1        , ['Ice','Brick','Cyan','Snow']                                  )
+        .addWinter2018(758 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, true , 252, -1        , ['Snow','Pile','Grey','Gray','White']                          )
+        .addWinter2018(759 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, true , 253, -1        , ['Glacier','Snow','Ice','Cyan','Blue']                         )
+        .addWinter2018(760 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, true , 254, -1        , ['Slate','Grey','Gray','Winter']                               ),
+      new ItemBrickPackage('Garden', 'Garden', ['Garden'])
+        .addGarden(1143, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 300, -1        , ['Rock','Environment','Brown','Soil','Dark','Dirt']        )
+        .addGarden(1144, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 301, -1        , ['Grass','Moss','Environment','Brown','Soil','Dark','Dirt'])
+        .addGarden(1145, ItemLayer.FOREGROUND, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 302, -1        , ['Leaves','Green','Leaf','Nature','Plant']                 )
+        .addGarden(1560, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 346, 0x00000000, ['Grass','Green','Nature','Plant','Short']                 )
+        .addGarden(1561, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 347, 0x00000000, ['Fence','White','Short','Post']                           )
+        .addGarden(1562, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 348, 0x00000000, ['Fence','Brown','Lattice','Wood']                         )
+        .addGarden(1147, ItemLayer.DECORATION, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 304, 0x00000000, ['Flower','Green','Pink','Vine','Bean','Stalk']            )
+        .addGarden(1148, ItemLayer.DECORATION, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 305, 0x00000000, ['Leaf','Green','Bean','Stalk','Left']                     )
+        .addGarden(1149, ItemLayer.DECORATION, ItemManager.blocksBMD    , ItemTab.BLOCK     , true , 306, 0x00000000, ['Leaf','Green','Bean','Stalk','Right']                    )
+        .addGarden(1564, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 349, 0x00000000, ['Snail','Shell']                                          )
+        .addGarden(1565, ItemLayer.DECORATION, ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 350, 0x00000000, ['Butterfly']                                              )
+        .addGarden(761 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 255, -1        , ['Rock','Environment','Brown','Soil','Dark','Dirt','Rock'] )
+        .addGarden(762 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 256, -1        , ['Grass','Moss','Environment','Brown','Soil','Dark','Dirt'])
+        .addGarden(763 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD  , ItemTab.BACKGROUND, true , 257, -1        , ['Leaves','Green','Leaf','Nature','Plant']                 )
+        .addGarden(1566, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD, ItemTab.DECORATIVE, false, 351, 0x00000000, ['Wood','Frame','Window','Brown','Peep','Hole']            ),
+      new ItemBrickPackage('Fireworks', 'Fireworks', [])
+        .addFireworks(),
+      new ItemBrickPackage('Toxic', 'Toxic', ['Toxic'])
+        .addToxic(1586, ItemLayer.ABOVE     , ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 774, 0x00000000, ['Toxic','Waste','Green','Glow']                                                                                       )
+        .addToxic(1587, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, true , 788, 0x00000000, ['Toxic','Waste','Barrel','Leaking','Green','Glow','Morphable']                                                        )
+        .addToxic(1588, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 789, 0x00000000, ['Sewer','Pipe','Drain','Water','Blue','Lava','Orange','Mud','Swamp','Bog','Brown','Toxic','Waste','Green','Morphable'])
+        .addToxic(765 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 258, -1        , ['Toxic','Waste','Green']                                                                                              )
+        .addToxic(1589, ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, true , 356, 0x00000000, ['Rusty','Rusted','Broken','Metal','Ladder','Vertical','Industrial']                                                   )
+        .addToxic(1590, ItemLayer.ABOVE     , ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 357, 0x00000000, ['Rusty','Rusted','Metal','Guard','Rail']                                                                              )
+        .addToxic(1155, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.BLOCK     , true , 795, -1        , ['Rusty','Rusted','One way','One-way','Metal','Platform','Morphable']                                                  ),
+      new ItemBrickPackage('Special', 'Special', [])
+        .addSpecial(1591, ItemLayer.ABOVE     , 'blockgoldenegg' , true , false, 358)
+        .addSpecial(1603, ItemLayer.DECORATION, 'brickgreenspace', false, true , 363)
+        .addSpecial(1604, ItemLayer.DECORATION, 'brickgoldsack'  , false, true , 364),
+      new ItemBrickPackage('Dungeon', 'Dungeon', ['Halloween','Dungeon'])
+        .addDungeon(1156, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 311, -1        , ['Grey','Gray','Dungeon','Brick']                )
+        .addDungeon(1157, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 312, -1        , ['Green','Dungeon','Brick']                      )
+        .addDungeon(1158, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 313, -1        , ['Blue','Dungeon','Brick']                       )
+        .addDungeon(1159, ItemLayer.FOREGROUND, ItemManager.blocksBMD       , ItemTab.BLOCK     , true , 314, -1        , ['Purple','Dungeon','Brick']                     )
+        .addDungeon(769 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 262, -1        , ['Grey','Gray','Dungeon','Brick']                )
+        .addDungeon(770 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 263, -1        , ['Green','Dungeon','Brick']                      )
+        .addDungeon(771 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 264, -1        , ['Blue','Dungeon','Brick']                       )
+        .addDungeon(772 , ItemLayer.BACKGROUND, ItemManager.bgBlocksBMD     , ItemTab.BACKGROUND, false, 265, -1        , ['Purple','Dungeon','Brick']                     )
+        .addDungeon(1592, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, true , 799, 0x00000000, ['Dungeon','Brick','Pillar','Bottom','Morphable'])
+        .addDungeon(1593, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, true , 803, 0x00000000, ['Dungeon','Brick','Pillar','Middle','Morphable'])
+        .addDungeon(1160, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.BLOCK     , true , 807, 0x00000000, ['Dungeon','Brick','Pillar','Top','Morphable']   )
+        .addDungeon(1594, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, true , 811, 0x00000000, ['Dungeon','Brick','Arch','Left','Morphable']    )
+        .addDungeon(1595, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, true , 815, 0x00000000, ['Dungeon','Brick','Arch','Right','Morphable']   )
+        .addDungeon(1597, ItemLayer.DECORATION, ItemManager.specialBlocksBMD, ItemTab.DECORATIVE, false, 830, 0x00000000, ['Dungeon','Torch','Fire','Morphable']           )
+        .addDungeon(1598, ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, false, 359, 0x00000000, ['Dungeon','Bars','Window']                      )
+        .addDungeon(1599, ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, true , 360, 0x00000000, ['Dungeon','Chain','Ring']                       )
+        .addDungeon(1600, ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, true , 361, 0x00000000, ['Dungeon','Chain','Hook']                       )
+        .addDungeon(1601, ItemLayer.DECORATION, ItemManager.decoBlocksBMD   , ItemTab.DECORATIVE, true , 362, 0x00000000, ['Dungeon','Lock','Padlock']                     ),
+      new ItemBrickPackage('Shadows', 'Shadows', ['Shadows','Dark','Glow'])
+        .addShadows(1596, 1 , ['Morphable'])
+        .addShadows(1605, 5 , ['Morphable'])
+        .addShadows(1606, 9 , ['Morphable'])
+        .addShadows(1607, 11, ['Morphable'])
+        .addShadows(1608, 14, []           )
+        .addShadows(1609, 16, ['Morphable'])
+        .addShadows(1610, 20, ['Morphable'])
+        .addShadows(1611, 24, ['Morphable'])
+        .addShadows(1612, 26, ['Morphable'])
+        .addShadows(1613, 29, []           )
+        .addShadows(1614, 31, ['Morphable'])
+        .addShadows(1615, 35, ['Morphable'])
+        .addShadows(1616, 39, ['Morphable'])
+        .addShadows(1617, 43, ['Morphable'])
       // TODO: npc
     ];
 
