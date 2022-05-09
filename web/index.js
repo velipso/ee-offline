@@ -4309,6 +4309,118 @@ class ItemManager {
     for (let i = 0; i < ItemManager.bricks.length; i++)
       ItemManager.bricks[i] = ItemManager.bricks[i] || ItemManager.bricks[0].copy(i);
   }
+
+  static getRotateableSprite(type){
+    switch (type){
+      case ItemId.GLOWYLINE_BLUE_SLOPE:         return ItemManager.sprGlowylineBlueSlope;
+      case ItemId.GLOWY_LINE_BLUE_STRAIGHT:     return ItemManager.sprGlowylineBlueStraight;
+      case ItemId.GLOWY_LINE_GREEN_SLOPE:       return ItemManager.sprGlowylineGreenSlope;
+      case ItemId.GLOWY_LINE_GREEN_STRAIGHT:    return ItemManager.sprGlowylineGreenStraight;
+      case ItemId.GLOWY_LINE_YELLOW_SLOPE:      return ItemManager.sprGlowylineYellowSlope;
+      case ItemId.GLOWY_LINE_YELLOW_STRAIGHT:   return ItemManager.sprGlowylineYellowStraight;
+      case ItemId.GLOWY_LINE_RED_SLOPE:         return ItemManager.sprGlowylineRedSlope;
+      case ItemId.GLOWY_LINE_RED_STRAIGHT:      return ItemManager.sprGlowylineRedStraight;
+      case ItemId.ONEWAY_CYAN:                  return ItemManager.sprOnewayCyan;
+      case ItemId.ONEWAY_YELLOW:                return ItemManager.sprOnewayYellow;
+      case ItemId.ONEWAY_ORANGE:                return ItemManager.sprOnewayOrange;
+      case ItemId.ONEWAY_PINK:                  return ItemManager.sprOnewayPink;
+      case ItemId.ONEWAY_GRAY:                  return ItemManager.sprOnewayGray;
+      case ItemId.ONEWAY_BLUE:                  return ItemManager.sprOnewayBlue;
+      case ItemId.ONEWAY_RED:                   return ItemManager.sprOnewayRed;
+      case ItemId.ONEWAY_GREEN:                 return ItemManager.sprOnewayGreen;
+      case ItemId.ONEWAY_BLACK:                 return ItemManager.sprOnewayBlack;
+      case ItemId.ONEWAY_WHITE:                 return ItemManager.sprOnewayWhite;
+      case ItemId.MEDIEVAL_AXE:                 return ItemManager.sprMedievalAxe;
+      case ItemId.MEDIEVAL_BANNER:              return ItemManager.sprMedievalBanner;
+      case ItemId.MEDIEVAL_COATOFARMS:          return ItemManager.sprMedievalCoatOfArms;
+      case ItemId.MEDIEVAL_SHIELD:              return ItemManager.sprMedievalShield;
+      case ItemId.MEDIEVAL_SWORD:               return ItemManager.sprMedievalSword;
+      case ItemId.MEDIEVAL_TIMBER:              return ItemManager.sprMedievalTimber;
+      case ItemId.TOOTH_BIG:                    return ItemManager.sprToothBig;
+      case ItemId.TOOTH_SMALL:                  return ItemManager.sprToothSmall;
+      case ItemId.TOOTH_TRIPLE:                 return ItemManager.sprToothTriple;
+      case ItemId.DOJO_LIGHT_LEFT:              return ItemManager.sprDojoLightLeft;
+      case ItemId.DOJO_LIGHT_RIGHT:             return ItemManager.sprDojoLightRight;
+      case ItemId.DOJO_DARK_LEFT:               return ItemManager.sprDojoDarkLeft;
+      case ItemId.DOJO_DARK_RIGHT:              return ItemManager.sprDojoDarkRight;
+      case ItemId.DOMESTIC_LIGHT_BULB:          return ItemManager.sprDomesticLightBulb;
+      case ItemId.DOMESTIC_TAP:                 return ItemManager.sprDomesticTap;
+      case ItemId.DOMESTIC_PAINTING:            return ItemManager.sprDomesticPainting;
+      case ItemId.DOMESTIC_VASE:                return ItemManager.sprDomesticVase;
+      case ItemId.DOMESTIC_TV:                  return ItemManager.sprDomesticTV
+      case ItemId.DOMESTIC_WINDOW:              return ItemManager.sprDomesticWindow;
+      case ItemId.HALFBLOCK_DOMESTIC_BROWN:     return ItemManager.sprHalfBlockDomesticBrown;
+      case ItemId.HALFBLOCK_DOMESTIC_WHITE:     return ItemManager.sprHalfBlockDomesticWhite;
+      case ItemId.HALFBLOCK_DOMESTIC_YELLOW:    return ItemManager.sprHalfBlockDomesticYellow;
+      case ItemId.HALLOWEEN_2015_WINDOW_RECT:   return ItemManager.sprHalloween2015WindowRect;
+      case ItemId.HALLOWEEN_2015_WINDOW_CIRCLE: return ItemManager.sprHalloween2015WindowCircle;
+      case ItemId.HALLOWEEN_2015_LAMP:          return ItemManager.sprHalloween2015Lamp;
+      case ItemId.NEW_YEAR_2015_BALLOON:        return ItemManager.sprNewYear2015Balloon;
+      case ItemId.NEW_YEAR_2015_STREAMER:       return ItemManager.sprNewYear2015Streamer;
+      case ItemId.HALFBLOCK_FAIRYTALE_ORANGE:   return ItemManager.sprHalfBlockFairytaleRed;
+      case ItemId.HALFBLOCK_FAIRYTALE_GREEN:    return ItemManager.sprHalfBlockFairytaleGreen;
+      case ItemId.HALFBLOCK_FAIRYTALE_BLUE:     return ItemManager.sprHalfBlockFairytaleBlue;
+      case ItemId.HALFBLOCK_FAIRYTALE_PINK:     return ItemManager.sprHalfBlockFairytalePink;
+      case ItemId.FAIRYTALE_FLOWERS:            return ItemManager.sprFairytaleFlowers;
+      case ItemId.SPRING_TULIP:                 return ItemManager.sprSpringTulip;
+      case ItemId.SPRING_DAISY:                 return ItemManager.sprSpringDaisy;
+      case ItemId.SPRING_DAFFODIL:              return ItemManager.sprSpringDaffodil;
+      case ItemId.SUMMER_FLAG:                  return ItemManager.sprSummerFlag;
+      case ItemId.SUMMER_AWNING:                return ItemManager.sprSummerAwning;
+      case ItemId.SUMMER_ICECREAM:              return ItemManager.sprSummerIceCream;
+      case ItemId.CAVE_TORCH:                   return ItemManager.sprCaveTorch;
+      case ItemId.CAVE_CRYSTAL:                 return ItemManager.sprCaveCrystal;
+      case ItemId.RESTAURANT_CUP:               return ItemManager.sprRestaurantCup;
+      case ItemId.RESTAURANT_PLATE:             return ItemManager.sprRestaurantPlate;
+      case ItemId.RESTAURANT_BOWL:              return ItemManager.sprRestaurantBowl;
+      case ItemId.HALLOWEEN_2016_ROTATABLE:     return ItemManager.sprHalloweenRot;
+      case ItemId.HALLOWEEN_2016_EYES:          return ItemManager.sprHalloweenEyes;
+      case ItemId.HALLOWEEN_2016_PUMPKIN:       return ItemManager.sprHalloweenPumpkin;
+      case ItemId.CHRISTMAS_2016_LIGHTS_DOWN:   return ItemManager.sprChristmas2016LightsDown;
+      case ItemId.CHRISTMAS_2016_LIGHTS_UP:     return ItemManager.sprChristmas2016LightsUp;
+      case ItemId.HALFBLOCK_WHITE:              return ItemManager.sprHalfBlockWhite;
+      case ItemId.HALFBLOCK_GRAY:               return ItemManager.sprHalfBlockGray;
+      case ItemId.HALFBLOCK_BLACK:              return ItemManager.sprHalfBlockBlack;
+      case ItemId.HALFBLOCK_RED:                return ItemManager.sprHalfBlockRed;
+      case ItemId.HALFBLOCK_ORANGE:             return ItemManager.sprHalfBlockOrange;
+      case ItemId.HALFBLOCK_YELLOW:             return ItemManager.sprHalfBlockYellow;
+      case ItemId.HALFBLOCK_GREEN:              return ItemManager.sprHalfBlockGreen;
+      case ItemId.HALFBLOCK_CYAN:               return ItemManager.sprHalfBlockCyan;
+      case ItemId.HALFBLOCK_BLUE:               return ItemManager.sprHalfBlockBlue;
+      case ItemId.HALFBLOCK_PURPLE:             return ItemManager.sprHalfBlockPurple;
+      case ItemId.INDUSTRIAL_PIPE_THIN:         return ItemManager.sprIndustrialPipeThin;
+      case ItemId.INDUSTRIAL_PIPE_THICK:        return ItemManager.sprIndustrialPipeThick;
+      case ItemId.INDUSTRIAL_TABLE:             return ItemManager.sprIndustrialTable;
+      case ItemId.DOMESTIC_PIPE_STRAIGHT:       return ItemManager.sprDomesticPipeStraight;
+      case ItemId.DOMESTIC_PIPE_T:              return ItemManager.sprDomesticPipeT;
+      case ItemId.DOMESTIC_FRAME_BORDER:        return ItemManager.sprDomesticFrameBorder;
+      case ItemId.HALFBLOCK_WINTER2018_SNOW:    return ItemManager.sprHalfBlockWinter2018Snow;
+      case ItemId.HALFBLOCK_WINTER2018_GLACIER: return ItemManager.sprHalfBlockWinter2018Glacier;
+      case ItemId.FIREWORKS:                    return ItemManager.sprFireworks;
+      case ItemId.TOXIC_WASTE_BARREL:           return ItemManager.sprToxicWasteBarrel;
+      case ItemId.SEWER_PIPE:                   return ItemManager.sprSewerPipe;
+      case ItemId.METAL_PLATFORM:               return ItemManager.sprMetalPlatform;
+      case ItemId.DUNGEON_PILLAR_BOTTOM:        return ItemManager.sprDungeonPillarBottom;
+      case ItemId.DUNGEON_PILLAR_MIDDLE:        return ItemManager.sprDungeonPillarMiddle;
+      case ItemId.DUNGEON_PILLAR_TOP:           return ItemManager.sprDungeonPillarTop;
+      case ItemId.DUNGEON_ARCH_LEFT:            return ItemManager.sprDungeonArchLeft;
+      case ItemId.DUNGEON_ARCH_RIGHT:           return ItemManager.sprDungeonArchRight;
+      case ItemId.SHADOW_A:                     return ItemManager.sprShadowA;
+      case ItemId.SHADOW_B:                     return ItemManager.sprShadowB;
+      case ItemId.SHADOW_C:                     return ItemManager.sprShadowC;
+      case ItemId.SHADOW_D:                     return ItemManager.sprShadowD;
+      case ItemId.SHADOW_F:                     return ItemManager.sprShadowF;
+      case ItemId.SHADOW_G:                     return ItemManager.sprShadowG;
+      case ItemId.SHADOW_H:                     return ItemManager.sprShadowH;
+      case ItemId.SHADOW_I:                     return ItemManager.sprShadowI;
+      case ItemId.SHADOW_K:                     return ItemManager.sprShadowK;
+      case ItemId.SHADOW_L:                     return ItemManager.sprShadowL;
+      case ItemId.SHADOW_M:                     return ItemManager.sprShadowM;
+      case ItemId.SHADOW_N:                     return ItemManager.sprShadowN;
+      default:
+        return null;
+    }
+  }
 }
 
 //
@@ -4807,7 +4919,7 @@ class BlSprite extends BlObject {
   drawPoint(target, pointX, pointY, frame){
     this.frame = frame || 0;
     if (this.shadow){
-      throw new Error('TODO: Draw sprite shadow');
+      /* TODO: draw sprite shadow
       target.copyPixelsRotated(
         this.sprImageShadow,
         this.shadowRect.x,
@@ -4820,6 +4932,7 @@ class BlSprite extends BlObject {
         this.height + 2,
         this.rotatedDeg
       );
+      */
     }
     else{
       target.copyPixelsRotated(
@@ -5061,15 +5174,14 @@ class World extends BlObject {
               this.spawnPoints[rotation] = [];
             this.spawnPoints[rotation].push([nx, ny]);
             break;
-          case ItemId.LABEL: {
+          case ItemId.LABEL:
             this.lookup.setLabel(nx, ny, text, text_color, wrapLength);
             // TODO: var t:BlText = new BlText(Global.default_label_size,wrapLength,uint('0x'+text_color.substr(1,text_color.length)),'left','system',true);
             // TODO: t.text = text;
             // TODO: t.x = nx * size;
             // TODO: t.y = ny * size;
             // TODO: labelcontainer.add(t);
-            // TODO: fallthrough?!?!
-          }
+            break;
 
           case ItemId.TEXT_SIGN:
             this.lookup.setTextSign(nx, ny, {text: sign_text, type: sign_type});
@@ -5595,15 +5707,15 @@ class World extends BlObject {
         if (type === 0)
           continue;
 
-        /*
         // render rotateables, note spikes and portals are not in this list currently
-        if (ItemId.isBlockRotateable(type) && !ItemId.isNonRotatableHalfBlock(type) && type != ItemId.HALLOWEEN_2016_EYES && type != ItemId.FIREWORKS && type != ItemId.DUNGEON_TORCH) {
-          var rot:int = lookup.getInt(cx, cy);
-          var rotSprite:BlSprite = ItemManager.getRotateableSprite(type);
-          rotSprite.drawPoint(target, point, rot);
+        if (ItemId.isBlockRotateable(type) && !ItemId.isNonRotatableHalfBlock(type) &&
+          type !== ItemId.HALLOWEEN_2016_EYES && type !== ItemId.FIREWORKS &&
+          type !== ItemId.DUNGEON_TORCH){
+          const rot = this.lookup.getInt(cx, cy);
+          const rotSprite = ItemManager.getRotateableSprite(type);
+          rotSprite.drawPoint(target, point.x, point.y, rot);
           continue;
         }
-        */
 
         switch (type){
           case ItemId.CHECKPOINT:
@@ -5990,13 +6102,14 @@ class World extends BlObject {
             ItemManager.sprSpikesBlue.drawPoint(target, point, lookup.getInt(cx, cy));
             continue;
           }
-
-          case ItemId.PORTAL:{
-            var p:Portal = lookup.getPortal(cx,cy)
-            ItemManager.sprPortal.drawPoint(target, point, p.rotation * 15 + (((offset/1.5 >> 0)+cx+cy)%15) + 1)// +1 because the first frame is just cy 'dead portal' used by the UI
+          */
+          case ItemId.PORTAL: {
+            const p = this.lookup.getPortal(cx, cy);
+            ItemManager.sprPortal.drawPoint(target, point.x, point.y,
+              p.rotation * 15 + (((this.aniOffset / 1.5 >> 0) + cx + cy) % 15) + 1);
             continue;
           }
-
+          /*
           case ItemId.PORTAL_INVISIBLE: {
             if ((Bl.data.canEdit && player.isFlying) || full) {
               var pInv:Portal = lookup.getPortal(cx,cy);
@@ -6117,11 +6230,10 @@ class World extends BlObject {
             }
             continue;
           }
-
-          case ItemId.LABEL: {
+          */
+          case ItemId.LABEL:
             continue;
-          }
-
+          /*
           case ItemId.ICE: {
             if (lookup.getNumber(cx, cy) != 0) {
               lookup.setNumber(cx, cy, lookup.getNumber(cx, cy) - .25);
@@ -6244,7 +6356,6 @@ class World extends BlObject {
     const {startX, startY, endX, endY} = this.getDrawBoundary(target, ox, oy, full);
     const point = {x: 0, y: 0};
 
-    // Seperate loop to perserve shadows
     for (let cy = startY; cy < endY; cy++){
       const row = this.above[cy]
       point.y = (cy << 4) + oy;
@@ -6252,6 +6363,8 @@ class World extends BlObject {
         const type = row[cx];
         point.x = (cx << 4) + ox;
         switch (type){
+          case 0:
+            break;
           case 100:
             ItemManager.sprCoin.drawPoint(target, point.x, point.y,
               ((this.aniOffset >> 0) + cx + cy) % 12);
@@ -6260,83 +6373,68 @@ class World extends BlObject {
             ItemManager.sprBonusCoin.drawPoint(target, point.x, point.y,
               ((this.aniOffset >> 0) + cx + cy) % 12);
             break;
+          case ItemId.WAVE:
+            ItemManager.sprWave.drawPoint(target, point.x, point.y,
+              ((this.aniOffset / 5 >> 0)) % 8);
+            break;
+          case ItemId.MUD_BUBBLE:
+            if (this.lookup.getNumber(cx, cy) != 0){
+              this.lookup.setNumber(cx, cy, this.lookup.getNumber(cx, cy) + 0.25);
+              if (this.lookup.getNumber(cx, cy) >= 10)
+                this.lookup.setNumber(cx, cy, 0);
+            }
+            else if (Math.random() < 0.005)
+              this.lookup.setNumber(cx, cy, 1 + Math.round(Math.random()) * 10);
+            ItemManager.sprMudBubble.drawPoint(target, point.x, point.y,
+              (this.lookup.getNumber(cx, cy) >> 0) % 19);
+            break;
+          case ItemId.FIRE:
+            ItemManager.sprFireHazard.drawPoint(target, point.x, point.y,
+              ((this.aniOffset / 1.2 >> 0) + (this.width - cx) + cy) % 12);
+            break;
+          case ItemId.WATER:
+            if (this.lookup.getInt(cx, cy) != 0){
+              this.lookup.setInt(cx, cy, this.lookup.getInt(cx, cy) + 1);
+              if (this.lookup.getInt(cx, cy) >= 25)
+                this.lookup.setInt(cx, cy, 0);
+            }
+            else if (Math.random() < 0.001)
+              this.lookup.setInt(cx, cy, Math.floor(Math.random() * 4) * 25 + 5);
+            ItemManager.sprWater.drawPoint(target, point.x, point.y,
+              Math.floor(this.lookup.getNumber(cx, cy) / 5));
+            break;
+          case ItemId.TOXIC_WASTE:
+            if (this.lookup.getInt(cx, cy) != 0) {
+              this.lookup.setInt(cx, cy, this.lookup.getInt(cx, cy) + 1);
+              if (this.lookup.getInt(cx, cy) >= 25)
+                this.lookup.setInt(cx, cy, 0);
+            }
+            else if (Math.random() < 0.005)
+              this.lookup.setInt(cx, cy, Math.floor(Math.random() * 4) * 25 + 5);
+            ItemManager.sprToxic.drawPoint(target, point.x, point.y,
+              Math.floor(this.lookup.getNumber(cx, cy) / 5));
+            break;
+          case ItemId.TOXIC_WASTE_SURFACE:
+            if (this.lookup.getNumber(cx, cy) != 0){
+              this.lookup.setNumber(cx, cy, this.lookup.getNumber(cx, cy) + 0.25);
+              if (this.lookup.getNumber(cx, cy) >= 10)
+                this.lookup.setNumber(cx, cy, 0);
+            }
+            else if (Math.random() < 0.01)
+              this.lookup.setNumber(cx, cy, 1 + Math.round(Math.random()) * 10);
+            ItemManager.sprToxicBubble.drawPoint(target, point.x, point.y,
+              (this.lookup.getNumber(cx, cy) >> 0) % 19);
+            break;
+          case ItemId.TEXT_SIGN:
+            ItemManager.sprSign.drawPoint(target, point.x, point.y,
+              this.lookup.getTextSign(cx, cy).type +
+                (ItemId.isSolid(this.getTile(0, cx, cy + 1)) ? 0 : 4))
+            break;
+          case ItemId.LAVA:
+            ItemManager.sprLava.drawPoint(target, point.x, point.y,
+              ((this.aniOffset / 5 >> 0)) % 8);
+            break;
           /*
-          case ItemId.WAVE:{
-            ItemManager.sprWave.drawPoint(target, point, ((offset/5 >> 0))%8);
-            break;
-          }
-          case ItemId.MUD_BUBBLE:{
-            if (lookup.getNumber(cx, cy) != 0) {
-              lookup.setNumber(cx, cy, lookup.getNumber(cx, cy) + .25);
-              if (lookup.getNumber(cx,cy ) % 10 == 0) {
-                lookup.setNumber(cx, cy, 0);
-              }
-            } else {
-              if (Math.random()<0.005) {
-                lookup.setNumber(cx, cy, 1 + Math.round(Math.random()) * 10);
-              }
-            }
-            ItemManager.sprMudBubble.drawPoint(target, point, (lookup.getNumber(cx, cy) >> 0) % 19);
-            break;
-          }
-          case ItemId.FIRE:{
-            ItemManager.sprFireHazard.drawPoint(target, point, ((offset / 1.2 >> 0) + (width - cx) + cy) % 12);
-            break;
-          }
-
-          case ItemId.WATER:{
-            if (lookup.getInt(cx, cy) != 0) {
-              lookup.setInt(cx, cy, lookup.getInt(cx, cy) + 1);
-              if (lookup.getInt(cx, cy) % 25 == 0) {
-                lookup.setInt(cx, cy, 0);
-              }
-            } else {
-              if (Math.random() < 0.001) {
-                lookup.setInt(cx, cy, int(Math.random() * 4) * 25 + 5);
-              }
-            }
-            ItemManager.sprWater.drawPoint(target, point, int(lookup.getNumber(cx, cy) / 5))
-            break;
-          }
-          case ItemId.TOXIC_WASTE: {
-            if (lookup.getInt(cx, cy) != 0) {
-              lookup.setInt(cx, cy, lookup.getInt(cx, cy) + 1);
-              if (lookup.getInt(cx, cy) % 25 == 0) {
-                lookup.setInt(cx, cy, 0);
-              }
-            } else {
-              if (Math.random() < 0.005) {
-                lookup.setInt(cx, cy, int(Math.random() * 4) * 25 + 5);
-              }
-            }
-            ItemManager.sprToxic.drawPoint(target, point, int(lookup.getNumber(cx, cy) / 5))
-            break;
-          }
-          case ItemId.TOXIC_WASTE_SURFACE: {
-            if (lookup.getNumber(cx, cy) != 0) {
-              lookup.setNumber(cx, cy, lookup.getNumber(cx, cy) + .25);
-              if (lookup.getNumber(cx,cy ) % 10 == 0) {
-                lookup.setNumber(cx, cy, 0);
-              }
-            } else {
-              if (Math.random()<0.01) {
-                lookup.setNumber(cx, cy, 1 + Math.round(Math.random()) * 10);
-              }
-            }
-            ItemManager.sprToxicBubble.drawPoint(target, point, (lookup.getNumber(cx, cy) >> 0) % 19);
-            break;
-          }
-          case ItemId.TEXT_SIGN:{
-            var isFloating:Boolean = !ItemId.isSolid(getTile(0, cx, cy + 1));
-            ItemManager.sprSign.drawPoint(target, point, lookup.getTextSign(cx, cy).type + (isFloating? 4 : 0))
-            break;
-          }
-
-          case ItemId.LAVA:{
-            ItemManager.sprLava.drawPoint(target, point, ((offset/5 >> 0))%8);
-            break;
-          }
-
           case ItemId.GOLDEN_EASTER_EGG: {
             infront.push({
               d:ItemManager.blocksGoldenEasterEggBMD,
@@ -6345,9 +6443,11 @@ class World extends BlObject {
             });
             break;
           }
+          */
 
-          default:{
-            if (ItemId.isNPC(type)) {
+          default:
+            if (ItemId.isNPC(type)){
+              /* TODO: NPC
               var npclookup:Npc = lookup.getNpc(cx, cy);
               var npc:ItemNpc = ItemManager.getNpcById(type);
               if (player.currentNpc != null && player.currentNpc.equals(npclookup) && player.currentNpc.isTalking) {
@@ -6359,16 +6459,18 @@ class World extends BlObject {
                 npc.drawTo(target, point, ((offset - offsetNPC) / npc.rate >> 0) % npc.frames);
                 drewAnimatedNPC = true;
               } else npc.drawTo(target, point, 0);
-            } else if (ItemId.isBlockRotateable(type) && !ItemId.isNonRotatableHalfBlock(type) && type != ItemId.HALLOWEEN_2016_EYES && type != ItemId.FIREWORKS && type != ItemId.DUNGEON_TORCH) {
-              var rot:int = lookup.getInt(cx, cy);
-              var rotSprite:BlSprite = ItemManager.getRotateableSprite(type);
-              rotSprite.drawPoint(target, point, rot);
-            } else {
-              target.copyPixels(ItemManager.bmdBricks[type],rect18x18,point);
+              */
             }
+            else if (ItemId.isBlockRotateable(type) && !ItemId.isNonRotatableHalfBlock(type) &&
+              type != ItemId.HALLOWEEN_2016_EYES && type != ItemId.FIREWORKS &&
+              type != ItemId.DUNGEON_TORCH){
+              const rot = this.lookup.getInt(cx, cy);
+              const rotSprite = ItemManager.getRotateableSprite(type);
+              rotSprite.drawPoint(target, point.x, point.y, rot);
+            }
+            else
+              ItemManager.bricks[type].draw(target, point.x, point.y);
             break;
-          }
-          */
         }
 
         /*
@@ -7388,7 +7490,7 @@ class Player extends SynchronizedSprite {
       if (this.spaceJustDown){
         this.lastJump = -this.state.now();
         inJump = true;
-        mod = -1
+        mod = -1;
       }
 
       if (this.spaceDown /*TODO: || !this.isMe && !this.isControlled && hasLevitation*/){
@@ -7733,7 +7835,7 @@ class PlayState extends BlContainer {
   }
 
   now(){
-    return this.tickCount * Config.physics_ms_per_tick;
+    return (this.tickCount + 1000) * Config.physics_ms_per_tick;
   }
 
   tick(input){
@@ -7816,6 +7918,10 @@ class Screen {
   fullScreen = true;
   zoom = 1;
   boundary = {x: 0, y: 0, w: Config.bw, h: Config.bh};
+  resolution = 'max';
+  lastResize;
+  frameCount = 0;
+  lastFPS = 0;
 
   constructor(cnv, ctx, dpr){
     this.cnv = cnv;
@@ -7866,6 +7972,15 @@ class Screen {
 
   endDraw(){
     this.ctx.restore();
+    this.frameCount++;
+    const now = Date.now();
+    if (this.lastFPS + 1000 <= now){
+      const fps = document.getElementById('fps');
+      if (fps)
+        fps.innerText = `${this.frameCount} FPS`;
+      this.lastFPS = now;
+      this.frameCount = 0;
+    }
   }
 
   copyPixels(bmd, srcX, srcY, srcW, srcH, dstX, dstY, dstW, dstH){
@@ -7964,8 +8079,24 @@ class Screen {
   }
 
   resize(w, h){
-    this.cnv.width = Math.round(w * this.dpr);
-    this.cnv.height = Math.round(h * this.dpr);
+    this.lastResize = {w, h};
+    if (this.resolution === 'max'){
+      this.cnv.width = Math.round(w * this.dpr);
+      this.cnv.height = Math.round(h * this.dpr);
+    }
+    else{
+      const res = parseFloat(this.resolution);
+      const bw = Math.round(Config.bw * res / (16 * this.zoom));
+      const bh = Math.round(Config.bh * res / (16 * this.zoom));
+      if (w * bh > h * bw){
+        this.cnv.width = Math.round(w * bh / h);
+        this.cnv.height = bh;
+      }
+      else{
+        this.cnv.width = bw;
+        this.cnv.height = Math.round(h * bw / w);
+      }
+    }
     this.cnv.style.width = `${w}px`;
     this.cnv.style.height = `${h}px`;
     this.ctx.imageSmoothingEnabled = false;
@@ -7977,6 +8108,7 @@ class Screen {
     this.zoom = Math.min(1, this.zoom * m);
     if (this.zoom > 0.95)
       this.zoom = 1;
+    this.resize(this.lastResize.w, this.lastResize.h);
   }
 
   tick(input){
@@ -7988,6 +8120,12 @@ class Screen {
       this.multiplyZoom(1 / 1.1);
     if (input.keyJustPressed.F4)
       this.multiplyZoom(1.1);
+    if (input.keyJustPressed.F5){
+      const res = ['8', '12', '16', '32', 'max'];
+      this.resolution = res[(res.indexOf(this.resolution) + 1) % res.length];
+      document.getElementById('resolution').innerText = this.resolution;
+      this.resize(this.lastResize.w, this.lastResize.h);
+    }
   }
 }
 

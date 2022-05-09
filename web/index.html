@@ -21,6 +21,9 @@ html, body {
 canvas {
   user-select: none;
   display: block;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
 }
 a {
   color: #6ef;
@@ -39,7 +42,7 @@ a:hover, a:active {
   bottom: 20px;
   left: 20px;
   width: 300px;
-  height: 210px;
+  height: 230px;
   border: 2px solid #2ac;
   border-radius: 10px;
   background-color: #278;
@@ -136,6 +139,11 @@ button:active div {
   list-style-type: none;
   padding-left: 20px;
 }
+#fps {
+  display: inline-block;
+  width: 70px;
+  text-align: right;
+}
 </style>
 </head>
 <body>
@@ -149,12 +157,14 @@ button:active div {
       Jump: Space<br />
       Debug: F1<br />
       Full screen: F2<br />
-      Zoom: F3 / F4
+      Zoom: F3 / F4<br />
+      Resolution: F5 (<span id="resolution">max</span>)
     </p>
     <p>
       <input type="file" id="file" hidden oninput="javascript: playFile(this.files[0]);" />
       <button onclick="javascript: document.getElementById('file').click();"><div>Upload</div></button>
       <button onclick="javascript: playTutorial();"><div>Tutorial</div></button>
+      <span id="fps"></span>
     </p>
   </div>
   <a id="menu-closed" href="#" style="display: none;" onclick="javascript: return showMenu();">
