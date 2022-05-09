@@ -126,6 +126,7 @@ class Config {
   static physics_jump_height         = 26;
   static physics_boost               = 16;
   static physics_gravity             = 2;
+  static physics_queue_length        = 2;
   static camera_lag = 1 / 16;
   static bw = 640;
   static bh = 480;
@@ -6569,8 +6570,8 @@ class Player extends SynchronizedSprite {
   isDead = false;
   isFlying = false;
   spriteRect; // rect2
-  queue = [];
-  lastJump = -Date.now();
+  queue = Array.from({length: Config.physics_queue_length}).map(() => 0);
+  lastJump;
   lastPortal;
   current;
   current_below;
@@ -6626,6 +6627,7 @@ class Player extends SynchronizedSprite {
     this.size = 16;
     this.width = 16;
     this.height = 16;
+    this.lastJump = -this.state.now();
   }
 
   get isControlled(){
@@ -6723,21 +6725,20 @@ class Player extends SynchronizedSprite {
     }
     */
 
-    const cx = (this.x + 8) >> 4;
-    const cy = (this.y + 8) >> 4;
+    let cx = (this.x + 8) >> 4;
+    let cy = (this.y + 8) >> 4;
 
     let delayed = this.queue.shift();
     this.current = this.world.getTile(0, cx, cy);
-    /*
-    if (ItemId.isHalfBlock(current)) {
-      var rot:int = world.lookup.getInt(cx, cy);
-      if (!ItemId.isBlockRotateable(current) && ItemId.isNonRotatableHalfBlock(current))
+
+    if (ItemId.isHalfBlock(this.current)){
+      let rot = this.world.lookup.getInt(cx, cy);
+      if (!ItemId.isBlockRotateable(this.current) && ItemId.isNonRotatableHalfBlock(this.current))
         rot = 1;
-      if (rot == 1) cy -=1;
-      if (rot == 0) cx -=1;
-      current = world.getTile(0,cx,cy);
+      if (rot === 1) cy -= 1;
+      if (rot === 0) cx -= 1;
+      this.current = world.getTile(0, cx, cy);
     }
-    */
 
     /*
     if (tx != -1) UpdateTeamDoors(tx, ty);
@@ -7369,7 +7370,7 @@ class Player extends SynchronizedSprite {
       this.lastPortal = cp;
     };
 
-    while ((currentSX !== 0 && !doneX) || (currentSY != 0 && !doneY)){
+    while ((currentSX !== 0 && !doneX) || (currentSY !== 0 && !doneY)){
       processPortals();
       ox = this.x;
       oy = this.y;
@@ -7385,7 +7386,7 @@ class Player extends SynchronizedSprite {
       let mod = 1;
       let inJump = false;
       if (this.spaceJustDown){
-        this.lastJump = -Date.now();
+        this.lastJump = -this.state.now();
         inJump = true;
         mod = -1
       }
@@ -7398,11 +7399,11 @@ class Player extends SynchronizedSprite {
         }
         else*/{
           if (this.lastJump < 0){
-            if (Date.now() + this.lastJump > 750)
+            if (this.state.now() + this.lastJump > 750)
               inJump = true;
           }
           else{
-            if (Date.now() - this.lastJump > 150)
+            if (this.state.now() - this.lastJump > 150)
               inJump = true;
           }
         }
@@ -7420,7 +7421,7 @@ class Player extends SynchronizedSprite {
             (this.speedY === 0 && this.mory && this.moy)
           ) && grounded
         ) ||
-        this.current == ItemId.EFFECT_MULTIJUMP
+        this.current === ItemId.EFFECT_MULTIJUMP
       ) // On ground so reset jumps to 0
         this.jumpCount = 0;
 
@@ -7432,13 +7433,13 @@ class Player extends SynchronizedSprite {
           if (this.maxJumps < 1000) // Not infinite jumps
             this.jumpCount++;
           this.speedX = -this.morx * Config.physics_jump_height * this.jumpMultiplier;
-          this.lastJump = Date.now() * mod;
+          this.lastJump = this.state.now() * mod;
         }
         if (this.jumpCount < this.maxJumps && this.mory && this.moy){ // Jump in y direction
           if (this.maxJumps < 1000) // Not infinite jumps
             this.jumpCount++;
           this.speedY = -this.mory * Config.physics_jump_height * this.jumpMultiplier;
-          this.lastJump = Date.now() * mod;
+          this.lastJump = this.state.now() * mod;
         }
       }
 
@@ -7708,6 +7709,7 @@ class PlayState extends BlContainer {
   coins = 0;
   bcoins = 0;
   keysQueue = [];
+  tickCount = 0;
 
   constructor(world){
     super();
@@ -7730,8 +7732,13 @@ class PlayState extends BlContainer {
     this.target = this.player;
   }
 
+  now(){
+    return this.tickCount * Config.physics_ms_per_tick;
+  }
+
   tick(input){
     super.tick(input);
+    this.tickCount++;
   }
 
   enterFrame(){

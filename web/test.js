@@ -31,26 +31,34 @@ class FakePlayer {
     this.input = new FakeInput(simulator);
   }
 
-  get worldPosition() {
+  get worldPosition(){
     return {
       x: (this.simulator.ee.state.player.x + 8) >> 4,
       y: (this.simulator.ee.state.player.y + 8) >> 4
     };
   }
 
-  get position() {
+  get position(){
     return {
       x: this.simulator.ee.state.player.x,
       y: this.simulator.ee.state.player.y
     };
   }
 
-  get x() {
+  get x(){
     return this.simulator.ee.state.player.x;
   }
 
-  get y() {
+  set x(v){
+    this.simulator.ee.state.player.x = v;
+  }
+
+  get y(){
     return this.simulator.ee.state.player.y;
+  }
+
+  set y(v){
+    this.simulator.ee.state.player.y = v;
   }
 }
 
@@ -341,12 +349,12 @@ class TestSuite {
       btn.addEventListener('click', () => {
         let sim = simulator.clone();
         let events = JSON.parse(JSON.stringify(simulator.events));
-        console.log(events);
         const totalTime = events.filter(k => k.kind === 'simulateMs').reduce((v, k) => v + k.ms, 0);
         let timeLeft = totalTime;
         sim.draw();
         defaultScreen.drawStatus(`Hit Space ${totalTime - timeLeft}/${totalTime}`);
         window.onTestKey = key => {
+          window.sim = sim;
           if (key === 'Space' && timeLeft > 0){
             let dt = Math.min(timeLeft, Config.physics_ms_per_tick);
             timeLeft -= dt;
