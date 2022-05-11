@@ -18,9 +18,11 @@ class Simulator {
   spawn;
   events = [];
   template;
+  mappings;
 
-  constructor(template){
+  constructor(template, mappings){
     this.template = template;
+    this.mappings = mappings;
     lastSimulator = this;
     this.input = new Input();
     this.world = new World();
@@ -35,45 +37,20 @@ class Simulator {
       if (line.length !== width)
         throw new Error('Invalid test, level widths are inconsistent');
       for (let x = 0; x < width; x++){
-        const ch = line.charAt(x);
-        let placeTile = false;
-        let properties;
-        switch (ch){
-          case ' ': break;
-          case '#': placeTile = 1088; break; // block
-          case '^': placeTile =    2; break; // gravity up
-          case '>': placeTile =    3; break; // gravity right
-          case '<': placeTile =    1; break; // gravity left
-          case '.': placeTile =    4; break; // dot
-          case 'U': placeTile =  116; break; // boost up
-          case 'R': placeTile =  115; break; // boost right
-          case 'D': placeTile =  117; break; // boost down
-          case 'L': placeTile =  114; break; // boost left
-          case 'k': placeTile =    6; break; // red key
-          case 'd': placeTile =   23; break; // red door
-          case 'g': placeTile =   26; break; // red gate
-          case '[': placeTile = 1116; properties = {rotation: 2}; break; // half slab left
-          case ']': placeTile = 1116; properties = {rotation: 0}; break; // half slab right
-          case '{': placeTile = 1092; properties = {rotation: 0}; break; // one way left
-          case '}': placeTile = 1092; properties = {rotation: 2}; break; // one way right
-          case 'X': // goal
-            if (this.goal)
-              throw new Error('Cannot set goal twice');
-            this.goal = {x, y};
-            placeTile = 5;
-            break;
-          case 'p': // player spawn
-            this.world.spawnPoints = [[[x, y]]];
-            break;
-          default:
-            throw new Error(`Unknown test tile: ${ch}`);
-        }
-        if (placeTile){
+        const m = mappings[line.charAt(x)];
+        if (!m)
+          throw new Error(`Unknown character: "${line.charAt(x)}"`);
+        const {tile, prop, spawn, goal} = m;
+        if (spawn)
+          this.world.spawnPoints = [[[x, y]]];
+        if (goal)
+          this.goal = {x, y};
+        if (tile){
           this.world.setTileComplex(
-            placeTile >= 500 && placeTile < 1000 ? 1 : 0,
+            tile >= 500 && tile < 1000 ? 1 : 0,
             x, y,
-            placeTile,
-            properties
+            tile,
+            prop
           );
         }
       }
@@ -211,7 +188,7 @@ class Simulator {
   }
 
   clone(){
-    return new Simulator(this.template);
+    return new Simulator(this.template, this.mappings);
   }
 }
 

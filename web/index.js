@@ -961,6 +961,20 @@ class ItemTab {
 // ItemBrick
 //
 
+function drawBrickWithNumber(target, ox, oy, num, white, bmd, offset){
+  const srcBmd = white ? ItemManager.blockNumbersBMD : ItemManager.blockNumbers2BMD;
+  target.copyPixels(bmd, offset * 16, 0, 16, 16, ox, oy, 16, 16);
+  if (num >= 1000)
+    target.copyPixels(srcBmd, 40, 0, 4, 5, ox + 12, oy + 11, 4, 5);
+  else{
+    num = '' + num;
+    for (let i = 0; i < num.length; i++){
+      const n = num[num.length - i - 1] - '0';
+      target.copyPixels(srcBmd, n * 4, 0, 4, 5, ox + 12 - i * 5, oy + 11, 4, 5);
+    }
+  }
+}
+
 class ItemBrick {
   id;
   debugId;
@@ -1043,49 +1057,8 @@ class ItemBrick {
     target.debugText(`${this.debugId}`, ox + 8, oy + 8);
   }
 
-  drawWithNumber(target, ox, oy, num, white){
-    const srcBmd = white ? ItemManager.blockNumbersBMD : ItemManager.blockNumbers2BMD;
-    target.copyPixels(
-      this.bmd,
-      this.offset * 16,
-      0,
-      16,
-      16,
-      ox,
-      oy,
-      16,
-      16
-    );
-    if (num >= 1000){
-      target.copyPixels(
-        srcBmd,
-        40,
-        0,
-        4,
-        5,
-        ox + 12,
-        oy + 11,
-        4,
-        5
-      );
-    }
-    else{
-      num = '' + num;
-      for (let i = 0; i < num.length; i++){
-        const n = num[num.length - i - 1] - '0';
-        target.copyPixels(
-          srcBmd,
-          n * 4,
-          0,
-          4,
-          5,
-          ox + 12 - i * 5,
-          oy + 11,
-          4,
-          5
-        );
-      }
-    }
+  drawWithNumber(target, ox, oy, num, white, bmd, offset){
+    drawBrickWithNumber(target, ox, oy, num, white, this.bmd, this.offset);
   }
 
   copy(debugId){
@@ -5074,6 +5047,9 @@ class World extends BlObject {
   };
   overlapCells = [];
   showDeathGate = 0;
+  orangeSwitches = Array.from({length: 1000}).map(() => false);
+  timedoorState = false;
+  hideTimedoorOffset = 0;
 
   constructor(){
     super();
@@ -5486,6 +5462,11 @@ class World extends BlObject {
       this.keysTimer[color] = this.aniOffset;
   }
 
+  setTimedoor(state){
+    this.hideTimedoorOffset = this.aniOffset;
+    this.timedoorState = state;
+  }
+
   getTile(layer, x, y){
     if(layer < 0 || layer >= this.depth || x < 0 || x >= this.width || y < 0 || y >= this.height)
       return 0;
@@ -5503,6 +5484,9 @@ class World extends BlObject {
       if (this.keys[color] && ((this.aniOffset - this.keysTimer[color]) / 30) >= 5)
         this.playState.switchKey(color, false, false);
     }
+
+    if (((this.aniOffset - this.hideTimedoorOffset) / 30) >= 5)
+      this.setTimedoor(!this.timedoorState);
   }
 
   overlaps(pl){
@@ -5637,17 +5621,32 @@ class World extends BlObject {
           case 1009: if (!this.getKey('magenta')) continue; break;
           case 1010: if (!this.getKey('yellow')) continue; break;
 
-          // TODO: different interactive blocks
+          case 156:
+            if (this.timedoorState)
+              continue;
+            break;
+          case 157:
+            if (!this.timedoorState)
+              continue;
+            break;
+
+          case ItemId.DOOR_PURPLE:
+            if (pl.switches[this.lookup.getInt(cx, cy)])
+              continue;
+            break;
+          case ItemId.GATE_PURPLE:
+            if (!pl.switches[this.lookup.getInt(cx, cy)])
+              continue;
+            break;
+          case ItemId.DOOR_ORANGE:
+            if (this.orangeSwitches[this.lookup.getInt(cx, cy)])
+              continue;
+            break;
+          case ItemId.GATE_ORANGE:
+            if (!this.orangeSwitches[this.lookup.getInt(cx, cy)])
+              continue;
+            break;
           /*
-          case 156: if (timedoorState) continue; break;
-          case 157: if (!timedoorState) continue; break;
-
-          case ItemId.DOOR_PURPLE: if ( pl.switches[lookup.getInt(cx, cy)]) continue; break;
-          case ItemId.GATE_PURPLE: if (!pl.switches[lookup.getInt(cx, cy)]) continue; break;
-
-          case ItemId.DOOR_ORANGE: if ( orangeSwitches[lookup.getInt(cx, cy)]) continue; break;
-          case ItemId.GATE_ORANGE: if (!orangeSwitches[lookup.getInt(cx, cy)]) continue; break;
-
           case ItemId.DOOR_GOLD: if ( pl.wearsGoldSmiley) continue; break;
           case ItemId.GATE_GOLD: if (!pl.wearsGoldSmiley) continue; break;
 
@@ -5669,15 +5668,13 @@ class World extends BlObject {
             if (this.lookup.getInt(cx, cy) <= pl.deaths)
               continue;
             break;
-          /*
-          case ItemId.COINGATE:     if (lookup.getInt(cx, cy) >  /*pl.coins* / (pl.isme ? showCoinGate : pl.coins))  continue; break;
-          case ItemId.BLUECOINGATE:   if (lookup.getInt(cx, cy) >  /*pl.bcoins* / (pl.isme ? showBlueCoinGate : pl.bcoins)) continue; break;
-          */
           case ItemId.DEATH_GATE:
             if (this.lookup.getInt(cx, cy) > (pl.isMe ? this.showDeathGate : pl.deaths))
               continue;
             break;
           /*
+          case ItemId.COINGATE:     if (lookup.getInt(cx, cy) >  /*pl.coins* / (pl.isme ? showCoinGate : pl.coins))  continue; break;
+          case ItemId.BLUECOINGATE:   if (lookup.getInt(cx, cy) >  /*pl.bcoins* / (pl.isme ? showBlueCoinGate : pl.bcoins)) continue; break;
           case ItemId.TEAM_DOOR: if (pl.team == lookup.getInt(cx, cy)) continue; break;
           case ItemId.TEAM_GATE: if (pl.team != lookup.getInt(cx, cy)) continue; break;
 
@@ -5845,42 +5842,106 @@ class World extends BlObject {
               );
             }
             continue;
+          // Purple switch, doors and gates
+          case ItemId.SWITCH_PURPLE:
+            if (this.player.switches[this.lookup.getInt(cx, cy)]) {
+              drawBrickWithNumber(
+                target, point.x, point.y, this.lookup.getInt(cx, cy), true,
+                ItemManager.specialBlocksBMD, 311
+              );
+            } else {
+              ItemManager.bricks[ItemId.SWITCH_PURPLE].drawWithNumber(
+                target, point.x, point.y, this.lookup.getInt(cx, cy), true
+              );
+            }
+            continue;
+          case ItemId.RESET_PURPLE:
+            ItemManager.bricks[ItemId.RESET_PURPLE].drawWithNumber(
+              target, point.x, point.y, this.lookup.getInt(cx, cy), true
+            );
+            continue;
+          case ItemId.DOOR_PURPLE:
+            if (this.player.switches[this.lookup.getInt(cx, cy)]){
+              ItemManager.bricks[ItemId.GATE_PURPLE].drawWithNumber(
+                target, point.x, point.y, this.lookup.getInt(cx, cy), true
+              );
+            }
+            else{
+              ItemManager.bricks[ItemId.DOOR_PURPLE].drawWithNumber(
+                target, point.x, point.y, this.lookup.getInt(cx, cy), true
+              );
+            }
+            continue;
+          case ItemId.GATE_PURPLE:
+            if (this.player.switches[this.lookup.getInt(cx, cy)]){
+              ItemManager.bricks[ItemId.DOOR_PURPLE].drawWithNumber(
+                target, point.x, point.y, this.lookup.getInt(cx, cy), true
+              );
+            }
+            else{
+              ItemManager.bricks[ItemId.GATE_PURPLE].drawWithNumber(
+                target, point.x, point.y, this.lookup.getInt(cx, cy), true
+              );
+            }
+            continue;
+          // Orange switch, doors and gates
+          case ItemId.SWITCH_ORANGE:
+            if (this.orangeSwitches[this.lookup.getInt(cx, cy)]){
+              drawBrickWithNumber(
+                target, point.x, point.y, this.lookup.getInt(cx, cy), true,
+                ItemManager.specialBlocksBMD, 423
+              );
+            } else {
+              ItemManager.bricks[ItemId.SWITCH_ORANGE].drawWithNumber(
+                target, point.x, point.y, this.lookup.getInt(cx, cy), true
+              );
+            }
+            continue;
+          case ItemId.RESET_ORANGE:
+            ItemManager.bricks[ItemId.RESET_ORANGE].drawWithNumber(
+              target, point.x, point.y, this.lookup.getInt(cx, cy), true
+            );
+            continue;
+          case ItemId.DOOR_ORANGE:
+            if (this.orangeSwitches[this.lookup.getInt(cx, cy)]){
+              ItemManager.bricks[ItemId.GATE_ORANGE].drawWithNumber(
+                target, point.x, point.y, this.lookup.getInt(cx, cy), true
+              );
+            }
+            else{
+              ItemManager.bricks[ItemId.DOOR_ORANGE].drawWithNumber(
+                target, point.x, point.y, this.lookup.getInt(cx, cy), true
+              );
+            }
+            continue;
+          case ItemId.GATE_ORANGE:
+            if (!this.orangeSwitches[this.lookup.getInt(cx, cy)]){
+              ItemManager.bricks[ItemId.GATE_ORANGE].drawWithNumber(
+                target, point.x, point.y, this.lookup.getInt(cx, cy), true
+              );
+            }
+            else{
+              ItemManager.bricks[ItemId.DOOR_ORANGE].drawWithNumber(
+                target, point.x, point.y, this.lookup.getInt(cx, cy), true
+              );
+            }
+            continue;
+          // Time doors
+          case ItemId.TIMEDOOR:
+            ItemManager.sprDoorsTime.drawPoint(
+              target, point.x, point.y,
+              Math.min((((this.aniOffset - this.hideTimedoorOffset) / 30) >> 0), 4) +
+                (this.timedoorState ? 5 : 0)
+              )
+            continue;
+          case ItemId.TIMEGATE:
+            ItemManager.sprDoorsTime.drawPoint(
+              target, point.x, point.y,
+              Math.min((((this.aniOffset - this.hideTimedoorOffset) / 30) >> 0), 4) +
+                (this.timedoorState ? 0 : 5)
+            );
+            continue;
           /*
-          //Purple switch, doors and gates
-          case ItemId.DOOR_PURPLE:{
-            if (player.switches[lookup.getInt(cx, cy)]) {
-              ItemManager.sprPurpleGates.drawPoint(target, point, lookup.getInt(cx, cy))
-            } else {
-              ItemManager.sprPurpleDoors.drawPoint(target, point, lookup.getInt(cx, cy))
-            }
-            continue;
-          }
-          case ItemId.GATE_PURPLE:{
-            if (player.switches[lookup.getInt(cx, cy)]) {
-              ItemManager.sprPurpleDoors.drawPoint(target, point, lookup.getInt(cx, cy))
-            } else {
-              ItemManager.sprPurpleGates.drawPoint(target, point, lookup.getInt(cx, cy))
-            }
-            continue;
-          }
-
-          case ItemId.DOOR_ORANGE:{
-            if (orangeSwitches[lookup.getInt(cx, cy)]) {
-              ItemManager.sprOrangeGates.drawPoint(target, point, lookup.getInt(cx, cy))
-            } else {
-              ItemManager.sprOrangeDoors.drawPoint(target, point, lookup.getInt(cx, cy))
-            }
-            continue;
-          }
-          case ItemId.GATE_ORANGE:{
-            if (orangeSwitches[lookup.getInt(cx, cy)]) {
-              ItemManager.sprOrangeDoors.drawPoint(target, point, lookup.getInt(cx, cy))
-            } else {
-              ItemManager.sprOrangeGates.drawPoint(target, point, lookup.getInt(cx, cy))
-            }
-            continue;
-          }
-
           case ItemId.DOOR_GOLD:{
             if(player.wearsGoldSmiley){
               ItemManager.sprDoors.drawPoint(target, point, 10)
@@ -5895,45 +5956,6 @@ class World extends BlObject {
             }
             break;
           }
-
-          case ItemId.SWITCH_PURPLE:{
-            if (player.switches[lookup.getInt(cx, cy)]) {
-              ItemManager.sprSwitchDOWN.drawPoint(target, point, lookup.getInt(cx, cy))
-            } else {
-              ItemManager.sprSwitchUP.drawPoint(target, point,lookup.getInt(cx, cy))
-            }
-            continue;
-          }
-
-          case ItemId.SWITCH_ORANGE:{
-            if (orangeSwitches[lookup.getInt(cx, cy)]) {
-              ItemManager.sprOrangeSwitchDOWN.drawPoint(target, point,lookup.getInt(cx, cy))
-            } else {
-              ItemManager.sprOrangeSwitchUP.drawPoint(target, point,lookup.getInt(cx, cy))
-            }
-            continue;
-          }
-
-          case ItemId.RESET_PURPLE:{
-            ItemManager.sprSwitchRESET.drawPoint(target, point, lookup.getInt(cx, cy))
-            continue;
-          }
-
-          case ItemId.RESET_ORANGE:{
-            ItemManager.sprOrangeSwitchRESET.drawPoint(target, point,lookup.getInt(cx, cy))
-            continue;
-          }
-
-          //Time doors
-          case ItemId.TIMEDOOR:{
-            ItemManager.sprDoorsTime.drawPoint(target, point, Math.min( (((offset-hideTimedoorOffset)/30)>>0) , 4) + (timedoorState? 5: 0))
-            continue;
-          }
-          case ItemId.TIMEGATE:{
-            ItemManager.sprDoorsTime.drawPoint(target, point,Math.min( (((offset-hideTimedoorOffset)/30)>>0) , 4) + (timedoorState? 0: 5))
-            continue;
-          }
-
           // Invisible arrow blink
           case 411:
           case 412:
@@ -6730,7 +6752,7 @@ class Player extends SynchronizedSprite {
   isMe;
   state;
   isFlying = false;
-  spriteRect; // rect2
+  spriteRect;
   queue = Array.from({length: Config.physics_queue_length}).map(() => 0);
   lastJump;
   lastPortal;
@@ -6751,6 +6773,9 @@ class Player extends SynchronizedSprite {
   bcoins = 0;
   bx = []; // collect bcoin locations
   by = [];
+
+  switches = Array.from({length: 1000}).map(() => false);
+  switchQueue = [];
 
   // input
   leftDown = 0;
@@ -6862,7 +6887,7 @@ class Player extends SynchronizedSprite {
     let nx = 1;
     let ny = 1;
 
-    if (checkpoint && this.checkpoint_x != -1){
+    if (checkpoint && this.checkpoint_x !== -1){
       nx = this.checkpoint_x;
       ny = this.checkpoint_y;
     }
@@ -6892,6 +6917,20 @@ class Player extends SynchronizedSprite {
     this.x = nx;
     this.y = ny;
   }
+
+  pressPurpleSwitch(switchId, enabled){
+    if (switchId === 1000){
+      for (let i = 0; i < 1000; i++)
+        this.pressPurpleSwitch(i, enabled);
+    }
+
+    this.switches[switchId] = enabled;
+    if (this.world.overlaps(this)){
+      this.switches[switchId] = !enabled;
+      this.switchQueue.push({switchId, enabled});
+    }
+  }
+
 
   tick(input){
     /*
@@ -6971,10 +7010,13 @@ class Player extends SynchronizedSprite {
       this.queue.push(this.current);
     }
 
-    /*
-    var queue_length:int = this.tilequeue.length;
-    while(queue_length--) this.tilequeue.shift()();
-    */
+    {
+      const switchQueueLength = this.switchQueue.length;
+      for (let i = 0; i < switchQueueLength; i++){
+        const {switchId, enabled} = this.switchQueue.shift();
+        this.pressPurpleSwitch(switchId, enabled);
+      }
+    }
 
     this.getPlayerInput(input);
 
@@ -7695,17 +7737,16 @@ class Player extends SynchronizedSprite {
     }
 
     this.updateTicks();
+
+    if (this.isDead && this.deadOffset > 16){
+      this.respawn();
+      this.deaths++;
+    }
   }
 
   draw(target, ox, oy){
     const playerX = this.x + ox - 5;
     const playerY = this.y + oy - 5;
-
-    if (this.isDead && this.deadOffset > 16){
-      this.respawn();
-      this.deaths++;
-      return;
-    }
 
     if (this.isDead){
       this.drawFace(target, playerX, playerY, true, 0);
@@ -7865,6 +7906,28 @@ class Me extends Player {
 
       if (!isGod){
         switch (this.current){
+          case ItemId.SWITCH_PURPLE:{
+            const sid = this.world.lookup.getInt(cx, cy);
+            this.pressPurpleSwitch(sid, !this.switches[sid]);
+            break;
+          }
+          case ItemId.SWITCH_ORANGE:{
+            const sid = this.world.lookup.getInt(cx, cy);
+            this.state.pressOrangeSwitch(sid, !this.world.orangeSwitches[sid]);
+            break;
+          }
+          case ItemId.RESET_PURPLE:{
+            const sid = this.world.lookup.getInt(cx, cy);
+            if (sid == 1000 || this.switches[sid])
+              this.pressPurpleSwitch(sid, false);
+            break;
+          }
+          case ItemId.RESET_ORANGE:{
+            const sid = this.world.lookup.getInt(cx, cy);
+            if (sid == 1000 || this.world.orangeSwitches[sid])
+              this.state.pressOrangeSwitch(sid, false);
+            break;
+          }
           case ItemId.CHECKPOINT:
             this.checkpoint_x = cx;
             this.checkpoint_y = cy;
@@ -7920,6 +7983,7 @@ class PlayState extends BlContainer {
   coins = 0;
   bcoins = 0;
   keysQueue = [];
+  orangeSwitchQueue = [];
   tickCount = 0;
 
   constructor(world){
@@ -7947,6 +8011,19 @@ class PlayState extends BlContainer {
     return (this.tickCount + 1000) * Config.physics_ms_per_tick;
   }
 
+  pressOrangeSwitch(switchId, enabled){
+    if (switchId === 1000){
+      for (let i = 0; i < 1000; i++)
+        this.pressOrangeSwitch(i, enabled);
+    }
+
+    this.world.orangeSwitches[switchId] = enabled;
+    if (this.world.overlaps(this.player)){
+      this.world.orangeSwitches[switchId] = !enabled;
+      this.orangeSwitchQueue.push({switchId, enabled});
+    }
+  }
+
   tick(input){
     super.tick(input);
 
@@ -7954,6 +8031,12 @@ class PlayState extends BlContainer {
     for (let i = 0; i < keysLength; i++){
       const {color, state} = this.keysQueue.shift();
       this.switchKey(color, state, true);
+    }
+
+    const orangeSwitchLength = this.orangeSwitchQueue.length;
+    for (let i = 0; i < orangeSwitchLength; i++){
+      const {switchId, enabled} = this.orangeSwitchQueue.shift();
+      this.pressOrangeSwitch(switchId, enabled);
     }
 
     this.tickCount++;

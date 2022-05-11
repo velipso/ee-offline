@@ -1,11 +1,191 @@
 function loadTests(it, expect){
 
+function tiles(m){
+  const mappings = {
+    ' ': {},
+    '#': {tile: 1088}, // block
+    '^': {tile:    2}, // gravity up
+    '>': {tile:    3}, // gravity right
+    '<': {tile:    1}, // gravity left
+    '.': {tile:    4}, // dot
+    '[': {tile: 1116, prop: {rotation: 2}}, // half slab left
+    ']': {tile: 1116, prop: {rotation: 0}}, // half slab right
+    '{': {tile: 1092, prop: {rotation: 0}}, // one way left
+    '}': {tile: 1092, prop: {rotation: 2}}, // one way right
+    'X': {tile:    5, goal: true},
+    'p': {spawn: true}
+  };
+  if (m){
+    for (const [k, v] of Object.entries(m))
+      mappings[k] = v;
+  }
+  return mappings;
+}
+
+it('death gates and checkpoints work', () => {
+  const sim = new Simulator(`
+    #############
+    # p  C  D  X#
+    ###D###G#####
+    #######x#####
+    #############
+  `, tiles({
+    'G': {tile: 1012, prop: {rotation: 1}}, // death gate
+    'D': {tile: 1011, prop: {rotation: 1}}, // death door
+    'C': {tile:  360}, // checkpoint
+    'x': {tile:  361, prop: {rotation: 0}}  // spike
+  }))
+  .right()
+  .wait(3000);
+  expect(sim.player.worldPosition).toEqual(sim.goal);
+});
+
+it('time doors and gates work', () => {
+  const sim = new Simulator(`
+    ###############
+    #UUUUUUUUUUUUU#
+    #   T   G     #
+    # p U T U G X #
+    ###############
+  `, tiles({
+    'U': {tile: 116}, // boost up
+    'T': {tile: 156}, // time door
+    'G': {tile: 157}  // time gate
+  }))
+  .right()
+  .wait(10300);
+  expect(sim.player.worldPosition).toEqual(sim.goal);
+});
+
+it('orange switch ids work', () => {
+  const sim = new Simulator(`
+    #######################
+    # p  P  E  P   G  H GX#
+    ####HHH####EE#EEE###HH#
+    #######################
+  `, tiles({
+    'P': {tile:  467, prop: {rotation: 1}}, // orange switch
+    'Q': {tile: 1620, prop: {rotation: 1}}, // orange reset
+    'E': {tile: 1079, prop: {rotation: 1}}, // orange door
+    'F': {tile: 1080, prop: {rotation: 1}}, // orange gate
+    'G': {tile:  467, prop: {rotation: 2}}, // orange switch 2
+    'H': {tile: 1079, prop: {rotation: 2}}  // orange door 2
+  }))
+  .right()
+  .wait(2000);
+  expect(sim.player.worldPosition).toEqual(sim.goal);
+});
+
+it('orange switches work on doors and gates', () => {
+  const sim = new Simulator(`
+    #######################
+    #      >     E QE #   #
+    #      ^FFFFFFFF# #   #
+    # p F P^F #    P###   #
+    #EEE##### #      P F X#
+    #######################
+  `, tiles({
+    'P': {tile:  467, prop: {rotation: 1}}, // orange switch
+    'Q': {tile: 1620, prop: {rotation: 1}}, // orange reset
+    'E': {tile: 1079, prop: {rotation: 1}}, // orange door
+    'F': {tile: 1080, prop: {rotation: 1}}  // orange gate
+  }))
+  .right()
+  .wait(2000);
+  expect(sim.player.worldPosition).toEqual(sim.goal);
+});
+
+it('purple switch ids work', () => {
+  const sim = new Simulator(`
+    #######################
+    # p  P  E  P   G  H GX#
+    ####HHH####EE#EEE###HH#
+    #######################
+  `, tiles({
+    'P': {tile:  113, prop: {rotation: 1}}, // purple switch
+    'Q': {tile: 1619, prop: {rotation: 1}}, // purple reset
+    'E': {tile:  184, prop: {rotation: 1}}, // purple door
+    'F': {tile:  185, prop: {rotation: 1}}, // purple gate
+    'G': {tile:  113, prop: {rotation: 2}}, // purple switch 2
+    'H': {tile:  184, prop: {rotation: 2}}  // purple door 2
+  }))
+  .right()
+  .wait(2000);
+  expect(sim.player.worldPosition).toEqual(sim.goal);
+});
+
+it('purple switches work on doors and gates', () => {
+  const sim = new Simulator(`
+    #######################
+    #      >     E QE #   #
+    #      ^FFFFFFFF# #   #
+    # p F P^F #    P###   #
+    #EEE##### #      P F X#
+    #######################
+  `, tiles({
+    'P': {tile:  113, prop: {rotation: 1}}, // purple switch
+    'Q': {tile: 1619, prop: {rotation: 1}}, // purple reset
+    'E': {tile:  184, prop: {rotation: 1}}, // purple door
+    'F': {tile:  185, prop: {rotation: 1}}  // purple gate
+  }))
+  .right()
+  .wait(2000);
+  expect(sim.player.worldPosition).toEqual(sim.goal);
+});
+
+it('key doors open after 5 seconds', () => {
+  const sim = new Simulator(`
+    #########
+    #pkd d  #
+    ####### #
+    #  d d L#
+    # #######
+    #  d d  #
+    ####### #
+    #  d d L#
+    # #######
+    #  d d  #
+    ####### #
+    #  d d L#
+    # #######
+    #  d d  #
+    ####### #
+    #  d d L#
+    # #######
+    #  d d  #
+    ####### #
+    #  d d L#
+    # #######
+    #  d d  #
+    ####### #
+    #  d d L#
+    #d#######
+    # #     #
+    #X#     #
+    #d      #
+    #########
+  `, tiles({
+    'L': {tile: 114},  // boost left
+    'k': {tile:   6}, // red key
+    'd': {tile:  23}, // red door
+    'g': {tile:  26}  // red gate
+  }))
+  .right()
+  .wait(6000);
+  expect(sim.player.worldPosition).toEqual(sim.goal);
+});
+
+
 it('keys and doors work', () => {
   const sim = new Simulator(`
     #########
     #p k d X#
     #########
-  `)
+  `, tiles({
+    'k': {tile:  6}, // red key
+    'd': {tile: 23}, // red door
+    'g': {tile: 26}  // red gate
+  }))
   .right()
   .wait(700);
   expect(sim.player.worldPosition).toEqual(sim.goal);
@@ -17,7 +197,11 @@ it('keys and gates work', () => {
     #p k.g  #
     ####X## #
     #########
-  `)
+  `, tiles({
+    'k': {tile:  6}, // red key
+    'd': {tile: 23}, // red door
+    'g': {tile: 26}  // red gate
+  }))
   .right()
   .wait(2000)
   .down()
@@ -35,7 +219,11 @@ it('doors stay open if covered', () => {
     #     ##
     #p k d##
     ########
-  `)
+  `, tiles({
+    'k': {tile:  6}, // red key
+    'd': {tile: 23}, // red door
+    'g': {tile: 26}  // red gate
+  }))
   .right()
   .wait(290)
   .noDir()
@@ -54,7 +242,11 @@ it('gates stay open if covered', () => {
     #######
     #Xpgk #
     #######
-  `)
+  `, tiles({
+    'k': {tile:  6}, // red key
+    'd': {tile: 23}, // red door
+    'g': {tile: 26}  // red gate
+  }))
   .right()
   .wait(200)
   .left()
@@ -69,7 +261,7 @@ it('one ways work', () => {
     # ## # #
     # ##X# #
     ########
-  `)
+  `, tiles())
   .right()
   .wait(500)
   .left()
@@ -91,7 +283,7 @@ it('players can climb onto ledges with dots', () => {
     #   X#
     #p .##
     ######
-  `)
+  `, tiles())
   .upRight()
   .wait(1000);
   expect(sim.player.worldPosition).toEqual(sim.goal);
@@ -105,7 +297,7 @@ it('single arrow is not strong', () => {
     #p^#
     ##X#
     ####
-  `)
+  `, tiles())
   .right()
   .wait(560);
   expect(sim.player.worldPosition).toEqual(sim.goal);
@@ -122,7 +314,7 @@ it('double arrow is not strong', () => {
     #^#
     #X#
     ###
-  `)
+  `, tiles())
   .wait(2000);
   expect(sim.player.worldPosition).toEqual(sim.goal);
 });
@@ -137,7 +329,7 @@ it('players can perform 1x1s', () => {
     # ##
     # ##
     ####
-  `)
+  `, tiles())
   .left()
   .wait(150) // ee hookjump performable in a one-tick window of 15 ticks
   .jump()
@@ -159,7 +351,7 @@ it('players can perform hold space 1x1s', () => {
     # ##
     #p##
     ####
-  `)
+  `, tiles())
   .right()
   .jump()
   .wait(2000)
@@ -176,7 +368,12 @@ it('players can perform false hooks', () => {
     #p   X#
     ###DD##
     #######
-  `)
+  `, tiles({
+    'U': {tile: 116}, // boost up
+    'R': {tile: 115}, // boost right
+    'D': {tile: 117}, // boost down
+    'L': {tile: 114}  // boost left
+  }))
   .right()
   .wait(220)
   .jump()
@@ -196,7 +393,7 @@ it('players can perform arrow hover', () => {
     # #
     #p#
     ###
-  `)
+  `, tiles())
   .jump()
   .up()
   .wait(1000);
@@ -221,7 +418,7 @@ it('players drop down the right amount of dots', () => {
     #.#
     #.#
     ###
-  `)
+  `, tiles())
   .wait(10000);
   expect(sim.player.y).toBeCloseTo(128, 4);
 });
@@ -232,7 +429,7 @@ it('players go right the right amount of spaces on dots', () => {
     #p              #
     #...............#
     #################
-  `)
+  `, tiles())
   .right()
   .wait(250)
   .noDir()
@@ -245,7 +442,7 @@ it('players go right the right amount of spaces', () => {
     ##############
     #p           #
     ##############
-  `)
+  `, tiles())
   .right()
   .wait(250)
   .noDir()
@@ -279,7 +476,7 @@ it('players jump up the right amount of dots', () => {
     #.#
     #p#
     ###
-  `)
+  `, tiles())
   .jump()
   .wait(10000);
   expect(sim.player.y).toBeCloseTo(48, 4);
@@ -291,7 +488,7 @@ it('players go right the right amount of dots', () => {
     #p              #
     #...............#
     #################
-  `)
+  `, tiles())
   .right()
   .wait(250)
   .noDir()
@@ -305,7 +502,7 @@ it('players go left the right amount of dots', () => {
     #            p#
     #.............#
     ###############
-  `)
+  `, tiles())
   .left()
   .wait(250)
   .noDir()
@@ -318,7 +515,7 @@ it('players go right the right amount of spaces', () => {
     #########
     #p      #
     #########
-  `)
+  `, tiles())
   .right()
   .wait(250)
   .noDir()
@@ -331,7 +528,7 @@ it('players go left the right amount of spaces', () => {
     #########
     #      p#
     #########
-  `)
+  `, tiles())
   .left()
   .wait(250)
   .noDir()
@@ -345,7 +542,7 @@ it('does not modify on 0.2 away from right', () => {
     ####
     # p#
     ####
-  `)
+  `, tiles())
   .playerX(pos)
   .wait(1000);
   expect(sim.player.x).toEqual(pos);
@@ -357,7 +554,7 @@ it('does not modify on 0.2 away from left', () => {
     ####
     #p #
     ####
-  `)
+  `, tiles())
   .playerX(pos)
   .wait(1000);
   expect(sim.player.x).toEqual(pos);
@@ -369,7 +566,7 @@ it('slowly drags the player left', () => {
     #####
     # p #
     #####
-  `)
+  `, tiles())
   .playerX(pos);
   const inchingSteps = [
     17.866573333333335, 17.742135111111114, 17.625992770370374, 17.517593252345684,
@@ -395,7 +592,7 @@ it('slowly drags the player right', () => {
     #####
     # p #
     #####
-  `)
+  `, tiles())
   .playerX(pos);
   const inchingSteps = [
     14.001066666666667, 14.001137777777778, 14.00121362962963, 14.001294538271605,
@@ -440,7 +637,7 @@ it('when holding right for 1 tick', () => {
     ####
     #p #
     ####
-  `);
+  `, tiles());
   const xValues = [
     0, 0.12658920639726146, 0.2230234173493919, 0.30124411111087135, 0.36378974702858446,
     0.41288075149150816, 0.45045744095484347, 0.4782135378534885, 0.49762578434408566,
@@ -469,7 +666,7 @@ it('when holding right for 2 ticks', () => {
     ####
     #p #
     ####
-  `);
+  `, tiles());
   const xValues = [
     0, 0.12658920639726146, 0.37740287306511106, 0.5600305779645416, 0.7071341042758241,
     0.8237054431609473, 0.9141089613993861, 0.9821563723145391, 1.031172985919211,
@@ -501,7 +698,7 @@ it('when holding right for 3 ticks', () => {
     ####
     #p #
     ####
-  `);
+  `, tiles());
   const xValues = [
     0, 0.12658920639726146, 0.37740287306511106, 0.7501204284507018, 1.008892211719957,
     1.2157151450243495, 1.3779514102955714, 1.5020342574996706, 1.5935791646916553,
@@ -536,7 +733,12 @@ it('player can jump up', () => {
     #RX#
     #p##
     ####
-  `)
+  `, tiles({
+    'U': {tile: 116}, // boost up
+    'R': {tile: 115}, // boost right
+    'D': {tile: 117}, // boost down
+    'L': {tile: 114}, // boost left
+  }))
   .jump()
   .wait(1000);
   expect(sim.player.worldPosition).toEqual(sim.goal);
@@ -549,7 +751,7 @@ it('player can jump right', () => {
     #< pX#
     #^<<##
     ######
-  `)
+  `, tiles())
   .jump()
   .wait(800)
   .noJump()
@@ -565,7 +767,12 @@ it('boosts propel the player the right amount of blocks in half slabs', () => {
     ##[]#          #
     ## R         X #
     ################
-  `)
+  `, tiles({
+    'U': {tile: 116}, // boost up
+    'R': {tile: 115}, // boost right
+    'D': {tile: 117}, // boost down
+    'L': {tile: 114}, // boost left
+  }))
   .wait(1000);
   expect(sim.player.x).toBeCloseTo(208.80422973297345, 4);
 });
@@ -578,7 +785,12 @@ it('boosts propel the player the right amount of blocks', () => {
     ## #           #
     # R            #
     ################
-  `)
+  `, tiles({
+    'U': {tile: 116}, // boost up
+    'R': {tile: 115}, // boost right
+    'D': {tile: 117}, // boost down
+    'L': {tile: 114}, // boost left
+  }))
   .wait(1500);
   expect(sim.player.x).toBeCloseTo(201.62408749771458, 4);
 });
@@ -590,7 +802,7 @@ it('afk minigame rotates player around', () => {
     #>#<#
     #^^<#
     #####
-  `)
+  `, tiles())
   .wait(3050);
   expect(sim.player.worldPosition).toEqual(sim.goal);
 });
