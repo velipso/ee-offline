@@ -4723,9 +4723,7 @@ class EverybodyEdits {
   }
 
   draw(){
-    this.screen.startDraw();
-    this.state.draw(this.screen, 0, 0);
-    this.screen.endDraw();
+    this.screen.drawState(this.state);
   }
 
   stop(){
@@ -7981,7 +7979,9 @@ class Screen {
   transX;
   transY;
   scale;
-  loading = true;
+  lastBanner = false;
+  lastStatus = false;
+  lastState = false;
   debug = false;
   fullScreen = true;
   zoom = 1;
@@ -7997,10 +7997,17 @@ class Screen {
     this.dpr = dpr;
   }
 
-  startDraw(){
-    this.loading = false;
+  clear(){
+    this.lastBanner = false;
+    this.lastStatus = false;
+    this.lastState = false;
     this.ctx.fillStyle = '#000';
     this.ctx.fillRect(0, 0, this.cnv.width, this.cnv.height);
+  }
+
+  drawState(state){
+    this.clear();
+    this.lastState = state;
     this.ctx.save();
     this.boundary.x = 0;
     this.boundary.y = 0;
@@ -8028,17 +8035,13 @@ class Screen {
       this.ctx.rect(x1, y1, x2 - x1, y2 - y1);
       this.ctx.clip();
     }
-  }
 
-  worldToScreenX(x){
-    return Math.round(x * this.scale + this.transX);
-  }
+    //
+    // draw the state
+    state.draw(this, 0, 0);
+    //
+    //
 
-  worldToScreenY(y){
-    return Math.round(y * this.scale + this.transY);
-  }
-
-  endDraw(){
     this.ctx.restore();
     this.frameCount++;
     const now = Date.now();
@@ -8049,6 +8052,14 @@ class Screen {
       this.lastFPS = now;
       this.frameCount = 0;
     }
+  }
+
+  worldToScreenX(x){
+    return Math.round(x * this.scale + this.transX);
+  }
+
+  worldToScreenY(y){
+    return Math.round(y * this.scale + this.transY);
   }
 
   copyPixels(bmd, srcX, srcY, srcW, srcH, dstX, dstY, dstW, dstH){
@@ -8127,6 +8138,8 @@ class Screen {
   }
 
   drawBanner(text){
+    this.clear();
+    this.lastBanner = text;
     this.ctx.fillStyle = '#000';
     this.ctx.fillRect(0, 0, this.cnv.width, this.cnv.height);
     this.ctx.font = (20 * this.dpr) + 'px sans-serif';
@@ -8136,6 +8149,7 @@ class Screen {
   }
 
   drawStatus(text){
+    this.lastStatus = text;
     this.ctx.font = (20 * this.dpr) + 'px sans-serif';
     this.ctx.fillStyle = '#fff';
     this.ctx.textAlign = 'center';
@@ -8168,8 +8182,13 @@ class Screen {
     this.cnv.style.width = `${w}px`;
     this.cnv.style.height = `${h}px`;
     this.ctx.imageSmoothingEnabled = false;
-    if (this.loading)
-      this.drawBanner('Loading...');
+    const {lastBanner, lastState, lastStatus} = this;
+    if (lastBanner)
+      this.drawBanner(lastBanner);
+    if (lastState)
+      this.drawState(lastState);
+    if (lastStatus)
+      this.drawStatus(lastStatus);
   }
 
   multiplyZoom(m){

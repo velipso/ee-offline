@@ -449,6 +449,8 @@ class TestSuite {
     tr.appendChild(td2);
     if (totalFail > 0)
       document.getElementById('menu').style.backgroundColor = '#f00';
+
+    return totalFail <= 0;
   }
 }
 
@@ -462,7 +464,7 @@ async function runTests(){
   //defaultScreen.debug = true;
   defaultScreen.drawBanner('Running tests...');
   loadTests(TestSuite.it, TestSuite.expect);
-  await TestSuite.run();
+  defaultScreen.drawBanner((await TestSuite.run()) ? 'Pass' : 'Fail');
 }
 
 function showTestMenu(){
