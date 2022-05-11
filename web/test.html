@@ -35,14 +35,11 @@ a:hover, a:active {
   color: #fff;
   overflow: auto;
   position: absolute;
-  top: 20px;
-  left: 20px;
-  right: 20px;
-  bottom: 20px;
-  border: 2px solid #2ac;
-  border-radius: 10px;
-  background-color: #278;
-  padding: 0 10px;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  padding: 10px;
 }
 table {
   margin: 10px 10px 10px 0;
@@ -87,7 +84,8 @@ td {
   <script src="jszip.min.js"></script>
   <script src="pako_inflate.min.js"></script>
   <script src="index.js"></script>
-  <script src="test.js"></script>
+  <script src="tests.js"></script>
+  <script src="test-harness.js"></script>
   <script>
     loadResources().then(() => runTests());
   </script>

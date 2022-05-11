@@ -4723,8 +4723,6 @@ class EverybodyEdits {
   }
 
   draw(){
-    this.state.enterFrame();
-    this.state.exitFrame();
     this.screen.startDraw();
     this.state.draw(this.screen, 0, 0);
     this.screen.endDraw();
@@ -4747,8 +4745,6 @@ class BlObject {
   moving = false;
   hitmap;
 
-  enterFrame(){}
-  exitFrame(){}
   tick(input){}
 
   draw(target, ox, oy){
@@ -4813,16 +4809,6 @@ class BlContainer extends BlObject {
       if (Math.abs(this.y - (-this.target.y + Config.bh / 2)) < 0.5)
         this.y = -this.target.y + Config.bh / 2;
     }
-  }
-
-  exitFrame(){
-    for (const o of this.content)
-      o.exitFrame();
-  }
-
-  enterFrame(){
-    for (const o of this.content)
-      o.enterFrame();
   }
 
   draw(target, ox, oy){
@@ -7905,6 +7891,13 @@ class PlayState extends BlContainer {
 
   tick(input){
     super.tick(input);
+
+    const keysLength = this.keysQueue.length;
+    for (let i = 0; i < keysLength; i++){
+      const {color, state} = this.keysQueue.shift();
+      this.switchKey(color, state, true);
+    }
+
     this.tickCount++;
 
     {
@@ -7913,17 +7906,6 @@ class PlayState extends BlContainer {
       if (this.world.overlaps(this.player))
         this.world.showDeathGate = old;
     }
-  }
-
-  enterFrame(){
-    const keysLength = this.keysQueue.length;
-    for (let i = 0; i < keysLength; i++){
-      const {color, state} = this.keysQueue.shift();
-      this.switchKey(color, state, true);
-    }
-  }
-
-  exitFrame(){
   }
 
   switchKey(color, state, fromQueue){
