@@ -138,13 +138,12 @@ class Config {
 //
 
 class Input {
-  keyDown;
-  keyJustPressed;
-
-  constructor(){
-    this.keyDown = {};
-    this.keyJustPressed = {};
-  }
+  keyDown = {};
+  keyJustPressed = {};
+  gpJump = false;
+  gpHorizontal = 0;
+  gpVertical = 0;
+  controllers = false;
 
   down(code){
     if (!this.keyDown[code]){
@@ -158,6 +157,63 @@ class Input {
     delete this.keyJustPressed[code];
   }
 
+  startTick(){
+    if (this.keyJustPressed.F7){
+      this.controllers = !this.controllers;
+      if (!this.controllers)
+        this.blur();
+    }
+    if (this.controllers){
+      try {
+        const gamepads = navigator.getGamepads();
+        if (gamepads.length > 0){
+          let jump = false;
+          let horizontal = 0;
+          let vertical = 0;
+          for (const gp of gamepads){
+            for (let i = 0; i < Math.min(4, gp.buttons.length); i++){
+              if (gp.buttons[i].pressed)
+                jump = true;
+            }
+            if (gp.axes.length >= 2){
+              if (gp.axes[0] < -0.5)
+                horizontal = -1;
+              else if (gp.axes[0] > 0.5)
+                horizontal = 1;
+              if (gp.axes[1] < -0.5)
+                vertical = -1;
+              else if (gp.axes[1] > 0.5)
+                vertical = 1;
+            }
+          }
+          if (this.gpJump && !jump)
+            this.up('Space');
+          else if (!this.gpJump && jump)
+            this.down('Space');
+          this.gpJump = jump;
+          if (this.gpHorizontal !== horizontal){
+            this.up('ArrowLeft');
+            this.up('ArrowRight');
+            if (horizontal < 0)
+              this.down('ArrowLeft');
+            else if (horizontal > 0)
+              this.down('ArrowRight');
+            this.gpHorizontal = horizontal;
+          }
+          if (this.gpVertical !== vertical){
+            this.up('ArrowUp');
+            this.up('ArrowDown');
+            if (vertical < 0)
+              this.down('ArrowUp');
+            else if (vertical > 0)
+              this.down('ArrowDown');
+            this.gpVertical = vertical;
+          }
+        }
+      } catch (e){}
+    }
+  }
+
   endTick(){
     this.keyJustPressed = {};
   }
@@ -165,6 +221,9 @@ class Input {
   blur(){
     this.keyDown = {};
     this.keyJustPressed = {};
+    this.gpJump = false;
+    this.gpHorizontal = 0;
+    this.gpVertical = 0;
   }
 }
 
@@ -4715,6 +4774,7 @@ class EverybodyEdits {
   advanceTime(dt){
     this.accumulatedTime += dt;
     while (this.accumulatedTime >= Config.physics_ms_per_tick){
+      this.input.startTick();
       this.state.tick(this.input);
       this.screen.tick(this.input);
       this.input.endTick();
