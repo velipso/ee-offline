@@ -1,4 +1,5 @@
-let defaultScreen, defaultInput, eeGame, tutorialZip, tutorialLoaded = false;
+let defaultScreen, defaultInput, eeGame;
+let campaignsZip, campaignsLoaded = false, lastCampaign = {c: 0, w: 0};
 
 //
 // Flash polyfills
@@ -5468,7 +5469,7 @@ class World extends BlObject {
   }
 
   getTile(layer, x, y){
-    if(layer < 0 || layer >= this.depth || x < 0 || x >= this.width || y < 0 || y >= this.height)
+    if (layer < 0 || layer >= this.depth || x < 0 || x >= this.width || y < 0 || y >= this.height)
       return 0;
     return this.realMap[layer][y][x]
   }
@@ -6751,7 +6752,7 @@ class Player extends SynchronizedSprite {
   name;
   isMe;
   state;
-  isFlying = false;
+  isInGodMode = false;
   spriteRect;
   queue = Array.from({length: Config.physics_queue_length}).map(() => 0);
   lastJump;
@@ -6824,6 +6825,10 @@ class Player extends SynchronizedSprite {
     this.lastJump = -this.state.now();
   }
 
+  get isFlying(){
+    return this.isInGodMode;
+  }
+
   get isControlled(){
     // TODO: check for global target
     return this.isMe;
@@ -6862,6 +6867,15 @@ class Player extends SynchronizedSprite {
     //if (speedBoost == 2) sm *= 0.6;
     //if (zombie) sm *= 0.6;
     return sm;
+  }
+
+  resetDeath(){
+    this.isDead = false;
+  }
+
+  resetCheckpoint(){
+    this.checkpoint_x = -1;
+    this.checkpoint_y = -1;
   }
 
   respawn(){
@@ -7774,7 +7788,7 @@ class Player extends SynchronizedSprite {
     else{
       target.copyPixelsRotated(
         this.bmd,
-        this.spriteRect.x,
+        this.isFlying ? 61 * 26 : this.spriteRect.x,
         this.spriteRect.y,
         this.spriteRect.w,
         this.spriteRect.h,
@@ -8046,6 +8060,12 @@ class PlayState extends BlContainer {
       this.world.showDeathGate = this.player.deaths;
       if (this.world.overlaps(this.player))
         this.world.showDeathGate = old;
+    }
+
+    if (input.keyJustPressed.KeyG){
+      this.player.isInGodMode = !this.player.isInGodMode;
+      this.player.resetDeath();
+      // TODO: this.world.setShowAllSecrets(this.player.isInGodMode);
     }
   }
 
@@ -8504,8 +8524,8 @@ async function loadResources(){
 
   EverybodyEdits.init();
 
-  defaultScreen.drawBanner('Loading tutorial...');
-  tutorialZip = await blobToZipObj(await loadBlob('../media/campaigns/campaigns.zip'));
+  defaultScreen.drawBanner('Loading campaigns...');
+  campaignsZip = await blobToZipObj(await loadBlob('../media/campaigns/campaigns.zip'));
 }
 
 function restoreMenu(){
@@ -8563,11 +8583,11 @@ async function playURL(url){
   loadZipObj(await blobToZipObj(await loadBlob(url)), false);
 }
 
-function playTutorial(){
-  loadZipObj(tutorialZip, true);
+function playCampaigns(){
+  loadZipObj(campaignsZip, true);
 }
 
-function loadZipObj(zipObj, tutorial){
+function loadZipObj(zipObj, campaigns){
   const createElement = (name, children) => {
     const p = document.createElement(name);
     if (Array.isArray(children))
@@ -8600,22 +8620,26 @@ function loadZipObj(zipObj, tutorial){
   const list = document.getElementById('world-list');
   list.innerHTML = '';
 
-  if (tutorial){
-    // tutorial zip has specific format
-    list.appendChild(H1('Tutorial Campaigns'));
+  if (campaigns){
+    // campaigns zip has specific format
+    list.appendChild(H1('Campaigns'));
     const cats = CampaignPage.getCampaigns(zipObj);
     for (let c = 0; c < cats.length; c++){
       const cat = cats[c];
       const ul = UL();
       for (let w = 0; w < cat.worlds.length; w++){
         const world = cat.worlds[w];
-        ul.appendChild(LI([
+        const li = LI([
           `${c + 1}.${w + 1}. `,
           A(world.name, () => {
+            lastCampaign = {c, w};
             hideWorlds();
             loadEelvl(world.eelvl);
           })
-        ]));
+        ]);
+        if (lastCampaign.c === c && lastCampaign.w === w)
+          li.style.textDecoration = 'underline';
+        ul.appendChild(li);
       }
       list.appendChild(DIV([
         H2(`${c + 1}. ${cat.name}`),
@@ -8624,8 +8648,8 @@ function loadZipObj(zipObj, tutorial){
       ]));
     }
     showWorlds();
-    if (!tutorialLoaded){
-      tutorialLoaded = true;
+    if (!campaignsLoaded){
+      campaignsLoaded = true;
       loadEelvl(cats[0].worlds[0].eelvl);
     }
   }
@@ -8676,6 +8700,7 @@ function loadZipObj(zipObj, tutorial){
       }
       return false;
     };
+    let nextLevel = 1;
     const outputFiles = (dir, depth) => {
       for (const file of dir){
         if (file.dir){
@@ -8696,10 +8721,11 @@ function loadZipObj(zipObj, tutorial){
           list.appendChild(img);
         }
         else if (file.name.toLowerCase().endsWith('.eelvl')){
-          const ul = UL(LI(A(file.name, () => {
+          const ul = UL(LI([`${nextLevel++}. `, A(file.name, () => {
+            lastCampaign.c = -1;
             hideWorlds();
             loadEelvl(file.data);
-          })));
+          })]));
           ul.style.paddingLeft = '0';
           list.appendChild(ul);
         }

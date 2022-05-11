@@ -42,7 +42,7 @@ a:hover, a:active {
   bottom: 20px;
   left: 20px;
   width: 300px;
-  height: 270px;
+  height: 300px;
   border: 2px solid #2ac;
   border-radius: 10px;
   background-color: #278;
@@ -86,7 +86,7 @@ a:hover, a:active {
 button {
   display: inline-block;
   font-family: ee_nokiafc22;
-  font-size: 16px;
+  font-size: 15px;
   height: 40px;
   background-color: transparent;
   border: none;
@@ -140,8 +140,9 @@ button:active div {
   padding-left: 20px;
 }
 #fps {
+  font-size: 10px;
   display: inline-block;
-  width: 70px;
+  width: 55px;
   text-align: right;
 }
 </style>
@@ -155,6 +156,7 @@ button:active div {
     <p>
       Move: W / S / A / D / Arrows<br />
       Jump: Space<br />
+      God Mode: G<br />
       Debug: F1<br />
       Full screen: F2<br />
       Zoom: F3 / F4<br />
@@ -165,7 +167,7 @@ button:active div {
     <p>
       <input type="file" id="file" hidden oninput="javascript: playFile(this.files[0]);" />
       <button onclick="javascript: document.getElementById('file').click();"><div>Upload</div></button>
-      <button onclick="javascript: playTutorial();"><div>Tutorial</div></button>
+      <button onclick="javascript: playCampaigns();"><div>Campaigns</div></button>
       <span id="fps"></span>
     </p>
   </div>
@@ -180,7 +182,7 @@ button:active div {
   <script src="pako_inflate.min.js"></script>
   <script src="index.js"></script>
   <script>
-    loadResources().then(() => playTutorial());
+    loadResources().then(() => playCampaigns());
   </script>
 </body>
 </html>
