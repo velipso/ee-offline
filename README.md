@@ -3,11 +3,11 @@ Everybody Edits: Offline (EEO) is a recreation of Everybody Edits (EE), adapted 
 
 This fork was created by velipso in order to port the game to HTML5.  It's not done, but you can play what is available so far by clicking here:
 
-[Play Demo](https://cdn.githubraw.com/velipso/ee-offline/c6f50eeacb2330b9b26833b77e4443e81d601a5f/web/index.html)
+[Play Demo](https://cdn.githubraw.com/velipso/ee-offline/32a72f74e1f0b2f77851f6923dc71a0b92f9235d/web/index.html)
 
 You can run the test suite here (adapted from [SirJosh](https://github.com/SirJosh3917/smiley-face-game)):
 
-[Run Tests](https://cdn.githubraw.com/velipso/ee-offline/c6f50eeacb2330b9b26833b77e4443e81d601a5f/web/test.html)
+[Run Tests](https://cdn.githubraw.com/velipso/ee-offline/32a72f74e1f0b2f77851f6923dc71a0b92f9235d/web/test.html)
 
 ## Version differences
 Some features of EE were tricky or unnecessary to preserve, and thus there are several differences between EE and EEO. Those include:
