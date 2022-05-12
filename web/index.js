@@ -5048,6 +5048,8 @@ class World extends BlObject {
   };
   overlapCells = [];
   showDeathGate = 0;
+  showCoinGate = 0;
+  showBlueCoinGate = 0;
   orangeSwitches = Array.from({length: 1000}).map(() => false);
   timedoorState = false;
   hideTimedoorOffset = 0;
@@ -5673,9 +5675,15 @@ class World extends BlObject {
             if (this.lookup.getInt(cx, cy) > (pl.isMe ? this.showDeathGate : pl.deaths))
               continue;
             break;
+          case ItemId.COINGATE:
+            if (this.lookup.getInt(cx, cy) > (pl.isMe ? this.showCoinGate : pl.coins))
+              continue;
+            break;
+          case ItemId.BLUECOINGATE:
+            if (this.lookup.getInt(cx, cy) > (pl.isMe ? this.showBlueCoinGate : pl.bcoins))
+              continue;
+            break;
           /*
-          case ItemId.COINGATE:     if (lookup.getInt(cx, cy) >  /*pl.coins* / (pl.isme ? showCoinGate : pl.coins))  continue; break;
-          case ItemId.BLUECOINGATE:   if (lookup.getInt(cx, cy) >  /*pl.bcoins* / (pl.isme ? showBlueCoinGate : pl.bcoins)) continue; break;
           case ItemId.TEAM_DOOR: if (pl.team == lookup.getInt(cx, cy)) continue; break;
           case ItemId.TEAM_GATE: if (pl.team != lookup.getInt(cx, cy)) continue; break;
 
@@ -6068,38 +6076,34 @@ class World extends BlObject {
               );
             }
             continue;
+          case ItemId.COINGATE:
+            if (this.lookup.getInt(cx, cy) <= this.player.coins) // Locked
+              ItemManager.sprDoors.drawPoint(target, point.x, point.y, 7);
+            else{ // Open
+              ItemManager.bricks[ItemId.COINGATE].drawWithNumber(
+                target, point.x, point.y, this.lookup.getInt(cx, cy) - this.player.coins, true
+              );
+            }
+            continue;
           case ItemId.BLUECOINDOOR:
             if (this.lookup.getInt(cx, cy) <= this.player.bcoins) // Open
-              ItemManager.sprDoors.drawPoint(target, point, 36);
+              ItemManager.sprDoors.drawPoint(target, point.x, point.y, 36);
             else{ // Locked
               ItemManager.bricks[ItemId.BLUECOINDOOR].drawWithNumber(
-                target, point.x, point.y, this.lookup.getInt(cx, cy) - this.player.bcoins, false
+                target, point.x, point.y, this.lookup.getInt(cx, cy) - this.player.bcoins, true
+              );
+            }
+            continue;
+          case ItemId.BLUECOINGATE:
+            if (this.lookup.getInt(cx, cy) <= this.player.bcoins) // Locked
+              ItemManager.sprDoors.drawPoint(target, point.x, point.y, 37);
+            else{ // Open
+              ItemManager.bricks[ItemId.BLUECOINGATE].drawWithNumber(
+                target, point.x, point.y, this.lookup.getInt(cx, cy) - this.player.bcoins, true
               );
             }
             continue;
           /*
-          case ItemId.COINGATE:{
-            // Open / Invisible
-            if (lookup.getInt(cx,cy) <= player.coins) {
-              ItemManager.sprDoors.drawPoint(target, point, 7)
-            } else {
-              // Locked
-              ItemManager.sprCoinGates.drawPoint(target, point, lookup.getInt(cx, cy) - player.coins)
-            }
-            continue;
-          }
-
-          case ItemId.BLUECOINGATE:{
-            // Open / Invisible
-            if (lookup.getInt(cx, cy) <= player.bcoins) {
-              ItemManager.sprDoors.drawPoint(target, point, 37)
-            }else{
-              // Locked
-              ItemManager.sprBlueCoinGates.drawPoint(target, point, lookup.getInt(cx, cy) - player.bcoins)
-            }
-            continue;
-          }
-
           case ItemId.ZOMBIE_DOOR: {
             if (player.zombie) {
               ItemManager.sprDoors.drawPoint(target, point, 12);
@@ -6328,22 +6332,23 @@ class World extends BlObject {
             ItemManager.sprIce.drawPoint(target, point, 11 - (lookup.getNumber(cx, cy) >> 0) % 12);
             continue;
           }
-
-          case ItemId.CAVE_TORCH:{
-            ItemManager.sprCaveTorch.drawPoint(target, point, ((offset/2.3 >> 0)+(width-cx)+cy)%12);
+          */
+          case ItemId.CAVE_TORCH:
+            ItemManager.sprCaveTorch.drawPoint(target, point.x, point.y,
+              ((this.aniOffset / 2.3 >> 0) + (this.width - cx) + cy) % 12);
             continue;
-          }
-
-          case ItemId.DUNGEON_TORCH:{
-            ItemManager.sprDungeonTorch.drawPoint(target, point, lookup.getInt(cx, cy) * 12 + ((offset/2.3 >> 0)+(width-cx)+cy)%12);
+          case ItemId.DUNGEON_TORCH:
+            ItemManager.sprDungeonTorch.drawPoint(
+              target, point.x, point.y,
+              this.lookup.getInt(cx, cy) * 12 +
+                ((this.aniOffset / 2.3 >> 0) + (this.width - cx) + cy) % 12
+            );
             continue;
-          }
-
-          case ItemId.CHRISTMAS_2016_CANDLE:{
-            ItemManager.sprChristmas2016Candle.drawPoint(target, point, ((offset/2.3 >> 0)+(width-cx)+cy)%12);
+          case ItemId.CHRISTMAS_2016_CANDLE:
+            ItemManager.sprChristmas2016Candle.drawPoint(target, point.x, point.y,
+              ((this.aniOffset / 2.3 >> 0) + (this.width - cx) + cy) % 12);
             continue;
-          }
-
+          /*
           case ItemId.HALLOWEEN_2016_EYES:{
             if (player.isFlying)
             {
@@ -8060,6 +8065,20 @@ class PlayState extends BlContainer {
       this.world.showDeathGate = this.player.deaths;
       if (this.world.overlaps(this.player))
         this.world.showDeathGate = old;
+    }
+
+    {
+      const old = this.world.showCoinGate;
+      this.world.showCoinGate = this.player.coins;
+      if (this.world.overlaps(this.player))
+        this.world.showCoinGate = old;
+    }
+
+    {
+      const old = this.world.showBlueCoinGate;
+      this.world.showBlueCoinGate = this.player.bcoins;
+      if (this.world.overlaps(this.player))
+        this.world.showBlueCoinGate = old;
     }
 
     if (input.keyJustPressed.KeyG){

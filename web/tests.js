@@ -22,6 +22,60 @@ function tiles(m){
   return mappings;
 }
 
+it('gold coin doors and gates work', () => {
+  const sim = new Simulator(`
+    ###########
+    #p    G  c#
+    #2211111###
+    #cHH3322###
+    #2###   ###
+    #c3     3X#
+    #HHHGGGHHH#
+    ###########
+  `, tiles({
+    '1': {tile:  43, prop: {rotation: 1}}, // gold coin door 1
+    '2': {tile:  43, prop: {rotation: 2}}, // gold coin door 2
+    '3': {tile:  43, prop: {rotation: 2}}, // gold coin door 3
+    'G': {tile: 165, prop: {rotation: 1}}, // gold coin gate 1
+    'H': {tile: 165, prop: {rotation: 3}}, // gold coin gate 3
+    'c': {tile: 100}  // gold coin
+  }))
+  .right()
+  .wait(750)
+  .left()
+  .wait(1100)
+  .right()
+  .wait(1000);
+  expect(sim.player.worldPosition).toEqual(sim.goal);
+});
+
+it('blue coin doors and gates work', () => {
+  const sim = new Simulator(`
+    ###########
+    #p    G  c#
+    #2211111###
+    #cHH3322###
+    #2###   ###
+    #c3     3X#
+    #HHHGGGHHH#
+    ###########
+  `, tiles({
+    '1': {tile: 213, prop: {rotation: 1}}, // blue coin door 1
+    '2': {tile: 213, prop: {rotation: 2}}, // blue coin door 2
+    '3': {tile: 213, prop: {rotation: 2}}, // blue coin door 3
+    'G': {tile: 214, prop: {rotation: 1}}, // blue coin gate 1
+    'H': {tile: 214, prop: {rotation: 3}}, // blue coin gate 3
+    'c': {tile: 101}  // blue coin
+  }))
+  .right()
+  .wait(750)
+  .left()
+  .wait(1100)
+  .right()
+  .wait(1000);
+  expect(sim.player.worldPosition).toEqual(sim.goal);
+});
+
 it('death gates and checkpoints work', () => {
   const sim = new Simulator(`
     #############
