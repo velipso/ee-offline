@@ -22,6 +22,73 @@ function tiles(m){
   return mappings;
 }
 
+// TODO: test for EFFECT_FLY         = 418;
+// TODO: test for EFFECT_RUN         = 419;
+// TODO: test for EFFECT_PROTECTION  = 420;
+// TODO: test for EFFECT_CURSE       = 421;
+// TODO: test for EFFECT_ZOMBIE      = 422;
+// TODO: test for EFFECT_TEAM        = 423;
+// TODO: test for EFFECT_LOW_GRAVITY = 453;
+// TODO: test for EFFECT_MULTIJUMP   = 461;
+// TODO: test for EFFECT_GRAVITY     = 1517;
+// TODO: test for EFFECT_POISON      = 1584;
+// TODO: test for EFFECT_RESET       = 1618;
+
+it('jump effect works', () => {
+  const sim = new Simulator(`
+    #############
+    #>>>>>>>>>> #
+    #^^^^^^^^^> #
+    #^1c2^3^4## #
+    #^1 2^3^4## #
+    #c1 2^3c4## #
+    # 1 2^3 4## #
+    # 1 2c3 4## #
+    # 1 2 3 4## #
+    #p1J2j3z4X#.#
+    #############
+  `, tiles({
+    '1': {tile:  43, prop: {rotation: 1}}, // gold coin door 1
+    '2': {tile:  43, prop: {rotation: 2}}, // gold coin door 2
+    '3': {tile:  43, prop: {rotation: 3}}, // gold coin door 3
+    '4': {tile:  43, prop: {rotation: 4}}, // gold coin door 4
+    'J': {tile: 417, prop: {rotation: 1}}, // big jump
+    'j': {tile: 417, prop: {rotation: 2}}, // small jump
+    'z': {tile: 417, prop: {rotation: 0}}, // normal jump
+    'c': {tile: 100},
+  }))
+  .jump()
+  .wait(100)
+  .noJump()
+  .wait(900)
+  .right()
+  .wait(200)
+  .noDir()
+  .wait(500)
+  .jump()
+  .wait(100)
+  .noJump()
+  .wait(500)
+  .right()
+  .wait(170)
+  .noDir()
+  .wait(500)
+  .jump()
+  .wait(100)
+  .noJump()
+  .wait(500)
+  .right()
+  .wait(500)
+  .noDir()
+  .jump()
+  .wait(100)
+  .noJump()
+  .wait(500)
+  .right()
+  .wait(500);
+  expect(sim.player.worldPosition).toEqual(sim.goal);
+});
+
 it('gold coin doors and gates work', () => {
   const sim = new Simulator(`
     ###########

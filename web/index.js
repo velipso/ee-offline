@@ -129,6 +129,23 @@ class Config {
   static physics_gravity             = 2;
   static physics_queue_length        = 2;
   static camera_lag = 1 / 16;
+  // Effects
+  static effectReset                 = -1;
+  static effectJump                  = 0;
+  static effectFly                   = 1;
+  static effectRun                   = 2;
+  static effectProtection            = 3;
+  static effectCurse                 = 4;
+  static effectZombie                = 5;
+  static effectTeam                  = 6;
+  static effectLowGravity            = 7;
+  static effectFire                  = 8;
+  static effectMultijump             = 9;
+  static effectGravity               = 10;
+  static effectPoison                = 11;
+
+  static maxThrust = 0.2;
+  static thrustBurnOff = 0.01;
   static bw = 640;
   static bh = 480;
   static showBackground = true;
@@ -962,9 +979,8 @@ class ItemTab {
 // ItemBrick
 //
 
-function drawBrickWithNumber(target, ox, oy, num, white, bmd, offset){
+function drawNumber(target, ox, oy, num, white){
   const srcBmd = white ? ItemManager.blockNumbersBMD : ItemManager.blockNumbers2BMD;
-  target.copyPixels(bmd, offset * 16, 0, 16, 16, ox, oy, 16, 16);
   if (num >= 1000)
     target.copyPixels(srcBmd, 40, 0, 4, 5, ox + 12, oy + 11, 4, 5);
   else{
@@ -974,6 +990,11 @@ function drawBrickWithNumber(target, ox, oy, num, white, bmd, offset){
       target.copyPixels(srcBmd, n * 4, 0, 4, 5, ox + 12 - i * 5, oy + 11, 4, 5);
     }
   }
+}
+
+function drawBrickWithNumber(target, ox, oy, num, white, bmd, offset){
+  target.copyPixels(bmd, offset * 16, 0, 16, 16, ox, oy, 16, 16);
+  drawNumber(target, ox, oy, num, white);
 }
 
 class ItemBrick {
@@ -4761,7 +4782,7 @@ class BlObject {
   tick(input){}
 
   draw(target, ox, oy){
-    target.fillRect({x: this.x + ox, y: this.y + oy, w: 1, h: 1}, '#ffffff');
+    target.fillRect(this.x + ox, this.y + oy, 1, 1, '#ffffff');
   }
 }
 
@@ -5035,6 +5056,7 @@ class World extends BlObject {
   timedoorState = false;
   hideTimedoorOffset = 0;
   labels = [];
+  showAllSecrets = false;
 
   constructor(){
     super();
@@ -5472,14 +5494,14 @@ class World extends BlObject {
           case 414:
           case 1519:
           case ItemId.SLOW_DOT_INVISIBLE:
-            if (
-              !this.player.isFlying &&
-              this.lookup.isBlink(cx, cy) &&
-              this.lookup.getBlink(cx, cy) >= 0 &&
-              // originally 0.1 at 60 FPS => 0.06 at 100 TPS
-              this.lookup.updateBlink(cx, cy, 0.06) >= 5
-            )
-              this.lookup.deleteBlink(cx, cy);
+            if (!this.player.isFlying && this.lookup.isBlink(cx, cy)){
+              if (this.lookup.getBlink(cx, cy) >= 0){
+                if (this.lookup.updateBlink(cx, cy, 0.1) >= 5)
+                  this.lookup.deleteBlink(cx, cy);
+              }
+              else
+                this.lookup.updateBlink(cx, cy, 1);
+            }
             break;
         }
       }
@@ -5677,13 +5699,22 @@ class World extends BlObject {
             if (this.lookup.getInt(cx, cy) > (pl.isMe ? this.showBlueCoinGate : pl.bcoins))
               continue;
             break;
-          /*
-          case ItemId.TEAM_DOOR: if (pl.team == lookup.getInt(cx, cy)) continue; break;
-          case ItemId.TEAM_GATE: if (pl.team != lookup.getInt(cx, cy)) continue; break;
-
-          case ItemId.ZOMBIE_GATE: if (!pl.zombie) continue; break;
-          case ItemId.ZOMBIE_DOOR: if ( pl.zombie) continue; break;
-          */
+          case ItemId.TEAM_DOOR:
+            if (pl.team === this.lookup.getInt(cx, cy))
+              continue;
+            break;
+          case ItemId.TEAM_GATE:
+            if (pl.team !== this.lookup.getInt(cx, cy))
+              continue;
+            break;
+          case ItemId.ZOMBIE_GATE:
+            if (!pl.zombie)
+              continue;
+            break;
+          case ItemId.ZOMBIE_DOOR:
+            if (pl.zombie)
+              continue;
+            break;
           case 50:
             this.lookup.setSecret(cx, cy, true);
             break;
@@ -5726,10 +5757,8 @@ class World extends BlObject {
       const frame = this.lookup.getBlink(cx, cy) >> 0;
       if (frame >= 0)
         sprite.drawPoint(target, x, y, startFrame + frame);
-      else{
-        this.lookup.updateBlink(cx, cy, 1);
+      else
         return false;
-      }
     }
     return true;
   }
@@ -6087,26 +6116,13 @@ class World extends BlObject {
               );
             }
             continue;
+          case ItemId.ZOMBIE_DOOR:
+            ItemManager.sprDoors.drawPoint(target, x, y, this.player.zombie ? 12 : 13);
+            continue;
+          case ItemId.ZOMBIE_GATE:
+            ItemManager.sprDoors.drawPoint(target, x, y, this.player.zombie ? 13 : 12);
+            continue;
           /*
-          case ItemId.ZOMBIE_DOOR: {
-            if (player.zombie) {
-              ItemManager.sprDoors.drawPoint(target, point, 12);
-            }
-            else {
-              ItemManager.sprDoors.drawPoint(target, point, 13);
-            }
-            continue;
-          }
-          case ItemId.ZOMBIE_GATE: {
-            if (player.zombie) {
-              ItemManager.sprDoors.drawPoint(target, point, 13);
-            }
-            else {
-              ItemManager.sprDoors.drawPoint(target, point, 12);
-            }
-            continue;
-          }
-
           case 83:{
             if (lookup.isBlink(cx, cy)) {
               ItemManager.sprDrumsBlink.drawPoint(target, point, (lookup.getBlink(cx, cy)/6)<<0);
@@ -6202,96 +6218,87 @@ class World extends BlObject {
             ItemManager.sprHologram.drawPoint(target, point, ((offset/5 >> 0)+cx+cy)%5)
             continue;
           }
-
-          case ItemId.EFFECT_TEAM: {
-            var effectBlockTeam:int = lookup.getInt(cx, cy);
-            ItemManager.sprTeamEffect.drawPoint(target, point, effectBlockTeam);
-
-            continue;
-          }
-
-          case ItemId.TEAM_DOOR: {
-            var teamDoorTeam:int = lookup.getInt(cx, cy);
-            var teamDoorFrame:int = 22 + teamDoorTeam;
-            if (player.team == teamDoorTeam) teamDoorFrame += 7;
-            ItemManager.sprDoors.drawPoint(target, point, teamDoorFrame);
-            continue;
-          }
-          case ItemId.TEAM_GATE: {
-            var teamGateTeam:int = lookup.getInt(cx, cy);
-            var teamGateFrame:int = 29 + teamGateTeam;
-            if (player.team == teamGateTeam) teamGateFrame -= 7;
-            ItemManager.sprDoors.drawPoint(target, point, teamGateFrame);
-            continue;
-          }
-
-          case ItemId.EFFECT_CURSE: {
-            ItemManager.sprEffect.drawPoint(target, point, lookup.getInt(cx, cy) != 0 ? 4 : 11);
-            continue;
-          }
-          case ItemId.EFFECT_FLY: {
-            ItemManager.sprEffect.drawPoint(target, point, lookup.getBoolean(cx, cy) ? 1 : 8);
-            continue;
-          }
-          case ItemId.EFFECT_JUMP: {
-            ItemManager.sprEffect.drawPoint(target, point, [7, 0, 22][lookup.getInt(cx, cy)]);
-            continue;
-          }
-          case ItemId.EFFECT_PROTECTION: {
-            ItemManager.sprEffect.drawPoint(target, point, lookup.getBoolean(cx, cy) ? 3 : 10);
-            continue;
-          }
-          case ItemId.EFFECT_RUN: {
-            ItemManager.sprEffect.drawPoint(target, point, [9, 2, 25][lookup.getInt(cx, cy)]);
-            continue;
-          }
-          case ItemId.EFFECT_ZOMBIE: {
-            ItemManager.sprEffect.drawPoint(target, point, lookup.getInt(cx, cy) != 0 ? 5 : 12);
-            continue;
-          }
-          case ItemId.EFFECT_LOW_GRAVITY: {
-            ItemManager.sprEffect.drawPoint(target, point, lookup.getBoolean(cx, cy) ? 13 : 14);
-            continue;
-          }
-          case ItemId.EFFECT_MULTIJUMP: {
-            if (lookup.getInt(cx, cy) == 1) {
-              ItemManager.sprEffect.drawPoint(target, point, 16)
-            }
-            else ItemManager.sprMultiJumps.drawPoint(target, point, lookup.getInt(cx, cy))
-            continue;
-          }
-          case ItemId.EFFECT_GRAVITY: {
-            ItemManager.sprGravityEffect.drawPoint(target, point, lookup.getInt(cx, cy));
-            continue;
-          }
-          case ItemId.EFFECT_POISON: {
-            ItemManager.sprEffect.drawPoint(target, point, lookup.getInt(cx, cy) != 0 ? 23 : 24);
-            continue;
-          }
-
-          //Secret passages!
-          case 50:{
-            if (showAllSecrets || full || lookup.getSecret(cx, cy)) {
-              ItemManager.sprSecret.drawPoint(target, point, 0);
-            }
-            continue;
-          }
-          case 243:{
-            if (showAllSecrets || full || lookup.getSecret(cx, cy)) {
-              ItemManager.sprSecret.drawPoint(target, point, 1);
-            } else {
-              ItemManager.bricks[44].drawTo(target, (cx<<4)+ox, (cy<<4)+oy)
-            }
-            continue;
-          }
-          case 136:{
-            var pl:Player = (Global.base.state as PlayState).player;
-            if ((Bl.data.canEdit && pl.isFlying) || full){
-              ItemManager.sprSecret.drawPoint(target, point, 2);
-            }
-            continue;
-          }
           */
+          case ItemId.EFFECT_TEAM:
+            ItemManager.sprTeamEffect.drawPoint(target, x, y, this.lookup.getInt(cx, cy));
+            continue;
+          case ItemId.TEAM_DOOR:{
+            const teamDoorTeam = this.lookup.getInt(cx, cy);
+            let teamDoorFrame = 22 + teamDoorTeam;
+            if (this.player.team === teamDoorTeam)
+              teamDoorFrame += 7;
+            ItemManager.sprDoors.drawPoint(target, x, y, teamDoorFrame);
+            continue;
+          }
+          case ItemId.TEAM_GATE:{
+            const teamGateTeam = this.lookup.getInt(cx, cy);
+            let teamGateFrame = 29 + teamGateTeam;
+            if (this.player.team === teamGateTeam)
+              teamGateFrame -= 7;
+            ItemManager.sprDoors.drawPoint(target, x, y, teamGateFrame);
+            continue;
+          }
+          case ItemId.EFFECT_CURSE:
+            ItemManager.sprEffect.drawPoint(target, x, y,
+              this.lookup.getInt(cx, cy) !== 0 ? 4 : 11);
+            if (this.lookup.getInt(cx, cy) !== 0)
+              drawNumber(target, x, y, this.lookup.getInt(cx, cy), true);
+            continue;
+          case ItemId.EFFECT_FLY:
+            ItemManager.sprEffect.drawPoint(target, x, y, this.lookup.getBoolean(cx, cy) ? 1 : 8);
+            continue;
+          case ItemId.EFFECT_JUMP:
+            ItemManager.sprEffect.drawPoint(target, x, y, ([7, 0, 22])[this.lookup.getInt(cx, cy)]);
+            continue;
+          case ItemId.EFFECT_PROTECTION:
+            ItemManager.sprEffect.drawPoint(target, x, y, this.lookup.getBoolean(cx, cy) ? 3 : 10);
+            continue;
+          case ItemId.EFFECT_RUN:
+            ItemManager.sprEffect.drawPoint(target, x, y, ([9, 2, 25])[this.lookup.getInt(cx, cy)]);
+            continue;
+          case ItemId.EFFECT_ZOMBIE:
+            ItemManager.sprEffect.drawPoint(target, x, y,
+              this.lookup.getInt(cx, cy) !== 0 ? 5 : 12);
+            if (this.lookup.getInt(cx, cy) !== 0)
+              drawNumber(target, x, y, this.lookup.getInt(cx, cy), true);
+            continue;
+          case ItemId.EFFECT_LOW_GRAVITY:
+            ItemManager.sprEffect.drawPoint(target, x, y, this.lookup.getBoolean(cx, cy) ? 13 : 14);
+            continue;
+          case ItemId.EFFECT_MULTIJUMP:
+            if (this.lookup.getInt(cx, cy) === 1)
+              ItemManager.sprEffect.drawPoint(target, x, y, 16);
+            else{
+              ItemManager.bricks[ItemId.EFFECT_MULTIJUMP].drawWithNumber(
+                target, x, y, this.lookup.getInt(cx, cy), true
+              );
+            }
+            continue;
+          case ItemId.EFFECT_GRAVITY:
+            ItemManager.sprGravityEffect.drawPoint(target, x, y, this.lookup.getInt(cx, cy));
+            continue;
+          case ItemId.EFFECT_POISON:
+            ItemManager.sprEffect.drawPoint(target, x, y,
+              this.lookup.getInt(cx, cy) !== 0 ? 23 : 24);
+            if (this.lookup.getInt(cx, cy) !== 0)
+              drawNumber(target, x, y, this.lookup.getInt(cx, cy), true);
+            continue;
+
+          // Secret passages!
+          case 50:
+            if (this.showAllSecrets || full || this.lookup.getSecret(cx, cy))
+              ItemManager.sprSecret.drawPoint(target, x, y, 0);
+            continue;
+          case 243:
+            if (this.showAllSecrets || full || this.lookup.getSecret(cx, cy))
+              ItemManager.sprSecret.drawPoint(target, x, y, 1);
+            else
+              ItemManager.bricks[44].draw(target, x, y);
+            continue;
+          case 136:
+            if ((/* TODO: Bl.data.canEdit &&*/ this.player.isFlying) || full)
+              ItemManager.sprSecret.drawPoint(target, x, y, 2);
+            continue;
           case ItemId.LABEL:
             continue;
           /*
@@ -6801,6 +6808,43 @@ class Player extends SynchronizedSprite {
   jumpCount = 0;
   maxJumps = 1;
   isInvulnerable = false;
+  jumpBoost = 0;
+  speedBoost = 0;
+  hasLevitation = false;
+  isThrusting = false;
+  currentThrust = 0;
+  cursed = false;
+  curseTimeStart = 0;
+  curseDuration = 0;
+  zombie = false;
+  zombieTimeStart = 0;
+  zombieDuration = 0;
+  lowGravity = false;
+  isOnFire = false;
+  fireTimeStart = 0;
+  fireDuration = 0;
+  poison = false;
+  poisonTimeStart = 0;
+  poisonDuration = 0;
+  team = 0;
+  teamQueue = [];
+
+  static staticEffects = [
+    Config.effectJump,
+    Config.effectFly,
+    Config.effectRun,
+    Config.effectProtection,
+    Config.effectLowGravity,
+    Config.effectMultijump,
+    Config.effectGravity
+  ];
+
+  static timedEffects = [
+    Config.effectCurse,
+    Config.effectZombie,
+    Config.effectFire,
+    Config.effectPoison
+  ];
 
   constructor(world, name, isMe, state){
     super(ItemManager.smileysBMD);
@@ -6838,27 +6882,25 @@ class Player extends SynchronizedSprite {
 
   get gravityMultiplier(){
     let gm = 1;
-    // TODO: if (low_gravity) gm *= 0.15;
+    if (this.lowGravity) gm *= 0.15;
     gm *= this.worldGravityMultiplier;
     return gm;
   }
 
   get jumpMultiplier(){
     let jm = 1;
-    // TODO: jump multiplier
-    //if (jumpBoost == 1) jm *= 1.3;
-    //if (jumpBoost == 2) jm *= 0.75;
-    //if (zombie) jm *= 0.75;
+    if (this.jumpBoost === 1) jm *= 1.3;
+    else if (this.jumpBoost === 2) jm *= 0.75;
+    if (this.zombie) jm *= 0.75;
     if (this.slippery > 0) jm *= .88;
     return jm;
   }
 
   get speedMultiplier(){
     let sm = 1;
-    // TODO: speed multiplier
-    //if (speedBoost == 1) sm *= 1.5;
-    //if (speedBoost == 2) sm *= 0.6;
-    //if (zombie) sm *= 0.6;
+    if (this.speedBoost == 1) sm *= 1.5;
+    if (this.speedBoost == 2) sm *= 0.6;
+    if (this.zombie) sm *= 0.6;
     return sm;
   }
 
@@ -6869,6 +6911,15 @@ class Player extends SynchronizedSprite {
   resetCheckpoint(){
     this.checkpoint_x = -1;
     this.checkpoint_y = -1;
+  }
+
+  resetEffects(resetTimed = true){
+    for (const s of Player.staticEffects)
+      this.setEffect(s, false);
+    if (resetTimed){
+      for (const t of Player.timedEffects)
+        this.setEffect(t, false);
+    }
   }
 
   respawn(){
@@ -6886,6 +6937,11 @@ class Player extends SynchronizedSprite {
     // TODO: this.tilequeue = [];
 
     this.placeAtSpawn(true);
+
+    this.setEffect(Config.effectCurse, false);
+    this.setEffect(Config.effectZombie, false);
+    this.setEffect(Config.effectFire, false);
+    this.setEffect(Config.effectPoison, false);
   }
 
   placeAtSpawn(checkpoint){
@@ -6936,6 +6992,76 @@ class Player extends SynchronizedSprite {
     }
   }
 
+  setTeam(team){
+    if (!this.isMe){
+      this.team = team;
+      return;
+    }
+
+    const oldTeam = this.team;
+    this.team = team;
+    if (this.world.overlaps(this)){
+      this.team = oldTeam;
+      this.teamQueue.push(team);
+    }
+  }
+
+  setEffect(effectId, active, arg = 0, duration = 0){
+    switch (effectId){
+      case Config.effectReset:
+        this.resetEffects(false);
+        break;
+      case Config.effectJump:
+        this.jumpBoost = active ? arg : 0;
+        break;
+      case Config.effectFly:
+        this.hasLevitation = active;
+        break;
+      case Config.effectRun:
+        this.speedBoost = active ? arg : 0;
+        break;
+      case Config.effectProtection:
+        this.isInvulnerable = active;
+        break;
+      case Config.effectCurse:
+        this.cursed = active;
+        if (active){
+          this.curseTimeStart = this.state.now() - (duration - arg) * 1000;
+          this.curseDuration = duration * 1000;
+        }
+        break;
+      case Config.effectZombie:
+        this.zombie = active;
+        if (active){
+          this.zombieTimeStart = this.state.now() - (duration - arg) * 1000;
+          this.zombieDuration = duration * 1000;
+        }
+        break;
+      case Config.effectLowGravity:
+        this.lowGravity = active;
+        break;
+      case Config.effectFire:
+        this.isOnFire = active;
+        if (active){
+          this.fireTimeStart = this.state.now() - (duration - arg) * 1000;
+          this.fireDuration = duration * 1000;
+        }
+        break;
+      case Config.effectMultijump:
+        this.maxJumps = active ? arg : 1;
+        break;
+      case Config.effectGravity:
+        this.flipGravity = arg;
+        break;
+      case Config.effectPoison:
+        this.poison = active;
+        if (active){
+          this.poisonTimeStart = this.state.now() - (duration - arg) * 1000;
+          this.poisonDuration = duration * 1000;
+        }
+        break;
+    }
+  }
 
   tick(input){
     /*
@@ -6957,15 +7083,17 @@ class Player extends SynchronizedSprite {
     else
       this.deadOffset = 0;
 
-    /*
-    if (!isDead && (cursed || zombie || isOnFire || poison)) {
-      var curTime:Number = new Date().time;
-      if (cursed && curseDuration && curTime - curseTimeStart > curseDuration * 1000) killPlayer();
-      if (zombie && zombieDuration && curTime - zombieTimeStart > zombieDuration * 1000) killPlayer();
-      if (isOnFire && fireDuration && curTime - fireTimeStart > fireDuration * 1000) killPlayer();
-      if (poison && poisonDuration && curTime - poisonTimeStart > poisonDuration * 1000) killPlayer();
+    if (!this.isDead && (this.cursed || this.zombie || this.isOnFire || this.poison)){
+      const now = this.state.now();
+      if (this.cursed && this.curseDuration && now - this.curseTimeStart > this.curseDuration)
+        this.killPlayer();
+      if (this.zombie && this.zombieDuration && now - this.zombieTimeStart > this.zombieDuration)
+        this.killPlayer();
+      if (this.isOnFire && this.fireDuration && now - this.fireTimeStart > this.fireDuration)
+        this.killPlayer();
+      if (this.poison && this.poisonDuration && now - this.poisonTimeStart > this.poisonDuration)
+        this.killPlayer();
     }
-    */
 
     let cx = (this.x + 8) >> 4;
     let cy = (this.y + 8) >> 4;
@@ -6982,9 +7110,11 @@ class Player extends SynchronizedSprite {
       this.current = this.world.getTile(0, cx, cy);
     }
 
-    /*
-    if (tx != -1) UpdateTeamDoors(tx, ty);
-    */
+    {
+      const teamQueueLength = this.teamQueue.length;
+      for (let i = 0; i < teamQueueLength; i++)
+        this.setTeam(this.teamQueue.shift());
+    }
 
     const getCurrentBelow = () => {
       let x = 0, y = 0;
@@ -7093,12 +7223,11 @@ class Player extends SynchronizedSprite {
             this.morx = 0;
             this.mory = this._lava_buoyancy;
             break;
-          case ItemId.TOXIC_WASTE: {
+          case ItemId.TOXIC_WASTE:
             this.morx = 0;
             this.mory = _toxic_buoyancy;
             if (!this.isDead && !this.isInvulnerable) this.killPlayer();
             break;
-          }
           case ItemId.FIRE:
           case ItemId.SPIKE:
           case ItemId.SPIKE_CENTER:
@@ -7270,7 +7399,7 @@ class Player extends SynchronizedSprite {
     else if (ItemId.isSolid(this.current_below))
       this.slippery = 0;
     else if (this.slippery > 0)
-      this.slippery -= .2;
+      this.slippery -= 0.2;
 
     if (this._speedX || this._modifierX){
       this._speedX += this._modifierX;
@@ -7634,13 +7763,12 @@ class Player extends SynchronizedSprite {
         mod = -1;
       }
 
-      if (this.spaceDown /*TODO: || !this.isMe && !this.isControlled && hasLevitation*/){
-        /*
-        if ( hasLevitation ) {
-          isThrusting = true;
-          applyThrust();
+      if (this.spaceDown || (!this.isMe && !this.isControlled && this.hasLevitation)){
+        if (this.hasLevitation){
+          this.isThrusting = true;
+          this.currentThrust = Config.maxThrust;
         }
-        else*/{
+        else{
           if (this.lastJump < 0){
             if (this.state.now() + this.lastJump > 750)
               inJump = true;
@@ -7651,11 +7779,8 @@ class Player extends SynchronizedSprite {
           }
         }
       }
-      /*
-      else {
-        isThrusting = false;
-      }
-      */
+      else
+        this.isThrusting = false;
 
       if (
         (
@@ -7671,7 +7796,7 @@ class Player extends SynchronizedSprite {
       if (this.jumpCount === 0 && !grounded)
         this.jumpCount = 1; // Not on ground so first 'jump' removed
 
-      if (inJump/*TODO: && !this.hasLevitation*/) {
+      if (inJump && !this.hasLevitation) {
         if (this.jumpCount < this.maxJumps && this.morx && this.mox){ // Jump in x direction
           if (this.maxJumps < 1000) // Not infinite jumps
             this.jumpCount++;
@@ -7690,10 +7815,18 @@ class Player extends SynchronizedSprite {
       this.sendMovement(cx, cy);
     }
 
-    /*
-    if (hasLevitation)
-      updateThrust();
-    */
+    if (this.hasLevitation){
+      if (this.mory !== 0)
+        this.speedY -= this.currentThrust * (Config.physics_jump_height / 2) * this.mory * 0.5;
+      if (this.morx !== 0)
+        this.speedX -= this.currentThrust * (Config.physics_jump_height / 2) * this.morx * 0.5;
+      if (!this.isThrusting){
+        if (this.currentThrust > 0)
+          this.currentThrust -= Config.thrustBurnOff;
+        else
+          this.currentThrust = 0;
+      }
+    }
 
     // Auto align to grid. (do not autocorrect in liquid)
     const imx = this._speedX << 8;
@@ -7758,7 +7891,15 @@ class Player extends SynchronizedSprite {
       return;
     }
 
-    this.drawFace(target, playerX, playerY, false, 0);
+    this.drawFace(target, playerX, playerY, this.zombie, 0);
+
+    // TODO: animate fire
+    if (this.isOnFire)
+      target.copyPixels(ItemManager.auraFireBMD, 0, 0, 26, 26, playerX, playerY, 26, 26);
+
+    if (this.hasLevitation && this.isThrusting){
+      // TODO: playLevitationAnimation(target, ox, oy);
+    }
   }
 
   drawFace(target, pointX, pointY, zombie, deg){
@@ -7779,7 +7920,11 @@ class Player extends SynchronizedSprite {
     else{
       target.copyPixelsRotated(
         this.bmd,
-        this.isFlying ? 61 * 26 : this.spriteRect.x,
+        this.isFlying
+          ? 61 * 26
+          : this.hasLevitation && this.isThrusting
+          ? 36 * 26
+          : this.spriteRect.x,
         this.spriteRect.y,
         this.spriteRect.w,
         this.spriteRect.h,
@@ -7953,6 +8098,126 @@ class Me extends Player {
           case ItemId.KEY_YELLOW:
             this.state.switchKey(this.keyToColor[this.current], true, false);
             break;
+          // Effects
+          case ItemId.EFFECT_JUMP:{
+            const newJumpBoost = this.world.lookup.getInt(cx, cy);
+            if (this.jumpBoost === newJumpBoost)
+              break;
+            this.jumpBoost = newJumpBoost;
+            this.setEffect(Config.effectJump, this.jumpBoost !== 0, this.jumpBoost);
+            break;
+          }
+          case ItemId.EFFECT_FLY:{
+            const newLevitation = this.world.lookup.getBoolean(cx, cy);
+            if (this.hasLevitation === newLevitation)
+              break;
+            this.hasLevitation = newLevitation;
+            this.setEffect(Config.effectFly, this.hasLevitation);
+            break;
+          }
+          case ItemId.EFFECT_RUN:{
+            const newSpeed = this.world.lookup.getInt(cx, cy);
+            if (this.speedBoost === newSpeed)
+              break;
+            this.speedBoost = newSpeed;
+            this.setEffect(Config.effectRun, this.speedBoost !== 0, this.speedBoost);
+            break;
+          }
+          case ItemId.EFFECT_LOW_GRAVITY:{
+            const newLowGravity = this.world.lookup.getBoolean(cx, cy);
+            if (this.lowGravity === newLowGravity)
+              break;
+            this.lowGravity = newLowGravity;
+            this.setEffect(Config.effectLowGravity, this.lowGravity);
+            break;
+          }
+          case ItemId.EFFECT_CURSE:{
+            const newCurse = this.world.lookup.getInt(cx, cy) > 0;
+            if (this.cursed === newCurse || this.isInvulnerable)
+              break;
+            this.cursed = newCurse;
+            this.setEffect(Config.effectCurse, this.cursed,
+              this.world.lookup.getInt(cx, cy), this.world.lookup.getInt(cx, cy));
+            break;
+          }
+          case ItemId.EFFECT_ZOMBIE:{
+            const newZombie = this.world.lookup.getInt(cx, cy) > 0;
+            if (this.zombie === newZombie || this.isInvulnerable)
+              break;
+            this.zombie = newZombie;
+            this.setEffect(Config.effectZombie, this.zombie,
+              this.world.lookup.getInt(cx, cy), this.world.lookup.getInt(cx, cy));
+            break;
+          }
+          case ItemId.EFFECT_POISON:{
+            const newPoison = this.world.lookup.getInt(cx, cy) > 0;
+            if (this.poison === newPoison || this.isInvulnerable)
+              break;
+            this.poison = newPoison;
+            this.setEffect(Config.effectPoison, this.poison,
+              this.world.lookup.getInt(cx, cy), this.world.lookup.getInt(cx, cy));
+            break;
+          }
+          case ItemId.NPC_ZOMBIE:
+            if (this.zombie || this.isInvulnerable)
+              break;
+            this.zombie = true;
+            this.setEffect(Config.effectZombie, true);
+            break;
+          case ItemId.EFFECT_PROTECTION:{
+            const newInv = this.world.lookup.getBoolean(cx, cy);
+            if (this.isInvulnerable === newInv)
+              break;
+            this.isInvulnerable = newInv;
+            if (this.isInvulnerable){
+              this.cursed = false;
+              this.zombie = false;
+              this.poison = false;
+              this.isOnFire = false;
+              this.setEffect(Config.effectCurse, false);
+              this.setEffect(Config.effectPoison, false);
+              this.setEffect(Config.effectZombie, false);
+              this.setEffect(Config.effectFire, false);
+            }
+            this.setEffect(Config.effectProtection, this.isInvulnerable);
+            break;
+          }
+          case ItemId.EFFECT_RESET:
+            this.resetEffects(false);
+            break;
+          case ItemId.EFFECT_TEAM:
+            this.setTeam(this.world.lookup.getInt(cx, cy));
+            break;
+          case ItemId.LAVA:
+            if (this.isOnFire || this.isInvulnerable)
+              break;
+            this.isOnFire = true;
+            this.setEffect(Config.effectFire, this.isOnFire, 2, 2);
+            break;
+          case ItemId.WATER:
+          case ItemId.MUD:
+          case ItemId.TOXIC_WASTE:
+            if (!this.isOnFire)
+              break;
+            this.isOnFire = false;
+            this.setEffect(Config.effectFire, false);
+            break;
+          case ItemId.EFFECT_MULTIJUMP:{
+            const jps = this.world.lookup.getInt(cx, cy);
+            if (jps === this.maxJumps)
+              break;
+            this.maxJumps = jps;
+            this.setEffect(Config.effectMultijump, this.maxJumps !== 1, this.maxJumps);
+            break;
+          }
+          case ItemId.EFFECT_GRAVITY:{
+            const newflipGravity = this.world.lookup.getInt(cx, cy);
+            if (this.flipGravity === newflipGravity)
+              break;
+            this.flipGravity = newflipGravity;
+            this.setEffect(Config.effectGravity, this.flipGravity !== 0, this.flipGravity);
+            break;
+          }
         }
       }
 
@@ -7998,6 +8263,7 @@ class PlayState extends BlContainer {
   keysQueue = [];
   orangeSwitchQueue = [];
   tickCount = 0;
+  effectIcons = [];
 
   constructor(world){
     super();
@@ -8078,7 +8344,8 @@ class PlayState extends BlContainer {
     if (input.keyJustPressed.KeyG){
       this.player.isInGodMode = !this.player.isInGodMode;
       this.player.resetDeath();
-      // TODO: this.world.setShowAllSecrets(this.player.isInGodMode);
+      this.player.isOnFire = false;
+      //TODO: this.world.setShowAllSecrets(this.player.isInGodMode);
     }
   }
 
@@ -8090,26 +8357,7 @@ class PlayState extends BlContainer {
     }
   }
 
-  draw(target, ox, oy){
-    const startX = -this.x - 90;
-    const startY = -this.y - 90;
-    const endX = startX + Config.bw + 180;
-    const endY = startY + Config.bh + 180;
-
-    super.draw(target, ox, oy);
-
-    const ox2 = ox + this.x;
-    const oy2 = oy + this.y;
-
-    // Draws the 'above' decoration layer
-    this.world.postDraw(target, ox2, oy2);
-
-    // Draws you, if flying
-    this.player.drawGods(target, ox2, oy2);
-
-    // Draws bubbles for signs, world portals, etc.
-    this.world.drawDialogs(target, ox2, oy2);
-
+  drawCounts(target){
     let hudY = target.boundary.y + 5;
     const rightEdge = target.boundary.x + target.boundary.w - 20;
     if (this.player.deaths > 0){
@@ -8137,6 +8385,146 @@ class PlayState extends BlContainer {
       ItemManager.sprBonusCoin.drawPoint(target, rightEdge, hudY, 0);
       hudY += 15;
     }
+  }
+
+  drawEffects(target){
+    const now = this.now();
+    const effects = [];
+    if (this.player.jumpBoost !== 0){
+      effects.push({
+        draw: (x, y) => {
+          ItemManager.sprEffect.drawPoint(target, x, y, ([7, 0, 22])[this.player.jumpBoost]);
+        },
+        sort: -1
+      });
+    }
+    if (this.player.hasLevitation){
+      effects.push({
+        draw: (x, y) => {
+          ItemManager.sprEffect.drawPoint(target, x, y, 1);
+        },
+        sort: -2
+      });
+    }
+    if (this.player.speedBoost !== 0){
+      effects.push({
+        draw: (x, y) => {
+          ItemManager.sprEffect.drawPoint(target, x, y, ([9, 2, 25])[this.player.speedBoost]);
+        },
+        sort: -3
+      });
+    }
+    if (this.player.isInvulnerable){
+      effects.push({
+        draw: (x, y) => {
+          ItemManager.sprEffect.drawPoint(target, x, y, 3);
+        },
+        sort: -4
+      });
+    }
+    if (this.player.cursed){
+      const left = this.player.curseDuration - now + this.player.curseTimeStart;
+      effects.push({
+        draw: (x, y) => {
+          ItemManager.sprEffect.drawPoint(target, x, y, 4);
+          drawNumber(target, x, y, Math.ceil(left / 1000), true);
+        },
+        sort: left
+      });
+    }
+    if (this.player.zombie){
+      const left = this.player.zombieDuration - now + this.player.zombieTimeStart;
+      effects.push({
+        draw: (x, y) => {
+          ItemManager.sprEffect.drawPoint(target, x, y, 5);
+          drawNumber(target, x, y, Math.ceil(left / 1000), true);
+        },
+        sort: left
+      });
+    }
+    if (this.player.lowGravity){
+      effects.push({
+        draw: (x, y) => {
+          ItemManager.sprEffect.drawPoint(target, x, y, 13);
+        },
+        sort: -5
+      });
+    }
+    if (this.player.maxJumps !== 1){
+      effects.push({
+        draw: (x, y) => {
+          ItemManager.bricks[ItemId.EFFECT_MULTIJUMP].drawWithNumber(target, x, y,
+            this.player.maxJumps <= 0 ? 0 : this.player.maxJumps - this.player.jumpCount, true
+          );
+        },
+        sort: -6
+      });
+    }
+    if (this.player.flipGravity){
+      effects.push({
+        draw: (x, y) => {
+          ItemManager.sprGravityEffect.drawPoint(target, x, y, this.player.flipGravity);
+        },
+        sort: -7
+      });
+    }
+    if (this.player.poison){
+      const left = this.player.poisonDuration - now + this.player.poisonTimeStart;
+      effects.push({
+        draw: (x, y) => {
+          ItemManager.sprEffect.drawPoint(target, x, y, 23);
+          drawNumber(target, x, y, Math.ceil(left / 1000), true);
+        },
+        sort: left
+      });
+    }
+    if (this.player.team !== 0){
+      effects.push({
+        draw: (x, y) => {
+          ItemManager.sprTeamEffect.drawPoint(target, x, y, this.player.team);
+        },
+        sort: -8
+      });
+    }
+
+    effects.sort((a, b) => {
+      if (a.sort >= 0 && b.sort < 0)
+        return -1;
+      if (b.sort >= 0 && a.sort < 0)
+        return 1;
+      return a.sort - b.sort;
+    });
+
+    let y = target.boundary.y + 7;
+    for (const effect of effects){
+      target.fillRect(4, y - 3, 22, 22, '#444', '#aaa');
+      effect.draw(7, y);
+      y += 25;
+    }
+  }
+
+  draw(target, ox, oy){
+    const startX = -this.x - 90;
+    const startY = -this.y - 90;
+    const endX = startX + Config.bw + 180;
+    const endY = startY + Config.bh + 180;
+
+    super.draw(target, ox, oy);
+
+    const ox2 = ox + this.x;
+    const oy2 = oy + this.y;
+
+    // Draws the 'above' decoration layer
+    this.world.postDraw(target, ox2, oy2);
+
+    // Draws you, if flying
+    this.player.drawGods(target, ox2, oy2);
+
+    // Draws bubbles for signs, world portals, etc.
+    this.world.drawDialogs(target, ox2, oy2);
+
+    this.drawCounts(target);
+    this.drawEffects(target);
   }
 }
 
@@ -8268,13 +8656,20 @@ class Screen {
     }
   }
 
-  fillRect(dst, color){
+  fillRect(x, y, w, h, color, borderColor){
     this.ctx.fillStyle = color;
-    const x1 = this.worldToScreenX(dst.x);
-    const y1 = this.worldToScreenY(dst.y);
-    const x2 = this.worldToScreenX(dst.x + dst.w);
-    const y2 = this.worldToScreenY(dst.y + dst.h);
+    const x1 = this.worldToScreenX(x);
+    const y1 = this.worldToScreenY(y);
+    const x2 = this.worldToScreenX(x + w);
+    const y2 = this.worldToScreenY(y + h);
     this.ctx.fillRect(x1, y1, x2 - x1, y2 - y1);
+    if (borderColor){
+      this.ctx.beginPath();
+      this.ctx.rect(x1, y1, x2 - x1, y2 - y1);
+      this.ctx.lineWidth = this.worldToScreenX(1) - this.worldToScreenX(0);
+      this.ctx.strokeStyle = borderColor;
+      this.ctx.stroke();
+    }
   }
 
   text(text, align, baseline, x, y, fontSize, color){
@@ -8524,6 +8919,7 @@ async function loadResources(){
     LI('aurasOrnateBMD'          ,   64,  64, 'auras_ornate.png'           ),
     LI('aurasBubbleBMD'          ,  512,  64, 'auras_bubble.png'           ),
     LI('aurasGalaxyBMD'          ,  768,  64, 'auras_galaxy.png'           ),
+    LI('auraFireBMD'             ,  156,  26, 'fireaura.png'               ),
     LI('shopBMD'                 , 4850,  73, 'shop.png'                   ),
     LI('shopWorldsBMD'           , 2130,  68, 'shop_worlds.png'            ),
     LI('shopAurasBMD'            , 2716,  92, 'shop_auras.png'             ),
