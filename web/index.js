@@ -8497,7 +8497,7 @@ class PlayState extends BlContainer {
 
     let y = target.boundary.y + 7;
     for (const effect of effects){
-      target.fillRect(4, y - 3, 22, 22, '#444', '#aaa');
+      target.fillRect(target.boundary.x + 4, y - 3, 22, 22, '#444', '#aaa');
       effect.draw(target.boundary.x + 7, y);
       y += 25;
     }
