@@ -7,11 +7,11 @@ LuciferX for singleplayer due to Adobe ending support for Flash.
 I created this fork in order to port the game to HTML5.  It's not done, but you can play what is
 available so far by clicking here:
 
-[Play Demo](https://cdn.githubraw.com/velipso/ee-offline/0389dcb6341acb260eb1206ab2b0792c16a8472c/web/index.html)
+[Play Demo](https://cdn.githubraw.com/velipso/ee-offline/a812baee8e2debce231f1faddf1deadd28c9f204/web/index.html)
 
 You can run the test suite here (inspired by [SirJosh](https://github.com/SirJosh3917/smiley-face-game)):
 
-[Run Tests](https://cdn.githubraw.com/velipso/ee-offline/0389dcb6341acb260eb1206ab2b0792c16a8472c/web/test.html)
+[Run Tests](https://cdn.githubraw.com/velipso/ee-offline/a812baee8e2debce231f1faddf1deadd28c9f204/web/test.html)
 
 HTML5 Port
 ----------
