@@ -7921,9 +7921,9 @@ class Player extends SynchronizedSprite {
       target.copyPixelsRotated(
         this.bmd,
         this.isFlying
-          ? 61 * 26
-          : this.hasLevitation && this.isThrusting
           ? 36 * 26
+          : this.hasLevitation && this.isThrusting
+          ? 61 * 26
           : this.spriteRect.x,
         this.spriteRect.y,
         this.spriteRect.w,
