@@ -12,7 +12,7 @@ function tiles(m){
     ']': {tile: 1116, prop: {rotation: 0}}, // half slab right
     '{': {tile: 1092, prop: {rotation: 0}}, // one way left
     '}': {tile: 1092, prop: {rotation: 2}}, // one way right
-    'X': {tile:    5, goal: true},
+    'X': {tile:  222, goal: true},
     'p': {spawn: true}
   };
   if (m){
@@ -50,7 +50,7 @@ it('lava burns for 2.4 seconds', () => {
     'c': {tile: 100}  // coin
   }))
   .right()
-  .wait(10000);
+  .wait(7000);
   expect(sim.player.worldPosition).toEqual(sim.goal);
 });
 

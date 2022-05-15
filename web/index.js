@@ -150,6 +150,7 @@ class Config {
   static bw = 640;
   static bh = 480;
   static showBackground = true;
+  static eeotasCompatibility = false;
 }
 
 //
@@ -7991,7 +7992,9 @@ class Me extends Player {
       this.upDown        = input.keyDown.ArrowUp    || input.keyDown.KeyW ? -1 : 0;
       this.rightDown     = input.keyDown.ArrowRight || input.keyDown.KeyD ?  1 : 0;
       this.downDown      = input.keyDown.ArrowDown  || input.keyDown.KeyS ?  1 : 0;
-      this.spaceJustDown = !!input.keyJustPressed.Space;
+      // EEO TAS wires just pressed to down, incorrectly imo
+      this.spaceJustDown =
+        Config.eeotasCompatibility ? !!input.keyDown.Space : !!input.keyJustPressed.Space;
       this.spaceDown     = !!input.keyDown.Space;
       this.horizontal    = this.leftDown + this.rightDown;
       this.vertical      = this.upDown + this.downDown;
@@ -8883,14 +8886,16 @@ async function loadResources(){
     e.preventDefault();
     e.stopPropagation();
     defaultInput.down(e.code);
-    if (typeof window.onTestKey === 'function') // hack for tests
-      window.onTestKey(e.code);
+    if (typeof window.onTestKey === 'function') // hack for tests and tas
+      window.onTestKey(e.code, true);
   });
 
   window.addEventListener('keyup', e => {
     e.preventDefault();
     e.stopPropagation();
     defaultInput.up(e.code);
+    if (typeof window.onTestKey === 'function') // hack for tests and tas
+      window.onTestKey(e.code, false);
   });
 
   window.addEventListener('blur', () => {
@@ -8900,7 +8905,10 @@ async function loadResources(){
   new ResizeObserver(entries => {
     for (const e of entries) {
       const c = e.contentRect;
-      defaultScreen.resize(Math.round(c.width), Math.round(c.height));
+      defaultScreen.resize(
+        Math.round(c.width - (window.screenRightMargin || 0)), // screen right margin for tas.html
+        Math.round(c.height)
+      );
     }
   }).observe(document.body);
 
@@ -8980,9 +8988,11 @@ function restoreMenu(){
 }
 
 function hideMenu(){
-  document.getElementById('menu').style.display = 'none';
-  document.getElementById('menu-closed').style.display = '';
-  sessionStorage.setItem('hideMenu', 'true');
+  if (document.getElementById('menu')){
+    document.getElementById('menu').style.display = 'none';
+    document.getElementById('menu-closed').style.display = '';
+    sessionStorage.setItem('hideMenu', 'true');
+  }
   return false;
 }
 
@@ -8995,14 +9005,18 @@ function hideWorlds(){
 function showWorlds(){
   document.getElementById('worlds').style.display = '';
   document.getElementById('world-list').scrollTop = 0;
-  document.getElementById('menu').style.display = 'none';
-  document.getElementById('menu-closed').style.display = 'none';
+  if (document.getElementById('menu')){
+    document.getElementById('menu').style.display = 'none';
+    document.getElementById('menu-closed').style.display = 'none';
+  }
 }
 
 function showMenu(){
-  document.getElementById('menu').style.display = '';
-  document.getElementById('menu-closed').style.display = 'none';
-  sessionStorage.removeItem('hideMenu');
+  if (document.getElementById('menu')){
+    document.getElementById('menu').style.display = '';
+    document.getElementById('menu-closed').style.display = 'none';
+    sessionStorage.removeItem('hideMenu');
+  }
   return false;
 }
 
@@ -9181,14 +9195,4 @@ function loadZipObj(zipObj, campaigns){
       outputFiles(root, 0);
     showWorlds();
   }
-}
-
-function loadEelvl(eelvl){
-  defaultScreen.drawBanner('Loading level...');
-  if (eeGame)
-    eeGame.stop();
-  const world = new World();
-  world.loadEelvl(eelvl);
-  eeGame = new EverybodyEdits(defaultScreen, defaultInput, world);
-  eeGame.run();
 }

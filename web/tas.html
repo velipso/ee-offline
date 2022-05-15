@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>Everybody Edits [TAS]</title>
+  <style>
+@font-face {
+  font-family: ee_nokiafc22;
+  src: url('../media/nokiafc22.ttf');
+}
+@font-face {
+  font-family: ee_visitor;
+  src: url('../media/visitor.ttf');
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #000;
+  height: 100%;
+  overflow: hidden;
+  font-family: monospace;
+  font-size: 12px;
+  color: #ddd;
+}
+canvas {
+  user-select: none;
+  display: block;
+}
+a {
+  color: #6ef;
+  text-decoration: none;
+}
+a:hover, a:active {
+  color: #fff;
+  text-decoration: none;
+}
+#menu {
+  font-family: monospace;
+  color: #fff;
+  overflow: auto;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  padding: 10px;
+}
+table {
+  margin: 10px 10px 10px 0;
+  border-spacing: 0;
+  border-right: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+}
+td {
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  padding: 6px;
+}
+#menu-closed {
+  display: block;
+  font-family: ee_nokiafc22;
+  font-size: 16px;
+  line-height: 5px;
+  overflow: hidden;
+  color: #fff;
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 30px;
+  height: 30px;
+  border: 2px solid #2ac;
+  border-radius: 10px;
+  background-color: #278;
+  padding: 0;
+}
+#menu-closed p {
+  text-align: center;
+  margin-left: 1px;
+  margin-top: 9px;
+}
+#tas {
+  display: flex;
+  flex-flow: column nowrap;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 200px;
+}
+#list {
+  display: flex;
+  flex-flow: column nowrap;
+  flex: auto;
+  background-color: #333;
+  overflow: auto;
+}
+.list-row {
+  font-size: 18px;
+  padding: 4px 10px;
+}
+.list-current {
+  background-color: #666;
+}
+#ctrl {
+  flex: none;
+  background-color: #444;
+  padding: 5px;
+}
+#ctrl p {
+  margin: 5px 0;
+  padding: 0;
+}
+button {
+  display: inline-block;
+  font-family: monospace;
+  font-size: 12px;
+  height: 30px;
+  background-color: transparent;
+  border: none;
+}
+button div {
+  padding: 5px;
+  background-color: #111;
+  color: #ddd;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+}
+button:hover div {
+  color: #fff;
+  border: 2px solid #fff;
+}
+button:active div {
+  transform: translate(0, 2px);
+}
+#worlds {
+  font-family: ee_nokiafc22;
+  font-size: 16px;
+  color: #fff;
+  position: absolute;
+  bottom: 50px;
+  left: 50px;
+  top: 50px;
+  right: 50px;
+  border: 2px solid #2ac;
+  border-radius: 10px;
+  background-color: #278;
+  padding: 0 10px;
+}
+#worlds .menu-x {
+  right: 30px;
+}
+#worlds p {
+  margin: 10px 0;
+}
+#worlds p:last-child {
+  margin-bottom: 0;
+}
+#world-list {
+  position: absolute;
+  overflow: auto;
+  top: 0px;
+  left: 20px;
+  right: 0px;
+  bottom: 0px;
+}
+#world-list ul {
+  list-style-type: none;
+  padding-left: 20px;
+}
+.menu-x {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: block;
+  z-index: 9;
+}
+</style>
+</head>
+<body>
+  <div id="tas">
+    <div id="list">
+    </div>
+    <div id="ctrl">
+      <p>
+        Level:
+      </p>
+      <p>
+        <input type="file" id="file" hidden oninput="javascript: playFile(this.files[0]);" />
+        <button onclick="javascript: document.getElementById('file').click();"><div>Upload</div></button>
+        <button onclick="javascript: playCampaigns();"><div>Campaigns</div></button>
+      </p>
+      <p>
+        Inputs:
+      </p>
+      <p>
+        <input type="file" id="file2" hidden oninput="javascript: loadTAS(this.files[0]);" />
+        <button onclick="javascript: document.getElementById('file2').click();"><div>Load</div></button>
+        <button onclick="javascript: saveTAS();"><div>Save</div></button>
+        <button onclick="javascript: playTAS();"><div id="play">Play</div></button>
+      </p>
+      <p>
+        Controls:
+      </p>
+      <p style="padding-left: 5px;">
+        Move: W/S/A/D/Arrows<br />
+        Jump: Space<br />
+        Rewind: Backspace<br />
+        Forward: Any other key<br />
+        EEOTAS Compatibility: <input type="checkbox" checked oninput="javascript: Config.eeotasCompatibility = this.checked;">
+      </p>
+    </div>
+  </div>
+  <div id="worlds" style="display: none;">
+    <a class="menu-x" href="#" onclick="javascript: return hideWorlds();">X</a>
+    <div id="world-list"></div>
+  </div>
+  <script src="jszip.min.js"></script>
+  <script src="pako_inflate.min.js"></script>
+  <script src="index.js"></script>
+  <script src="tas.js"></script>
+  <script>
+    window.screenRightMargin = 200;
+    loadResources().then(() => runTAS());
+  </script>
+</body>
+</html>

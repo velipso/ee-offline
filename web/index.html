@@ -182,6 +182,15 @@ button:active div {
   <script src="pako_inflate.min.js"></script>
   <script src="index.js"></script>
   <script>
+    function loadEelvl(eelvl){
+      defaultScreen.drawBanner('Loading level...');
+      if (eeGame)
+        eeGame.stop();
+      const world = new World();
+      world.loadEelvl(eelvl);
+      eeGame = new EverybodyEdits(defaultScreen, defaultInput, world);
+      eeGame.run();
+    }
     loadResources().then(() => playCampaigns());
   </script>
 </body>

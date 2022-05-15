@@ -396,7 +396,9 @@ class TestSuite {
             : `Hit Space ${totalTime - timeLeft}/${totalTime}`
           );
         };
-        window.onTestKey = key => {
+        window.onTestKey = (key, down) => {
+          if (!down)
+            return;
           if (key === 'Space' && timeLeft > 0)
             advanceMs(Math.min(timeLeft, Config.physics_ms_per_tick));
           if (key === 'KeyR'){
