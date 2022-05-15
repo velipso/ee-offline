@@ -34,6 +34,26 @@ function tiles(m){
 // TODO: test for EFFECT_POISON      = 1584;
 // TODO: test for EFFECT_RESET       = 1618;
 
+it('lava burns for 2.4 seconds', () => {
+  const sim = new Simulator(`
+    #############################################
+    #pv:::::::::::: :w c v::::::::::::........w #
+    #DD##########################################
+    #  1X########################################
+    #############################################
+  `, tiles({
+    '1': {tile:  43, prop: {rotation: 1}}, // gold coin door 1
+    'D': {tile: 1011, prop: {rotation: 1}}, // death door
+    ':': {tile: 459}, // slow dot
+    'v': {tile: 416}, // lava
+    'w': {tile: 119}, // water
+    'c': {tile: 100}  // coin
+  }))
+  .right()
+  .wait(10000);
+  expect(sim.player.worldPosition).toEqual(sim.goal);
+});
+
 it('jump effect works', () => {
   const sim = new Simulator(`
     #############

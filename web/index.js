@@ -144,6 +144,7 @@ class Config {
   static effectGravity               = 10;
   static effectPoison                = 11;
 
+  static globalPing = 0.2;
   static maxThrust = 0.2;
   static thrustBurnOff = 0.01;
   static bw = 640;
@@ -7007,6 +7008,10 @@ class Player extends SynchronizedSprite {
   }
 
   setEffect(effectId, active, arg = 0, duration = 0){
+    if (duration > 0){
+      arg += 2 * Config.globalPing;
+      duration += 2 * Config.globalPing;
+    }
     switch (effectId){
       case Config.effectReset:
         this.resetEffects(false);
@@ -7426,7 +7431,7 @@ class Player extends SynchronizedSprite {
         this._speedX *= Config.physics_base_drag;
         this._speedX *= this._mud_drag;
       }
-      else if (this.current == ItemId.LAVA  && !isGod){
+      else if (this.current == ItemId.LAVA && !isGod){
         this._speedX *= Config.physics_base_drag;
         this._speedX *= this._lava_drag;
       }
@@ -7895,7 +7900,7 @@ class Player extends SynchronizedSprite {
 
     // TODO: animate fire
     if (this.isOnFire)
-      target.copyPixels(ItemManager.auraFireBMD, 0, 0, 26, 26, playerX, playerY, 26, 26);
+      target.copyPixels(ItemManager.auraFireBMD, 0, 0, 26, 26, playerX + 1, playerY, 26, 26);
 
     if (this.hasLevitation && this.isThrusting){
       // TODO: playLevitationAnimation(target, ox, oy);
