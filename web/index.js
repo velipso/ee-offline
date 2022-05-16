@@ -1,5 +1,7 @@
 let defaultScreen, defaultInput, eeGame;
-let campaignsZip, campaignsLoaded = false, lastCampaign = {c: 0, w: 0};
+let campaignsZip, campaignsLoaded = false, lastCampaign = {c: 0, w: 0}, ignorePlayerInput = false;
+let lastSqlFile = false;
+const sqlWorker = new Worker('worker.sql-wasm.js');
 
 //
 // Flash polyfills
@@ -4733,6 +4735,7 @@ class EverybodyEdits {
   }
 
   run(){
+    ignorePlayerInput = false;
     this.running = true;
 
     let lastTick = Date.now();
@@ -5099,8 +5102,11 @@ class World extends BlObject {
     const ownerID = data.readUTF();
 
     this.clearWorld(width, height, gravity);
-    const layers = this.realMap;
+    this.loadLayerData(data);
+  }
 
+  loadLayerData(data){
+    const layers = this.realMap;
     while (data.position < data.length){
       const type = data.readInt();
       const layer = data.readInt();
@@ -5166,7 +5172,7 @@ class World extends BlObject {
         const nx = xs[o];
         const ny = ys[o];
 
-        if (nx >= width || ny >= height)
+        if (nx >= this.width || ny >= this.height)
           continue;
 
         layers[layer][ny][nx] = type;
@@ -7231,7 +7237,7 @@ class Player extends SynchronizedSprite {
             break;
           case ItemId.TOXIC_WASTE:
             this.morx = 0;
-            this.mory = _toxic_buoyancy;
+            this.mory = this._toxic_buoyancy;
             if (!this.isDead && !this.isInvulnerable) this.killPlayer();
             break;
           case ItemId.FIRE:
@@ -8883,6 +8889,8 @@ async function loadResources(){
   defaultInput = new Input();
 
   window.addEventListener('keydown', e => {
+    if (ignorePlayerInput)
+      return;
     e.preventDefault();
     e.stopPropagation();
     defaultInput.down(e.code);
@@ -9023,6 +9031,13 @@ function showMenu(){
 async function playFile(file){
   if (!file)
     return;
+  const ext = file.name.toLowerCase();
+  const isSqlite = ext.endsWith('.sqlite') || ext.endsWith('.sqlite3');
+  if (isSqlite && lastSqlFile === file.name){
+    // use cached file
+    loadSqlite(true);
+    return;
+  }
   const data = await new Promise((resolve, reject) => {
     const r = new FileReader();
     r.onloadend = e => {
@@ -9030,12 +9045,10 @@ async function playFile(file){
     };
     r.readAsArrayBuffer(file);
   });
-
-var worker = new Worker("../../dist/");
-
-  const ext = file.name.toLowerCase();
-  if (ext.endsWith('.sqlite') || ext.endsWith('.sqlite3'))
+  if (isSqlite){
+    lastSqlFile = file.name;
     loadSqlite(data);
+  }
   else if (ext.endsWith('.zip') || ext.endsWith('.eelvls'))
     loadZipObj(await blobToZipObj(data), false);
   else
@@ -9090,6 +9103,8 @@ function loadSqlite(buffer){
     list.appendChild(loading);
     if (close){
       const btn = createElement('button', [DIV('Close')]);
+      btn.style.display = 'block';
+      btn.style.margin = '0 auto';
       btn.addEventListener('click', () => {
         query('', 0);
       });
@@ -9100,11 +9115,9 @@ function loadSqlite(buffer){
   showText('Loading...');
   showWorlds();
 
-  const worker = new Worker('worker.sql-wasm.js');
-
-  const query = (like, page) => {
+  const query = (like, page, random) => {
     showText('Searching...', true);
-    worker.onmessage = m => {
+    sqlWorker.onmessage = m => {
       const results = m.data.results;
       if (!results){
         showText('Error: No results', true);
@@ -9112,33 +9125,48 @@ function loadSqlite(buffer){
       }
       list.innerHTML = '';
 
+      const topBar = DIV();
+      topBar.style.marginTop = '10px';
+      list.appendChild(topBar);
       const search = createElement('input');
+      search.addEventListener('focus', () => { ignorePlayerInput = true; });
+      search.addEventListener('blur', () => { ignorePlayerInput = false; });
+      search.addEventListener('keydown', e => {
+        if (e.code === 'Enter')
+          query(search.value, 0);
+      });
+      search.type = 'text';
       search.placeholder = 'Search terms';
       search.value = like;
-      list.appendChild(search);
+      topBar.appendChild(search);
       const btn = createElement('button', [DIV('Search')]);
       btn.addEventListener('click', () => {
         query(search.value, 0);
       });
-      list.appendChild(btn);
-      const pp = createElement('button', [DIV('Prev page')]);
-      list.appendChild(pp);
+      topBar.appendChild(btn);
+      const rnd = createElement('button', [DIV('Random')]);
+      rnd.addEventListener('click', () => {
+        query('', 0, true);
+      });
+      topBar.appendChild(rnd);
+      const pp = createElement('button', [DIV('< Prev')]);
+      topBar.appendChild(pp);
       pp.disabled = page <= 0;
       pp.addEventListener('click', () => {
         query(like, page - 1);
       });
-      const np = createElement('button', [DIV('Next page')]);
-      list.appendChild(np);
+      const np = createElement('button', [DIV('Next >')]);
+      topBar.appendChild(np);
       np.addEventListener('click', () => {
         query(like, page + 1);
       });
 
-      const values = results[0].values;
-      if (values.length <= 0)
+      if (results.length < 0 || results[0].values.length <= 0)
         list.appendChild(P('No results'));
       else{
-        for (const row of values){
-          list.appendChild(P([A(row[1] || 'Untitled', () => {
+        for (const row of results[0].values){
+          const [id, name, owner, crew, desc, width, height, gravity, data] = row;
+          list.appendChild(P([A(name || 'Untitled', () => {
             lastCampaign.c = -1;
             hideWorlds();
             const decoder = new LZMA.Decoder();
@@ -9146,31 +9174,42 @@ function loadSqlite(buffer){
               [93, 0, 0, 16, 0, 255, 255, 255, 255]));
             const output = new LZMA.oStream();
             decoder.setProperties(header);
-            if (decoder.decodeBody(new LZMA.iStream(row[5]), output, header.uncompressedSize)){
-              const data = output.toUint8Array();
-              alert('Unimplemented :-(');
-              // TODO: data is *just* the tile data, not the full file... need a custom loader for
-              // this, see:
-              // https://gitlab.com/LukeM212/EELVL/-/blob/master/EELVL/Level.cs#L104
+            if (decoder.decodeBody(new LZMA.iStream(data), output, header.uncompressedSize)){
+              const decomp = output.toUint8Array();
+              defaultScreen.drawBanner('Loading level...');
+              if (eeGame)
+                eeGame.stop();
+              const world = new World();
+              world.clearWorld(width, height, gravity);
+              world.loadLayerData(new FlashByteArray(decomp));
+              eeGame = new EverybodyEdits(defaultScreen, defaultInput, world);
+              eeGame.run();
             }
             else
               showText('Failed to decompress data', true);
           })]));
           const ul = UL();
-          if (row[4])
-            ul.appendChild(LI(row[4]));
-          ul.appendChild(LI(`ID: ${row[0]}`));
-          ul.appendChild(LI(`Owner: ${row[2]}`));
-          if (row[3])
-            ul.appendChild(LI(`Crew: ${row[3]}`));
+          if (desc)
+            ul.appendChild(LI(desc));
+          ul.appendChild(LI(`ID: ${id}`));
+          ul.appendChild(LI(`Owner: ${owner}`));
+          if (crew)
+            ul.appendChild(LI(`Crew: ${crew}`));
           list.appendChild(ul);
         }
       }
     };
-    worker.postMessage({
+    sqlWorker.postMessage({
       action: 'exec',
-      sql: `
-SELECT world.id,world.name,player.name AS player,crew.name AS crew,description,data
+      sql: random ? `
+SELECT world.id,world.name,player.name,crew.name,description,width,height,gravity,data
+FROM world
+INNER JOIN player ON world.owner = player.rowid
+INNER JOIN crew ON world.crew = crew.rowid
+ORDER BY RANDOM()
+LIMIT 1
+` : `
+SELECT world.id,world.name,player.name,crew.name,description,width,height,gravity,data
 FROM world
 INNER JOIN player ON world.owner = player.rowid
 INNER JOIN crew ON world.crew = crew.rowid
@@ -9188,21 +9227,27 @@ LIMIT ${page * 30},30;
     });
   };
 
-  worker.onerror = e => {
-    console.error(e);
-    showText(`Error: ${e}`);
-  };
-  worker.onmessage = m => {
-    if (m && m.data && m.data.ready)
-      query('', 0);
-    else
-      showText('Error: Failed to load');
-  };
-  try {
-    worker.postMessage({ action: 'open', buffer }, [buffer]);
-  } catch (e) {
-    console.error(e);
-    worker.postMessage({ action: 'open', buffer });
+  if (buffer !== true){
+    sqlWorker.onerror = e => {
+      console.error(e);
+      showText(`Error: ${e}`);
+    };
+    sqlWorker.onmessage = m => {
+      if (m && m.data && m.data.ready)
+        query('', 0);
+      else
+        showText('Error: Failed to load');
+    };
+    try {
+      sqlWorker.postMessage({ action: 'open', buffer }, [buffer]);
+    } catch (e) {
+      console.error(e);
+      sqlWorker.postMessage({ action: 'open', buffer });
+    }
+  }
+  else{
+    // already loaded, so use what's in memory
+    query('', 0);
   }
 }
 
