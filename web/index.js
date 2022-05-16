@@ -9030,8 +9030,13 @@ async function playFile(file){
     };
     r.readAsArrayBuffer(file);
   });
+
+var worker = new Worker("../../dist/");
+
   const ext = file.name.toLowerCase();
-  if (ext.endsWith('.zip') || ext.endsWith('.eelvls'))
+  if (ext.endsWith('.sqlite') || ext.endsWith('.sqlite3'))
+    loadSqlite(data);
+  else if (ext.endsWith('.zip') || ext.endsWith('.eelvls'))
     loadZipObj(await blobToZipObj(data), false);
   else
     loadEelvl(new FlashByteArray(new Uint8Array(data)));
@@ -9045,36 +9050,163 @@ function playCampaigns(){
   loadZipObj(campaignsZip, true);
 }
 
-function loadZipObj(zipObj, campaigns){
-  const createElement = (name, children) => {
-    const p = document.createElement(name);
-    if (Array.isArray(children))
-      children.forEach(c => p.appendChild(typeof c === 'string' ? document.createTextNode(c) : c));
-    else if (typeof children === 'string')
-      p.appendChild(document.createTextNode(children));
-    else if (children)
-      p.appendChild(children);
-    return p;
-  };
-  const P   = c => createElement('p'  , c);
-  const DIV = c => createElement('div', c);
-  const H1  = c => createElement('h1' , c);
-  const H2  = c => createElement('h2' , c);
-  const H3  = c => createElement('h3' , c);
-  const UL  = c => createElement('ul' , c);
-  const LI  = c => createElement('li' , c);
-  const A   = (c, click) => {
-    const ele = createElement('a', c);
-    ele.href = '#';
-    ele.addEventListener('click', e => {
-      e.preventDefault();
-      e.stopPropagation();
-      click();
-      return false;
-    });
-    return ele;
+const createElement = (name, children) => {
+  const p = document.createElement(name);
+  if (Array.isArray(children))
+    children.forEach(c => p.appendChild(typeof c === 'string' ? document.createTextNode(c) : c));
+  else if (typeof children === 'string')
+    p.appendChild(document.createTextNode(children));
+  else if (children)
+    p.appendChild(children);
+  return p;
+};
+const P   = c => createElement('p'  , c);
+const DIV = c => createElement('div', c);
+const H1  = c => createElement('h1' , c);
+const H2  = c => createElement('h2' , c);
+const H3  = c => createElement('h3' , c);
+const UL  = c => createElement('ul' , c);
+const LI  = c => createElement('li' , c);
+const A   = (c, click) => {
+  const ele = createElement('a', c);
+  ele.href = '#';
+  ele.addEventListener('click', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    click();
+    return false;
+  });
+  return ele;
+};
+
+function loadSqlite(buffer){
+  const list = document.getElementById('world-list');
+
+  const showText = (text, close) => {
+    list.innerHTML = '';
+    const loading = P(text);
+    loading.style.margin = '20px';
+    loading.style.textAlign = 'center';
+    list.appendChild(loading);
+    if (close){
+      const btn = createElement('button', [DIV('Close')]);
+      btn.addEventListener('click', () => {
+        query('', 0);
+      });
+      list.appendChild(btn);
+    }
   };
 
+  showText('Loading...');
+  showWorlds();
+
+  const worker = new Worker('worker.sql-wasm.js');
+
+  const query = (like, page) => {
+    showText('Searching...', true);
+    worker.onmessage = m => {
+      const results = m.data.results;
+      if (!results){
+        showText('Error: No results', true);
+        return;
+      }
+      list.innerHTML = '';
+
+      const search = createElement('input');
+      search.placeholder = 'Search terms';
+      search.value = like;
+      list.appendChild(search);
+      const btn = createElement('button', [DIV('Search')]);
+      btn.addEventListener('click', () => {
+        query(search.value, 0);
+      });
+      list.appendChild(btn);
+      const pp = createElement('button', [DIV('Prev page')]);
+      list.appendChild(pp);
+      pp.disabled = page <= 0;
+      pp.addEventListener('click', () => {
+        query(like, page - 1);
+      });
+      const np = createElement('button', [DIV('Next page')]);
+      list.appendChild(np);
+      np.addEventListener('click', () => {
+        query(like, page + 1);
+      });
+
+      const values = results[0].values;
+      if (values.length <= 0)
+        list.appendChild(P('No results'));
+      else{
+        for (const row of values){
+          list.appendChild(P([A(row[1] || 'Untitled', () => {
+            lastCampaign.c = -1;
+            hideWorlds();
+            const decoder = new LZMA.Decoder();
+            const header = decoder.decodeHeader(new LZMA.iStream(
+              [93, 0, 0, 16, 0, 255, 255, 255, 255]));
+            const output = new LZMA.oStream();
+            decoder.setProperties(header);
+            if (decoder.decodeBody(new LZMA.iStream(row[5]), output, header.uncompressedSize)){
+              const data = output.toUint8Array();
+              alert('Unimplemented :-(');
+              // TODO: data is *just* the tile data, not the full file... need a custom loader for
+              // this, see:
+              // https://gitlab.com/LukeM212/EELVL/-/blob/master/EELVL/Level.cs#L104
+            }
+            else
+              showText('Failed to decompress data', true);
+          })]));
+          const ul = UL();
+          if (row[4])
+            ul.appendChild(LI(row[4]));
+          ul.appendChild(LI(`ID: ${row[0]}`));
+          ul.appendChild(LI(`Owner: ${row[2]}`));
+          if (row[3])
+            ul.appendChild(LI(`Crew: ${row[3]}`));
+          list.appendChild(ul);
+        }
+      }
+    };
+    worker.postMessage({
+      action: 'exec',
+      sql: `
+SELECT world.id,world.name,player.name AS player,crew.name AS crew,description,data
+FROM world
+INNER JOIN player ON world.owner = player.rowid
+INNER JOIN crew ON world.crew = crew.rowid
+${like.trim() ? `
+WHERE
+  world.id LIKE $like OR
+  world.name LIKE $like OR
+  description LIKE $like OR
+  player.name LIKE $like OR
+  crew.name LIKE $like
+` : ``}
+LIMIT ${page * 30},30;
+`,
+      params: { '$like': like ? `%${like.trim()}%` : '' }
+    });
+  };
+
+  worker.onerror = e => {
+    console.error(e);
+    showText(`Error: ${e}`);
+  };
+  worker.onmessage = m => {
+    if (m && m.data && m.data.ready)
+      query('', 0);
+    else
+      showText('Error: Failed to load');
+  };
+  try {
+    worker.postMessage({ action: 'open', buffer }, [buffer]);
+  } catch (e) {
+    console.error(e);
+    worker.postMessage({ action: 'open', buffer });
+  }
+}
+
+function loadZipObj(zipObj, campaigns){
   const list = document.getElementById('world-list');
   list.innerHTML = '';
 
