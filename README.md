@@ -7,15 +7,26 @@ LuciferX for singleplayer due to Adobe ending support for Flash.
 I created this fork in order to port the game to HTML5.  It's not done, but you can play what is
 available so far by clicking here:
 
-[Play Game](https://cdn.githubraw.com/velipso/ee-offline/3eb7c629101c101f10fb75a3da7dfc7e595aae42/web/index.html)
+[Play Game](https://cdn.githubraw.com/velipso/ee-offline/3ac4d4d5c2e85e1b393379d82a8d572eb160edcd/web/index.html)
 
 There is also a TAS frontend, but it's pretty basic at this point:
 
-[TAS Frontend](https://cdn.githubraw.com/velipso/ee-offline/3eb7c629101c101f10fb75a3da7dfc7e595aae42/web/tas.html)
+[TAS Frontend](https://cdn.githubraw.com/velipso/ee-offline/3ac4d4d5c2e85e1b393379d82a8d572eb160edcd/web/tas.html)
 
 You can run the test suite here (inspired by [SirJosh](https://github.com/SirJosh3917/smiley-face-game)):
 
-[Test Suite](https://cdn.githubraw.com/velipso/ee-offline/3eb7c629101c101f10fb75a3da7dfc7e595aae42/web/test.html)
+[Test Suite](https://cdn.githubraw.com/velipso/ee-offline/3ac4d4d5c2e85e1b393379d82a8d572eb160edcd/web/test.html)
+
+Supported File Formats
+----------------------
+
+`.eelvl` - Upload directly and play!
+
+`.zip` - The loader will search for images and `.eelvl` files, and let you click on them.
+
+`.sqlite3` - The loader specifically looks for SQLite3 files in order to support the ArchivEE.  You
+can download it [in this forum post](https://forums.everybodyedits.com/viewtopic.php?id=47348).
+You will need to decompress the zip file yourself, then click Upload and select `ArchivEE.sqlite3`.
 
 HTML5 Port
 ----------
