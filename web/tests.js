@@ -395,6 +395,19 @@ it('gates stay open if covered', () => {
   expect(sim.player.worldPosition).toEqual(sim.goal);
 });
 
+it('can back out of one ways', () => {
+  const sim = new Simulator(`
+    ##########
+    #X  p  } #
+    ##########
+  `, tiles())
+  .right()
+  .wait(250)
+  .left()
+  .wait(1000);
+  expect(sim.player.worldPosition).toEqual(sim.goal);
+});
+
 it('one ways work', () => {
   const sim = new Simulator(`
     ########

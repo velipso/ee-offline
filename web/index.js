@@ -6799,6 +6799,8 @@ class Player extends SynchronizedSprite {
   // cached input for teleporting (TODO: remove..?)
   oh = 0;
   ov = 0;
+  ox = 0;
+  oy = 0;
   oSpaceDown = false;
   oSpaceJP = false;
   enforceMovement = false;
@@ -7549,7 +7551,7 @@ class Player extends SynchronizedSprite {
     let currentSX = this._speedX;
     let remainderY = this.y % 1;
     let currentSY = this._speedY;
-    let osx, osy, ox, oy;
+    let osx, osy;
 
     let doneX = false;
     let doneY = false;
@@ -7582,7 +7584,7 @@ class Player extends SynchronizedSprite {
       }
       if (this.hitmap){
         if (this.hitmap.overlaps(this)){
-          this.x = ox;
+          this.x = this.ox;
           if (this._speedX > 0 && this.morx > 0)
             grounded = true;
           if (this._speedX < 0 && this.morx < 0)
@@ -7622,7 +7624,7 @@ class Player extends SynchronizedSprite {
       }
       if (this.hitmap){
         if (this.hitmap.overlaps(this)){
-          this.y = oy;
+          this.y = this.oy;
           if (this._speedY > 0 && this.mory > 0)
             grounded = true;
           if (this._speedY < 0 && this.mory < 0)
@@ -7756,8 +7758,8 @@ class Player extends SynchronizedSprite {
 
     while ((currentSX !== 0 && !doneX) || (currentSY !== 0 && !doneY)){
       processPortals();
-      ox = this.x;
-      oy = this.y;
+      this.ox = this.x;
+      this.oy = this.y;
 
       osx = currentSX;
       osy = currentSY;
