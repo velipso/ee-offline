@@ -22,9 +22,6 @@ function tiles(m){
   return mappings;
 }
 
-// TODO: test for EFFECT_FLY         = 418;
-// TODO: test for EFFECT_RUN         = 419;
-// TODO: test for EFFECT_PROTECTION  = 420;
 // TODO: test for EFFECT_CURSE       = 421;
 // TODO: test for EFFECT_ZOMBIE      = 422;
 // TODO: test for EFFECT_TEAM        = 423;
@@ -32,7 +29,188 @@ function tiles(m){
 // TODO: test for EFFECT_MULTIJUMP   = 461;
 // TODO: test for EFFECT_GRAVITY     = 1517;
 // TODO: test for EFFECT_POISON      = 1584;
-// TODO: test for EFFECT_RESET       = 1618;
+
+it('player gold works', () => {
+  const sim = new Simulator(`
+    #############
+    #p   g      #
+    #ddd###ddd###
+    #ddd# dddd###
+    #ggg#g#ggg###
+    #####X#######
+    #############
+  `, tiles({
+    'd': {tile: 200}, // gold smiley door
+    'g': {tile: 201}  // gold smiley gate
+  }))
+  .right()
+  .wait(1000)
+  .playerWearsGold(true)
+  .left()
+  .wait(1000)
+  .playerWearsGold(false)
+  .wait(500);
+  expect(sim.player.worldPosition).toEqual(sim.goal);
+});
+
+it('gold and silver crowns work', () => {
+  const sim = new Simulator(`
+    ######################
+    #p    gG wW      dD X#
+    #ddDD#######ggGG######
+    ######################
+  `, tiles({
+    'w': {tile:  121}, // silver crown
+    'd': {tile: 1152}, // silver crown door
+    'g': {tile: 1153}, // silver crown gate
+    'W': {tile:    5}, // gold crown
+    'D': {tile: 1094}, // gold crown door
+    'G': {tile: 1095}  // gold crown gate
+  }))
+  .right()
+  .wait(2000);
+  expect(sim.player.worldPosition).toEqual(sim.goal);
+});
+
+it('silver crowns work', () => {
+  const sim = new Simulator(`
+    #############
+    #p   g     w#
+    #ddd###ddd###
+    #ddd#Xdddd###
+    #ggg#ggggg###
+    #############
+  `, tiles({
+    'w': {tile:  121}, // silver crown
+    'd': {tile: 1152}, // silver crown door
+    'g': {tile: 1153}  // silver crown gate
+  }))
+  .right()
+  .wait(1000)
+  .left()
+  .wait(1000);
+  expect(sim.player.worldPosition).toEqual(sim.goal);
+});
+
+it('gold crowns work', () => {
+  const sim = new Simulator(`
+    #############
+    #p   g     w#
+    #ddd###ddd###
+    #ddd#Xdddd###
+    #ggg#ggggg###
+    #############
+  `, tiles({
+    'w': {tile:    5}, // gold crown
+    'd': {tile: 1094}, // gold crown door
+    'g': {tile: 1095}  // gold crown gate
+  }))
+  .right()
+  .wait(1000)
+  .left()
+  .wait(1000);
+  expect(sim.player.worldPosition).toEqual(sim.goal);
+});
+
+it('reset effect works', () => {
+  const sim = new Simulator(`
+    ###########
+    #########w#
+    #########c#
+    ######### #
+    ######### #
+    ######### #
+    #p PJ Q v #
+    #DD########
+    #  1X######
+    ###########
+  `, tiles({
+    'P': {tile:  420, prop: {rotation: 1}}, // protection effect
+    'J': {tile:  417, prop: {rotation: 1}}, // big jump
+    'Q': {tile: 1618, prop: {rotation: 0}}, // clear all effects
+    '1': {tile:   43, prop: {rotation: 1}}, // gold coin door 1
+    'D': {tile: 1011, prop: {rotation: 1}}, // death door
+    'v': {tile:  416}, // lava
+    'w': {tile:  119}, // water
+    'c': {tile:  100}  // coin
+  }))
+  .right()
+  .jump()
+  .wait(4000);
+  expect(sim.player.worldPosition).toEqual(sim.goal);
+});
+
+it('protection effect works against lava', () => {
+  const sim = new Simulator(`
+    ###############################################
+    #pPvv::::::::::::::::::::::::::::::::::::::Qcv#
+    #DD############################################
+    #  1X##########################################
+    ###############################################
+  `, tiles({
+    'P': {tile:  420, prop: {rotation: 1}}, // protection effect
+    'Q': {tile:  420, prop: {rotation: 0}}, // clear protection effect
+    '1': {tile:   43, prop: {rotation: 1}}, // gold coin door 1
+    'D': {tile: 1011, prop: {rotation: 1}}, // death door
+    ':': {tile:  459}, // slow dot
+    'v': {tile:  416}, // lava
+    'c': {tile:  100}  // coin
+  }))
+  .right()
+  .wait(11000);
+  expect(sim.player.worldPosition).toEqual(sim.goal);
+});
+
+it('run effect works', () => {
+  const sim = new Simulator(`
+    ##################################################################
+    #pk:::::::::::::::::::::::::::R    d  d  d  d  d  d  d  d Xd  d  #
+    ##################################################################
+  `, tiles({
+    'R': {tile: 419, prop: {rotation: 1}}, // run effect
+    ':': {tile: 459}, // slow dot
+    'k': {tile:   6}, // red key
+    'd': {tile:  23}, // red door
+  }))
+  .right()
+  .wait(7000);
+  expect(sim.player.worldPosition).toEqual(sim.goal);
+});
+
+it('fly effect works', () => {
+  const sim = new Simulator(`
+    #################################
+    # #                             #
+    # #                             #
+    #d#                             #
+    #X#                             #
+    # #                             #
+    #d#                             #
+    # #                             #
+    # #                             #
+    #d#                             #
+    # #                             #
+    # #                             #
+    #d#                             #
+    # #                             #
+    # #                             #
+    #d#                             #
+    #F#                             #
+    # #                             #
+    # ::::::::::::::::::::::::::::kp#
+    #################################
+  `, tiles({
+    'F': {tile: 418, prop: {rotation: 1}}, // fly effect
+    ':': {tile: 459}, // slow dot
+    'k': {tile:   6}, // red key
+    'd': {tile:  23}, // red door
+  }))
+  .left()
+  .wait(1000)
+  .jump()
+  .wait(6000);
+  expect(sim.player.worldPosition).toEqual(sim.goal);
+});
 
 it('lava burns for 2.4 seconds', () => {
   const sim = new Simulator(`
@@ -178,6 +356,54 @@ it('death gates and checkpoints work', () => {
   }))
   .right()
   .wait(3000);
+  expect(sim.player.worldPosition).toEqual(sim.goal);
+});
+
+it('time gates hold player', () => {
+  const sim = new Simulator(`
+    ####
+    #p #
+    ## #
+    ## #
+    ## #
+    ##G#
+    ## #
+    ## #
+    ## #
+    ## #
+    ##X#
+    ## #
+    ####
+  `, tiles({
+    'G': {tile: 157} // time gate
+  }))
+  .wait(4600)
+  .right()
+  .wait(5660);
+  expect(sim.player.worldPosition).toEqual(sim.goal);
+});
+
+it('time doors hold player', () => {
+  const sim = new Simulator(`
+    ####
+    #p #
+    ## #
+    ## #
+    ## #
+    ##T#
+    ## #
+    ## #
+    ## #
+    ## #
+    ##X#
+    ## #
+    ####
+  `, tiles({
+    'T': {tile: 156} // time door
+  }))
+  .wait(9600)
+  .right()
+  .wait(5660);
   expect(sim.player.worldPosition).toEqual(sim.goal);
 });
 

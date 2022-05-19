@@ -87,6 +87,12 @@ class Simulator {
     return this;
   }
 
+  playerWearsGold(enable){
+    this.events.push({kind: 'playerWearsGold', enable});
+    this.ee.state.player.wearsGoldSmiley = enable;
+    return this;
+  }
+
   noDir(){
     return this
       .setKey('ArrowUp', false)
@@ -381,7 +387,11 @@ class TestSuite {
                 events.shift();
                 break;
               case 'playerY':
-                window.sim.playerX(events[0].Y);
+                window.sim.playerX(events[0].y);
+                events.shift();
+                break;
+              case 'playerWearsGold':
+                window.sim.playerWearsGold(events[0].enable);
                 events.shift();
                 break;
               default:

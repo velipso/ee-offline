@@ -5648,15 +5648,14 @@ class World extends BlObject {
           case 1009: if (!this.getKey('magenta')) continue; break;
           case 1010: if (!this.getKey('yellow')) continue; break;
 
-          case 156:
+          case ItemId.TIMEDOOR:
             if (this.timedoorState)
               continue;
             break;
-          case 157:
+          case ItemId.TIMEGATE:
             if (!this.timedoorState)
               continue;
             break;
-
           case ItemId.DOOR_PURPLE:
             if (pl.switches[this.lookup.getInt(cx, cy)])
               continue;
@@ -5673,16 +5672,30 @@ class World extends BlObject {
             if (!this.orangeSwitches[this.lookup.getInt(cx, cy)])
               continue;
             break;
-          /*
-          case ItemId.DOOR_GOLD: if ( pl.wearsGoldSmiley) continue; break;
-          case ItemId.GATE_GOLD: if (!pl.wearsGoldSmiley) continue; break;
-
-          case ItemId.CROWNDOOR: if ( pl.collideWithCrownDoorGate) continue; break;
-          case ItemId.CROWNGATE: if (!pl.collideWithCrownDoorGate) continue; break;
-
-          case ItemId.SILVERCROWNDOOR: if ( pl.collideWithSilverCrownDoorGate) continue; break;
-          case ItemId.SILVERCROWNGATE: if (!pl.collideWithSilverCrownDoorGate) continue; break;
-          */
+          case ItemId.DOOR_GOLD:
+            if (pl.wearsGoldSmiley)
+              continue;
+            break;
+          case ItemId.GATE_GOLD:
+            if (!pl.wearsGoldSmiley)
+              continue;
+            break;
+          case ItemId.CROWNDOOR:
+            if (pl.collideWithGoldCrownDoorGate)
+              continue;
+            break;
+          case ItemId.CROWNGATE:
+            if (!pl.collideWithGoldCrownDoorGate)
+              continue;
+            break;
+          case ItemId.SILVERCROWNDOOR:
+            if (pl.collideWithSilverCrownDoorGate)
+              continue;
+            break;
+          case ItemId.SILVERCROWNGATE:
+            if (!pl.collideWithSilverCrownDoorGate)
+              continue;
+            break;
           case ItemId.COINDOOR:
             if (this.lookup.getInt(cx, cy) <= pl.coins)
               continue;
@@ -5996,22 +6009,18 @@ class World extends BlObject {
                 (this.timedoorState ? 0 : 5)
             );
             continue;
-          /*
-          case ItemId.DOOR_GOLD:{
-            if(player.wearsGoldSmiley){
-              ItemManager.sprDoors.drawPoint(target, point, 10)
+          case ItemId.DOOR_GOLD:
+            if (this.player.wearsGoldSmiley){
+              ItemManager.sprDoors.drawPoint(target, x, y, 10);
               continue;
             }
             break;
-          }
-          case ItemId.GATE_GOLD:{
-            if(player.wearsGoldSmiley){
-              ItemManager.sprDoors.drawPoint(target, point, 11)
+          case ItemId.GATE_GOLD:
+            if (this.player.wearsGoldSmiley){
+              ItemManager.sprDoors.drawPoint(target, x, y, 11);
               continue;
             }
             break;
-          }
-          */
           // Invisible arrow blink
           case 411:
             if (!full &&
@@ -6055,39 +6064,30 @@ class World extends BlObject {
             )
               continue;
             break;
-          /*
-          case ItemId.CROWNDOOR:{
-            if (player.collideWithCrownDoorGate) {
-              ItemManager.sprDoors.drawPoint(target, point, 40);
+          case ItemId.CROWNDOOR:
+            if (this.player.collideWithGoldCrownDoorGate){
+              ItemManager.sprDoors.drawPoint(target, x, y, 40);
               continue;
             }
             break;
-          }
-
-          case ItemId.CROWNGATE:{
-            if (player.collideWithCrownDoorGate) {
-              ItemManager.sprDoors.drawPoint(target, point, 41);
+          case ItemId.CROWNGATE:
+            if (this.player.collideWithGoldCrownDoorGate){
+              ItemManager.sprDoors.drawPoint(target, x, y, 41);
               continue;
             }
             break;
-          }
-
-          case ItemId.SILVERCROWNDOOR:{
-            if (player.collideWithSilverCrownDoorGate) {
-              ItemManager.sprDoors.drawPoint(target, point, 42);
+          case ItemId.SILVERCROWNDOOR:
+            if (this.player.collideWithSilverCrownDoorGate){
+              ItemManager.sprDoors.drawPoint(target, x, y, 42);
               continue;
             }
             break;
-          }
-
-          case ItemId.SILVERCROWNGATE:{
-            if (player.collideWithSilverCrownDoorGate) {
-              ItemManager.sprDoors.drawPoint(target, point, 43);
+          case ItemId.SILVERCROWNGATE:
+            if (this.player.collideWithSilverCrownDoorGate){
+              ItemManager.sprDoors.drawPoint(target, x, y, 43);
               continue;
             }
             break;
-          }
-          */
           case ItemId.COINDOOR:
             if (this.lookup.getInt(cx, cy) <= this.player.coins) // Open
               ItemManager.sprDoors.drawPoint(target, x, y, 6);
@@ -6838,6 +6838,13 @@ class Player extends SynchronizedSprite {
   poisonDuration = 0;
   team = 0;
   teamQueue = [];
+
+  // crowns/gold
+  completeTime = false;
+  hasGoldCrown = false;
+  hasSilverCrown = false;
+  collideWithGoldCrownDoorGate = false;
+  collideWithSilverCrownDoorGate = false;
 
   static staticEffects = [
     Config.effectJump,
@@ -7888,8 +7895,6 @@ class Player extends SynchronizedSprite {
       }
     }
 
-    this.updateTicks();
-
     if (this.isDead && this.deadOffset > 16){
       this.respawn();
       this.deaths++;
@@ -7906,6 +7911,11 @@ class Player extends SynchronizedSprite {
     }
 
     this.drawFace(target, playerX, playerY, this.zombie, 0);
+
+    if (this.hasGoldCrown)
+      target.copyPixels(ItemManager.goldCrownBMD, 0, 0, 26, 26, playerX, playerY, 26, 26);
+    else if (this.hasSilverCrown)
+      target.copyPixels(ItemManager.silverCrownBMD, 0, 0, 26, 26, playerX, playerY, 26, 26);
 
     // TODO: animate fire
     if (this.isOnFire)
@@ -7967,14 +7977,13 @@ class Player extends SynchronizedSprite {
   }
 
   get wearsGoldSmiley(){
-    return this.wearsGoldSmiley.y === 26;
+    return this.spriteRect.y === 26;
   }
 
   // overridden in Me
   getPlayerInput(input){}
   touchBlock(cx, cy, isGod){}
   sendMovement(cx, cy){}
-  updateTicks(){}
 }
 
 //
@@ -8072,6 +8081,12 @@ class Me extends Player {
 
       if (!isGod){
         switch (this.current){
+          case ItemId.CROWN:
+            if (!this.hasGoldCrown){
+              this.hasGoldCrown = true;
+              this.state.checkGoldCrown(true);
+            }
+            break;
           case ItemId.SWITCH_PURPLE:{
             const sid = this.world.lookup.getInt(cx, cy);
             this.pressPurpleSwitch(sid, !this.switches[sid]);
@@ -8102,9 +8117,24 @@ class Me extends Player {
           case 1519:
             this.world.lookup.setBlink(cx, cy, -100);
             break;
+          /*
+          case ItemId.DIAMOND:
+            frame = 31; break;
+          case ItemId.CAKE:
+            frame = Random.nextInt(72, 76); break;
+          case ItemId.HOLOGRAM:
+            frame = 100; break;
+          */
           case ItemId.CHECKPOINT:
             this.checkpoint_x = cx;
             this.checkpoint_y = cy;
+            break;
+          case ItemId.BRICK_COMPLETE:
+            if (!this.hasSilverCrown){ // TODO: && !resetSend
+              this.hasSilverCrown = true;
+              this.completeTime = this.state.tickCount * Config.physics_ms_per_tick;
+              this.state.checkSilverCrown(true);
+            }
             break;
           case ItemId.KEY_RED:
           case ItemId.KEY_GREEN:
@@ -8261,10 +8291,6 @@ class Me extends Player {
       this.enforceMovement = false;
     }
   }
-
-  updateTicks(){
-    // TODO
-  }
 }
 
 //
@@ -8277,6 +8303,8 @@ class PlayState extends BlContainer {
   coins = 0;
   bcoins = 0;
   keysQueue = [];
+  goldCrownQueue = [];
+  silverCrownQueue = [];
   orangeSwitchQueue = [];
   tickCount = 0;
   effectIcons = [];
@@ -8306,6 +8334,22 @@ class PlayState extends BlContainer {
     return (this.tickCount + 1000) * Config.physics_ms_per_tick;
   }
 
+  checkGoldCrown(collide){
+    this.player.collideWithGoldCrownDoorGate = collide;
+    if (this.world.overlaps(this.player)){
+      this.player.collideWithGoldCrownDoorGate = !collide;
+      this.goldCrownQueue.push(collide);
+    }
+  }
+
+  checkSilverCrown(collide){
+    this.player.collideWithSilverCrownDoorGate = collide;
+    if (this.world.overlaps(this.player)){
+      this.player.collideWithSilverCrownDoorGate = !collide;
+      this.silverCrownQueue.push(collide);
+    }
+  }
+
   pressOrangeSwitch(switchId, enabled){
     if (switchId === 1000){
       for (let i = 0; i < 1000; i++)
@@ -8321,6 +8365,18 @@ class PlayState extends BlContainer {
 
   tick(input){
     super.tick(input);
+
+    const goldCrownLength = this.goldCrownQueue.length;
+    for (let i= 0; i < goldCrownLength; i++){
+      const collide = this.goldCrownQueue.shift();
+      this.checkGoldCrown(collide);
+    }
+
+    const silverCrownLength = this.silverCrownQueue.length;
+    for (let i= 0; i < silverCrownLength; i++){
+      const collide = this.silverCrownQueue.shift();
+      this.checkSilverCrown(collide);
+    }
 
     const keysLength = this.keysQueue.length;
     for (let i = 0; i < keysLength; i++){
@@ -8938,6 +8994,8 @@ async function loadResources(){
     [false, false, document.fonts.ready],
     LI('smileysBMD'              , 4888,  52, 'smileys.png'                ),
     LI('smileyPlatinumSpenderBMD',  312,  52, 'smileys_platinumspender.png'),
+    LI('goldCrownBMD'            ,   26,  26, 'crown.png'                  ),
+    LI('silverCrownBMD'          ,   26,  26, 'crown_silver.png'           ),
     LI('aurasBMD'                , 3392, 128, 'auras.png'                  ),
     LI('aurasOrnateBMD'          ,   64,  64, 'auras_ornate.png'           ),
     LI('aurasBubbleBMD'          ,  512,  64, 'auras_bubble.png'           ),
