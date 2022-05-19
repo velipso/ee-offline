@@ -6706,6 +6706,8 @@ class World extends BlObject {
     const endX = (this.player.x + 16) >> 4;
     const endY = (this.player.y + 16) >> 4;
 
+    let textSign = false;
+
     for (let cy = startY; cy <= endY; cy++){
       let y = (cy << 4) + oy;
       for (let cx = startX; cx <= endX; cx++){
@@ -6739,22 +6741,12 @@ class World extends BlObject {
 
         switch (this.above[cy][cx]){
           case ItemId.TEXT_SIGN:{
-            const {text, type} = this.lookup.getTextSign(cx, cy);
-            const color = (['#ffffff', '#6699ff', '#ff5050', '#ffd11a'])[type];
-            target.textSign(
-              text
-                .replace(/%coins%/g, this.player.coins)
-                .replace(/%bcoins%/g, this.player.bcoins)
-                .replace(/%deaths%/g, this.player.deaths)
-                .replace(/%levelname%/g, this.worldName)
-                .replace(/%username%/g, this.player.name)
-                .replace(/%Username%/g, this.player.name.substr(0, 1).toUpperCase() + this.player.name.substr(1))
-                .replace(/%USERNAME%/g, this.player.name.toUpperCase())
-                .replace(/\\n/g, '\n'),
-              x,
-              y,
-              color
-            )
+            const dist = Math.abs((cx << 4) - this.player.x) + Math.abs((cy << 4) - this.player.y);
+            if (!textSign || dist < textSign.dist){
+              const {text, type} = this.lookup.getTextSign(cx, cy);
+              const color = (['#ffffff', '#6699ff', '#ff5050', '#ffd11a'])[type];
+              textSign = {dist, text, color, x, y};
+            }
             break;
           }
           /*
@@ -6766,6 +6758,25 @@ class World extends BlObject {
 
         // TODO: placer tool
       }
+    }
+
+    // only draw one text sign
+    if (textSign){
+      target.textSign(
+        textSign.text
+          .replace(/%coins%/g, this.player.coins)
+          .replace(/%bcoins%/g, this.player.bcoins)
+          .replace(/%deaths%/g, this.player.deaths)
+          .replace(/%levelname%/g, this.worldName)
+          .replace(/%username%/g, this.player.name)
+          .replace(/%Username%/g,
+              this.player.name.substr(0, 1).toUpperCase() + this.player.name.substr(1))
+          .replace(/%USERNAME%/g, this.player.name.toUpperCase())
+          .replace(/\\n/g, '\n'),
+        textSign.x,
+        textSign.y,
+        textSign.color
+      );
     }
   }
 }
