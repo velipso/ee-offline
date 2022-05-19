@@ -7,15 +7,15 @@ LuciferX for singleplayer due to Adobe ending support for Flash.
 I created this fork in order to port the game to HTML5.  It's not done, but you can play what is
 available so far by clicking here:
 
-[Play Game](https://cdn.githubraw.com/velipso/ee-offline/72ca9a50c8d5e33aa329920af6eca8f11638883d/web/index.html)
+[Play Game](https://cdn.githubraw.com/velipso/ee-offline/e1e37bfb54a0d3b5b34ed7ae7712758a39b24e64/web/index.html)
 
 There is also a TAS frontend, but it's pretty basic at this point:
 
-[TAS Frontend](https://cdn.githubraw.com/velipso/ee-offline/72ca9a50c8d5e33aa329920af6eca8f11638883d/web/tas.html)
+[TAS Frontend](https://cdn.githubraw.com/velipso/ee-offline/e1e37bfb54a0d3b5b34ed7ae7712758a39b24e64/web/tas.html)
 
 You can run the test suite here (inspired by [SirJosh](https://github.com/SirJosh3917/smiley-face-game)):
 
-[Test Suite](https://cdn.githubraw.com/velipso/ee-offline/72ca9a50c8d5e33aa329920af6eca8f11638883d/web/test.html)
+[Test Suite](https://cdn.githubraw.com/velipso/ee-offline/e1e37bfb54a0d3b5b34ed7ae7712758a39b24e64/web/test.html)
 
 Supported Level Formats
 -----------------------
