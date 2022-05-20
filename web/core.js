@@ -9072,22 +9072,28 @@ class Screen {
 
   resize(w, h){
     this.lastResize = {w, h};
+    const maxWidth = Math.round(w * this.dpr);
+    const maxHeight = Math.round(h * this.dpr);
     if (this.resolution === 'max'){
-      this.cnv.width = Math.round(w * this.dpr);
-      this.cnv.height = Math.round(h * this.dpr);
+      this.cnv.width = maxWidth;
+      this.cnv.height = maxHeight;
     }
     else{
       const res = parseFloat(this.resolution);
       const bw = Math.round(Config.bw * res / (16 * this.zoom));
       const bh = Math.round(Config.bh * res / (16 * this.zoom));
-      if (w * bh > h * bw){
-        this.cnv.width = Math.round(w * bh / h);
-        this.cnv.height = bh;
+      let newWidth = Math.round(w * bh / h);
+      let newHeight = bh;
+      if (w * bh <= h * bw){
+        newWidth = bw;
+        newHeight = Math.round(h * bw / w);
       }
-      else{
-        this.cnv.width = bw;
-        this.cnv.height = Math.round(h * bw / w);
+      if (newWidth >= maxWidth || newHeight >= maxHeight){
+        newWidth = maxWidth;
+        newHeight = maxHeight;
       }
+      this.cnv.width = newWidth;
+      this.cnv.height = newHeight;
     }
     this.cnv.style.width = `${w}px`;
     this.cnv.style.height = `${h}px`;
