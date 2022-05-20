@@ -6701,10 +6701,10 @@ class World extends BlObject {
   }
 
   drawDialogs(target, ox, oy){
-    const startX = this.player.x >> 4;
-    const startY = this.player.y >> 4;
-    const endX = (this.player.x + 16) >> 4;
-    const endY = (this.player.y + 16) >> 4;
+    const startX = Math.max(0, Math.min(this.width - 1, this.player.x >> 4));
+    const startY = Math.max(0, Math.min(this.height - 1, this.player.y >> 4));
+    const endX = Math.max(0, Math.min(this.width - 1, (this.player.x + 16) >> 4));
+    const endY = Math.max(0, Math.min(this.height - 1, (this.player.y + 16) >> 4));
 
     let textSign = false;
 
