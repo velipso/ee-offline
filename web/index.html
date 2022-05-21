@@ -193,11 +193,14 @@ input[type=text] {
   <script>
     function loadEelvl(eelvl){
       defaultScreen.drawBanner('Loading level...');
-      if (eeGame)
-        eeGame.stop();
       const world = new World();
       world.loadEelvl(eelvl);
-      eeGame = new EverybodyEdits(defaultScreen, defaultInput, world);
+      if (eeGame)
+        eeGame.destroy();
+      eeGame = new EverybodyEdits(defaultScreen, world);
+      eeGame.attachController(new ControllerKeyboard(window));
+      if (controllerGamepad)
+        eeGame.attachController(controllerGamepad);
       eeGame.run();
     }
     loadResources().then(() => playCampaigns());

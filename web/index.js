@@ -1,4 +1,4 @@
-let defaultScreen, defaultInput, eeGame;
+let defaultScreen, eeGame, controllerGamepad;
 let campaignsZip, campaignsLoaded = false, lastCampaign = {c: 0, w: 0}, ignorePlayerInput = false;
 let lastSqlFile = false;
 const sqlWorker = new Worker('worker.sql-wasm.js');
@@ -27,33 +27,11 @@ function blobToZipObj(blob){
 async function loadResources(){
   const dpr = window.devicePixelRatio || 1;
   const cnv = document.createElement('canvas');
+  cnv.tabIndex = 1;
   document.body.appendChild(cnv);
   const ctx = cnv.getContext('2d');
 
   defaultScreen = new Screen(cnv, ctx, dpr);
-  defaultInput = new Input();
-
-  window.addEventListener('keydown', e => {
-    if (ignorePlayerInput)
-      return;
-    e.preventDefault();
-    e.stopPropagation();
-    defaultInput.down(e.code);
-    if (typeof window.onTestKey === 'function') // hack for tests and tas
-      window.onTestKey(e.code, true);
-  });
-
-  window.addEventListener('keyup', e => {
-    e.preventDefault();
-    e.stopPropagation();
-    defaultInput.up(e.code);
-    if (typeof window.onTestKey === 'function') // hack for tests and tas
-      window.onTestKey(e.code, false);
-  });
-
-  window.addEventListener('blur', () => {
-    defaultInput.blur();
-  });
 
   new ResizeObserver(entries => {
     for (const e of entries) {
@@ -64,6 +42,86 @@ async function loadResources(){
       );
     }
   }).observe(document.body);
+
+  window.addEventListener('keydown', e => {
+    const result = (() => {
+      switch (e.code){
+        case 'F1':
+          if (eeGame){
+            eeGame.screenToggleDebug();
+            return true;
+          }
+          break;
+        case 'F2':
+          if (eeGame){
+            eeGame.screenToggleFull();
+            return true;
+          }
+          break;
+        case 'F3':
+          if (eeGame){
+            eeGame.screenMultiplyZoom(1 / 1.1);
+            return true;
+          }
+          break;
+        case 'F4':
+          if (eeGame){
+            eeGame.screenMultiplyZoom(1.1);
+            return true;
+          }
+          break;
+        case 'F5':
+          if (eeGame){
+            document.getElementById('resolution').innerText = eeGame.screenNextResolution();
+            return true;
+          }
+          break;
+        case 'F6':
+          if (eeGame){
+            eeGame.worldToggleBackground();
+            return true;
+          }
+          break;
+        case 'F7':
+          if (eeGame){
+            if (controllerGamepad){
+              eeGame.detachController(controllerGamepad);
+              controllerGamepad = false;
+            }
+            else{
+              controllerGamepad = new ControllerGamepad();
+              eeGame.attachController(controllerGamepad);
+            }
+          }
+          break;
+        case 'Escape':
+          if (
+            !document.getElementById('worlds') ||
+            document.getElementById('worlds').style.display === 'none'
+          ){
+            if (document.getElementById('menu').style.display === 'none')
+              showMenu();
+            else
+              hideMenu();
+          }
+          else
+            hideWorlds();
+          break;
+        case 'KeyG':
+          if (eeGame){
+            eeGame.playerToggleGodMode();
+            return true;
+          }
+          break;
+      }
+      return false;
+    })();
+    if (result){
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }
+  });
 
   await EverybodyEdits.init((done, total) => {
     defaultScreen.drawLoading(done, total);
@@ -268,7 +326,8 @@ function loadSqlite(buffer){
               const world = new World();
               world.clearWorld(width, height, gravity);
               world.loadLayerData(new FlashByteArray(decomp));
-              eeGame = new EverybodyEdits(defaultScreen, defaultInput, world);
+              eeGame = new EverybodyEdits(defaultScreen, world);
+              eeGame.attachController(new ControllerKeyboard(window));
               eeGame.run();
             }
             else

@@ -680,10 +680,10 @@ class ItemId {
 }
 
 //
-// Flash polyfills
+// FlashByteArray
 //
-
 // https://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/utils/ByteArray.html
+
 class FlashByteArray {
   data;
   view;
@@ -835,9 +835,105 @@ class Config {
   static effectPoison                = 11;
 
   // TODO: relocate
-  static showBackground = true;
   static eeotasBugs = false;
-  static iceBugs = false;
+}
+
+//
+// Controller
+//
+
+class Controller {
+  attach(){}
+  detach(){}
+  nextInput(){}
+}
+
+class ControllerKeyboard extends Controller {
+  element;
+  input;
+
+  constructor(element){
+    super();
+    this.element = element;
+    this.input = 0;
+  }
+
+  attach(){
+    this.element.addEventListener('keydown', this.keyDown);
+    this.element.addEventListener('keyup', this.keyUp);
+    this.element.addEventListener('blur', this.blur);
+  }
+
+  detach(){
+    this.element.removeEventListener('keydown', this.keyDown);
+    this.element.removeEventListener('keyup', this.keyUp);
+    this.element.removeEventListener('blur', this.blur);
+  }
+
+  keyToBit(code){
+    switch (code){
+      case 'Space':
+        return Input.JUMP;
+      case 'ArrowLeft':
+      case 'KeyA':
+        return Input.LEFT;
+      case 'ArrowRight':
+      case 'KeyD':
+        return Input.RIGHT;
+      case 'ArrowUp':
+      case 'KeyW':
+        return Input.UP;
+      case 'ArrowDown':
+      case 'KeyS':
+        return Input.DOWN;
+    }
+    return -1;
+  }
+
+  keyDown = e => {
+    const b = this.keyToBit(e.code);
+    if (b > 0)
+      this.input |= b;
+  };
+
+  keyUp = e => {
+    const b = this.keyToBit(e.code);
+    if (b >= 0)
+      this.input &= 0x1f ^ b;
+  };
+
+  blur = () => {
+    this.input = 0;
+  };
+
+  nextInput(){
+    return this.input;
+  }
+}
+
+class ControllerGamepad extends Controller {
+  attach(){}
+  detach(){}
+  nextInput(){
+    let input = 0;
+    for (const gp of navigator.getGamepads()){
+      for (let i = 0; i < Math.min(4, gp.buttons.length); i++){
+        if (gp.buttons[i].pressed)
+          input |= Input.JUMP;
+      }
+      if (gp.axes.length >= 2){
+        if (gp.axes[0] < -0.5)
+          input |= Input.LEFT;
+        else if (gp.axes[0] > 0.5)
+          input |= Input.RIGHT;
+        if (gp.axes[1] < -0.5)
+          input |= Input.UP;
+        else if (gp.axes[1] > 0.5)
+          input |= Input.DOWN;
+      }
+    }
+    return input;
+  }
 }
 
 //
@@ -845,92 +941,66 @@ class Config {
 //
 
 class Input {
-  keyDown = {};
-  keyJustPressed = {};
-  gpJump = false;
-  gpHorizontal = 0;
-  gpVertical = 0;
-  controllers = false;
+  static JUMP  = 1;
+  static LEFT  = 2;
+  static RIGHT = 4;
+  static UP    = 8;
+  static DOWN  = 16;
 
-  down(code){
-    if (!this.keyDown[code]){
-      this.keyDown[code] = true;
-      this.keyJustPressed[code] = true;
-    }
+  lastFrame = 0;
+  thisFrame = 0;
+  controllers = [];
+
+  attachController(controller){
+    controller.attach();
+    this.controllers.push(controller);
   }
 
-  up(code){
-    delete this.keyDown[code];
-    delete this.keyJustPressed[code];
+  detachController(controller){
+    const i = this.controllers.indexOf(controller);
+    if (i >= 0)
+      this.controllers.splice(i, 1)[0].detach();
   }
 
   startTick(){
-    if (this.keyJustPressed.F7){
-      this.controllers = !this.controllers;
-      if (!this.controllers)
-        this.blur();
-    }
-    if (this.controllers){
-      try {
-        const gamepads = navigator.getGamepads();
-        if (gamepads.length > 0){
-          let jump = false;
-          let horizontal = 0;
-          let vertical = 0;
-          for (const gp of gamepads){
-            for (let i = 0; i < Math.min(4, gp.buttons.length); i++){
-              if (gp.buttons[i].pressed)
-                jump = true;
-            }
-            if (gp.axes.length >= 2){
-              if (gp.axes[0] < -0.5)
-                horizontal = -1;
-              else if (gp.axes[0] > 0.5)
-                horizontal = 1;
-              if (gp.axes[1] < -0.5)
-                vertical = -1;
-              else if (gp.axes[1] > 0.5)
-                vertical = 1;
-            }
-          }
-          if (this.gpJump && !jump)
-            this.up('Space');
-          else if (!this.gpJump && jump)
-            this.down('Space');
-          this.gpJump = jump;
-          if (this.gpHorizontal !== horizontal){
-            this.up('ArrowLeft');
-            this.up('ArrowRight');
-            if (horizontal < 0)
-              this.down('ArrowLeft');
-            else if (horizontal > 0)
-              this.down('ArrowRight');
-            this.gpHorizontal = horizontal;
-          }
-          if (this.gpVertical !== vertical){
-            this.up('ArrowUp');
-            this.up('ArrowDown');
-            if (vertical < 0)
-              this.down('ArrowUp');
-            else if (vertical > 0)
-              this.down('ArrowDown');
-            this.gpVertical = vertical;
-          }
-        }
-      } catch (e){}
-    }
+    this.lastFrame = this.thisFrame;
+    this.thisFrame = 0;
+    for (const controller of this.controllers)
+      this.thisFrame |= controller.nextInput();
   }
 
-  endTick(){
-    this.keyJustPressed = {};
+  destroy(){
+    for (const controller of this.controllers)
+      controller.detach();
+    this.controllers.splice(0, this.controllers.length);
   }
 
-  blur(){
-    this.keyDown = {};
-    this.keyJustPressed = {};
-    this.gpJump = false;
-    this.gpHorizontal = 0;
-    this.gpVertical = 0;
+  get horizontal(){
+    const h = this.thisFrame & (Input.LEFT | Input.RIGHT);
+    return h === Input.LEFT
+      ? -1
+      : h === Input.RIGHT
+      ? 1
+      : 0;
+  }
+
+  get vertical(){
+    const h = this.thisFrame & (Input.UP | Input.DOWN);
+    return h === Input.UP
+      ? -1
+      : h === Input.DOWN
+      ? 1
+      : 0;
+  }
+
+  get jumpDown(){
+    return !!(this.thisFrame & Input.JUMP);
+  }
+
+  get jumpJustPressed(){
+    if (Config.eeotasBugs)
+      return !!(this.thisFrame & Input.JUMP);
+    return (this.thisFrame & Input.JUMP) && !(this.lastFrame & Input.JUMP);
   }
 }
 
@@ -4731,7 +4801,8 @@ class CampaignPage {
     for (const entry of zipObj){
       let i = 0;
       const campId = parseInt(entry.name.substr(0, entry.name.indexOf('/')), 10);
-      const tierId = parseInt(entry.name.substr(entry.name.indexOf('/') + 1, entry.name.indexOf('.')), 10);
+      const tierId =
+        parseInt(entry.name.substr(entry.name.indexOf('/') + 1, entry.name.indexOf('.')), 10);
       const fileType = entry.name.substr(entry.name.indexOf('.') + 1);
 
       if (!tempCamps[campId]){
@@ -4789,6 +4860,7 @@ class EverybodyEdits {
   screen;
   input;
   state;
+  world;
   running = false;
   accumulatedTime = 0;
 
@@ -4875,10 +4947,23 @@ class EverybodyEdits {
     ItemManager.init();
   }
 
-  constructor(screen, input, world){
+  constructor(screen, world){
     this.screen = screen;
-    this.input = input;
+    this.input = new Input();
+    this.world = world;
     this.state = new PlayState(world);
+  }
+
+  attachController(controller){
+    this.input.attachController(controller);
+  }
+
+  detachController(controller){
+    this.input.detachController(controller);
+  }
+
+  setScreen(screen){
+    this.screen = screen;
   }
 
   run(){
@@ -4904,8 +4989,6 @@ class EverybodyEdits {
     while (this.accumulatedTime >= Config.physics_ms_per_tick){
       this.input.startTick();
       this.state.tick(this.input);
-      this.screen.tick(this.input);
-      this.input.endTick();
       this.accumulatedTime -= Config.physics_ms_per_tick;
     }
   }
@@ -4916,6 +4999,42 @@ class EverybodyEdits {
 
   stop(){
     this.running = false;
+  }
+
+  destroy(){
+    this.stop();
+    this.input.destroy();
+  }
+
+  screenToggleDebug(){
+    this.screen.debug = !this.screen.debug;
+  }
+
+  screenToggleFull(){
+    this.screen.fullScreen = !this.screen.fullScreen;
+  }
+
+  screenMultiplyZoom(v){
+    this.screen.multiplyZoom(v);
+  }
+
+  screenNextResolution(){
+    return this.screen.nextResolution();
+  }
+
+  worldToggleBackground(){
+    this.world.toggleBackground();
+  }
+
+  playerToggleGodMode(){
+    this.state.player.isInGodMode = !this.state.player.isInGodMode;
+    this.state.player.resetDeath();
+    this.state.player.isOnFire = false;
+    //TODO: this.world.setShowAllSecrets(this.player.isInGodMode);
+  }
+
+  playerToggleIceBugs(){
+    this.state.player.toggleIceBugs();
   }
 }
 
@@ -5110,6 +5229,7 @@ class BlockSprite extends BlSprite {
 //
 
 class World extends BlObject {
+  showBackground = true;
   player;
   playState;
   lookup;
@@ -5149,8 +5269,8 @@ class World extends BlObject {
   labels = [];
   showAllSecrets = false;
 
-  constructor(){
-    super();
+  toggleBackground(){
+    this.showBackground = !this.showBackground;
   }
 
   clearWorld(width, height, gravity){
@@ -5566,9 +5686,6 @@ class World extends BlObject {
     this.overlapCells.length = 0;
     this.aniOffset += 0.3;
 
-    if (input.keyJustPressed.F6)
-      Config.showBackground = !Config.showBackground;
-
     for (const color of Object.keys(this.keys)){
       if (this.keys[color] && ((this.aniOffset - this.keysTimer[color]) / 30) >= 5)
         this.playState.switchKey(color, false, false);
@@ -5796,15 +5913,15 @@ class World extends BlObject {
               continue;
             break;
           case ItemId.DEATH_GATE:
-            if (this.lookup.getInt(cx, cy) > (pl.isMe ? this.showDeathGate : pl.deaths))
+            if (this.lookup.getInt(cx, cy) > this.showDeathGate)
               continue;
             break;
           case ItemId.COINGATE:
-            if (this.lookup.getInt(cx, cy) > (pl.isMe ? this.showCoinGate : pl.coins))
+            if (this.lookup.getInt(cx, cy) > this.showCoinGate)
               continue;
             break;
           case ItemId.BLUECOINGATE:
-            if (this.lookup.getInt(cx, cy) > (pl.isMe ? this.showBlueCoinGate : pl.bcoins))
+            if (this.lookup.getInt(cx, cy) > this.showBlueCoinGate)
               continue;
             break;
           case ItemId.TEAM_DOOR:
@@ -5893,7 +6010,7 @@ class World extends BlObject {
           target.fillRect(new Rectangle(point.x,point.y,16,16), bgColor);
         }else
         */
-          ItemManager.bricks[Config.showBackground ? bgrow[cx] : 0].draw(target, x, y);
+          ItemManager.bricks[this.showBackground ? bgrow[cx] : 0].draw(target, x, y);
       }
     }
 
@@ -6922,7 +7039,6 @@ class SynchronizedSprite extends SynchronizedObject {
 class Player extends SynchronizedSprite {
   world;
   name = 'player';
-  isMe;
   state;
   isInGodMode = false;
   spriteRect;
@@ -6930,6 +7046,7 @@ class Player extends SynchronizedSprite {
   lastJump;
   lastPortal;
   current;
+  iceBugs = false;
 
   // death
   isDead = false;
@@ -6950,10 +7067,6 @@ class Player extends SynchronizedSprite {
   switchQueue = [];
 
   // input
-  leftDown = 0;
-  rightDown = 0;
-  upDown = 0;
-  downDown = 0;
   spaceDown = false;
   spaceJustDown = false;
   horizontal = 0;
@@ -7026,12 +7139,11 @@ class Player extends SynchronizedSprite {
     Config.effectPoison
   ];
 
-  constructor(world, name, isMe, state){
+  constructor(world, name, state){
     super(ItemManager.smileysBMD);
     this.spriteRect = {x: 0, y: 0, w: 26, h: 26};
     this.world = world;
     this.name = name;
-    this.isMe = isMe;
     this.state = state;
     this.x = 16;
     this.y = 16;
@@ -7045,18 +7157,15 @@ class Player extends SynchronizedSprite {
     return this.isInGodMode;
   }
 
-  get isControlled(){
-    // TODO: check for global target
-    return this.isMe;
-  }
-
   killPlayer(){
     if (!this.isFlying && !this.isDead){
       this.isDead = true;
       // TODO: deadAnim = AnimationManager.animRandomDeath();
     }
-    else if (!this.isMe && this.isFlying)
-      this.cursed = this.zombie = this.isOnFire = this.poison = false;
+  }
+
+  toggleIceBugs(){
+    this.iceBugs = !this.iceBugs;
   }
 
   get gravityMultiplier(){
@@ -7152,8 +7261,7 @@ class Player extends SynchronizedSprite {
     }
     nx *= 16;
     ny *= 16;
-    if (this.isMe)
-      this.state.offset(this.x - nx, this.y - ny);
+    this.state.offset(this.x - nx, this.y - ny);
     this.x = nx;
     this.y = ny;
   }
@@ -7172,11 +7280,6 @@ class Player extends SynchronizedSprite {
   }
 
   setTeam(team){
-    if (!this.isMe){
-      this.team = team;
-      return;
-    }
-
     const oldTeam = this.team;
     this.team = team;
     if (this.world.overlaps(this)){
@@ -7301,7 +7404,7 @@ class Player extends SynchronizedSprite {
 
     const getCurrentBelow = () => {
       let x = 0, y = 0;
-      if (Config.iceBugs){
+      if (this.iceBugs){
         // original version has buggy logic
         switch (this.current){
           case ItemId.GRAVITY_LEFT : case ItemId.GRAVITY_LEFT_INVISIBLE: x -= 1; break;
@@ -7825,12 +7928,9 @@ class Player extends SynchronizedSprite {
     const processPortals = () => {
       this.current = this.world.getTile(0, cx, cy);
 
-      if (!isGod && this.current == ItemId.WORLD_PORTAL){
+      if (!isGod && this.current === ItemId.WORLD_PORTAL){
         /* TODO: world portals
-        if (!this.isMe){
-          this.resetSend = true;
-          this.resetPlayer(false, false, wp.target);
-        } else if (this.isMe && KeyBinding.risky.isDown() && !resetSend) {
+        if (KeyBinding.risky.isDown() && !resetSend) {
           var wp:WorldPortal = world.lookup.getWorldPortal(cx, cy);
           if (wp.id.length > 0) {
             resetSend = true;
@@ -7962,7 +8062,7 @@ class Player extends SynchronizedSprite {
         mod = -1;
       }
 
-      if (this.spaceDown || (!this.isMe && !this.isControlled && this.hasLevitation)){
+      if (this.spaceDown){
         if (this.hasLevitation){
           this.isThrusting = true;
           this.currentThrust = Config.maxThrust;
@@ -8182,84 +8282,40 @@ class Me extends Player {
   };
 
   getPlayerInput(input){
-    if (this.isControlled){
-      this.leftDown      = input.keyDown.ArrowLeft  || input.keyDown.KeyA ? -1 : 0;
-      this.upDown        = input.keyDown.ArrowUp    || input.keyDown.KeyW ? -1 : 0;
-      this.rightDown     = input.keyDown.ArrowRight || input.keyDown.KeyD ?  1 : 0;
-      this.downDown      = input.keyDown.ArrowDown  || input.keyDown.KeyS ?  1 : 0;
-      // EEO TAS wires just pressed to down, incorrectly imo
-      this.spaceJustDown =
-        Config.eeotasBugs ? !!input.keyDown.Space : !!input.keyJustPressed.Space;
-      this.spaceDown     = !!input.keyDown.Space;
-      this.horizontal    = this.leftDown + this.rightDown;
-      this.vertical      = this.upDown + this.downDown;
-    }
+    this.horizontal = input.horizontal;
+    this.vertical = input.vertical;
+    this.spaceJustDown = input.jumpJustPressed;
+    this.spaceDown = input.jumpDown;
   }
 
   touchBlock(cx, cy, isGod){
-    if (this.isMe){
-      // TODO: multiJumpEffectDisplay.update();
-      this.coinCountChanged = false;
-    }
+    // TODO: multiJumpEffectDisplay.update();
+    this.coinCountChanged = false;
 
     switch (this.current){
       case ItemId.COIN_GOLD:
       case ItemId.COIN_BLUE:
-      case ItemId.COLLECTEDCOIN:
-      case ItemId.COLLECTEDBLUECOIN: {
-        if (
-          this.isMe &&
-          this.current !== ItemId.COLLECTEDCOIN &&
-          this.current !== ItemId.COLLECTEDBLUECOIN
-        ){
-          // TODO: SoundManager.playMiscSound(SoundId.COIN);
-          this.world.setTileComplex(0, cx, cy, this.current + 10, null); // 100 -> 110; 101 -> 111
-          if (this.current == ItemId.COIN_GOLD) {
-            this.coins++;
-            this.gx.push(cx);
-            this.gy.push(cy);
-          }
-          else {
-            this.bcoins++;
-            this.bx.push(cx);
-            this.by.push(cy);
-          }
-          this.coinCountChanged = true;
-          // TODO: if particles enabled:
-          //for (var k:int = 0; k < 4; k++)
-          // spawnCoinPatricle(cx, cy, current == ItemId.COIN_BLUE);
+        // TODO: SoundManager.playMiscSound(SoundId.COIN);
+        this.world.setTileComplex(0, cx, cy, this.current + 10, null); // 100 -> 110; 101 -> 111
+        if (this.current == ItemId.COIN_GOLD) {
+          this.coins++;
+          this.gx.push(cx);
+          this.gy.push(cy);
         }
-        else if (!this.isMe){
-          /*
-          var found:Boolean = false;
-          for (var i:int = 0; i < gx.length; i++) {
-            if (gx[i] == cx && gy[i] == cy) {
-              found = true;
-              break;
-            }
-          }
-          if (!found) {
-            if (current == ItemId.COIN_GOLD || current == 110) {
-              coins++;
-              gx.push(cx)
-              gy.push(cy);
-            }
-            else if (current == ItemId.COIN_BLUE || current == 111) {
-              bcoins++;
-              bx.push(cx);
-              by.push(cy);
-            }
-          }
-          */
+        else{
+          this.bcoins++;
+          this.bx.push(cx);
+          this.by.push(cy);
         }
+        this.coinCountChanged = true;
+        // TODO: if particles enabled:
+        //for (var k:int = 0; k < 4; k++)
+        // spawnCoinPatricle(cx, cy, current == ItemId.COIN_BLUE);
         break;
-      }
     }
 
     if (this.pastX !== cx || this.pastY !== cy){ // only just-entered blocks
-      if (this.isMe){
-        // TODO: piano, drums, guitar
-      }
+      // TODO: piano, drums, guitar
 
       if (!isGod){
         switch (this.current){
@@ -8455,23 +8511,21 @@ class Me extends Player {
   }
 
   sendMovement(cx, cy){
-    if (this.isControlled){
-      if (
-        this.oh !== this.horizontal ||
-        this.ov !== this.vertical ||
-        this.oSpaceDown !== this.spaceDown ||
-        (this.oSpaceJP !== this.spaceJustDown && this.spaceJustDown) ||
-        this.coinCountChanged ||
-        this.enforceMovement
-      ){
-        this.oh = this.horizontal;
-        this.ov = this.vertical;
-        this.oSpaceDown = this.spaceDown;
-        this.oSpaceJP = this.spaceJustDown;
-        this.spaceJustDown = false;
-      }
-      this.enforceMovement = false;
+    if (
+      this.oh !== this.horizontal ||
+      this.ov !== this.vertical ||
+      this.oSpaceDown !== this.spaceDown ||
+      (this.oSpaceJP !== this.spaceJustDown && this.spaceJustDown) ||
+      this.coinCountChanged ||
+      this.enforceMovement
+    ){
+      this.oh = this.horizontal;
+      this.ov = this.vertical;
+      this.oSpaceDown = this.spaceDown;
+      this.oSpaceJP = this.spaceJustDown;
+      this.spaceJustDown = false;
     }
+    this.enforceMovement = false;
   }
 }
 
@@ -8500,7 +8554,7 @@ class PlayState extends BlObject {
     this.coins = coinCount.coins;
     this.bcoins = coinCount.bcoins;
 
-    this.player = new Me(this.world, 'player', true, this);
+    this.player = new Me(this.world, 'player', this);
     this.player.placeAtSpawn(false);
     this.player.worldGravityMultiplier = this.world.gravity;
     this.x = -this.player.x + Config.bw / 2;
@@ -8599,13 +8653,6 @@ class PlayState extends BlObject {
       this.world.showBlueCoinGate = this.player.bcoins;
       if (this.world.overlaps(this.player))
         this.world.showBlueCoinGate = old;
-    }
-
-    if (input.keyJustPressed.KeyG){
-      this.player.isInGodMode = !this.player.isInGodMode;
-      this.player.resetDeath();
-      this.player.isOnFire = false;
-      //TODO: this.world.setShowAllSecrets(this.player.isInGodMode);
     }
   }
 
@@ -9114,30 +9161,10 @@ class Screen {
     this.resize(this.lastResize.w, this.lastResize.h);
   }
 
-  tick(input){
-    if (input.keyJustPressed.F1)
-      this.debug = !this.debug;
-    if (input.keyJustPressed.F2)
-      this.fullScreen = !this.fullScreen;
-    if (input.keyJustPressed.F3)
-      this.multiplyZoom(1 / 1.1);
-    if (input.keyJustPressed.F4)
-      this.multiplyZoom(1.1);
-    if (input.keyJustPressed.F5){
-      const res = ['8', '12', '16', '32', 'max'];
-      this.resolution = res[(res.indexOf(this.resolution) + 1) % res.length];
-      document.getElementById('resolution').innerText = this.resolution;
-      this.resize(this.lastResize.w, this.lastResize.h);
-    }
-    if (input.keyJustPressed.Escape){
-      if (document.getElementById('worlds').style.display === 'none'){
-        if (document.getElementById('menu').style.display === 'none')
-          showMenu();
-        else
-          hideMenu();
-      }
-      else
-        hideWorlds();
-    }
+  nextResolution(){
+    const res = ['8', '12', '16', '32', 'max'];
+    this.resolution = res[(res.indexOf(this.resolution) + 1) % res.length];
+    this.resize(this.lastResize.w, this.lastResize.h);
+    return this.resolution;
   }
 }

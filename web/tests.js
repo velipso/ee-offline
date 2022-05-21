@@ -1176,14 +1176,7 @@ it('boosts propel the player the right amount of blocks', () => {
 });
 
 it('afk minigame rotates player around', () => {
-  const sim = new Simulator(`
-    #####
-    #>Xp#
-    #>#<#
-    #^^<#
-    #####
-  `, tiles())
-  .wait(3050);
+  const sim = new Simulator('>Xp\n>#<\n^^<', tiles()).wait(3050);
   expect(sim.player.worldPosition).toEqual(sim.goal);
 });
 

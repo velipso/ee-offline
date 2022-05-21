@@ -9,8 +9,34 @@ class FakePlayer {
   get y(){ return this.eePlayer.y; }
 }
 
+class FakeScreen {
+  boundary = {x: 0, y: 0, w: Config.bw, h: Config.bh};
+  drawState(state){
+    state.draw(this, 0, 0);
+  }
+  copyPixels(){}
+  copyPixelsRotated(){}
+  fillRect(){}
+  text(){}
+  textWrap(){}
+  textSign(){}
+  debugText(){}
+  debugRect(){}
+  tick(){}
+}
+
+class FakeController extends Controller {
+  input = 0;
+  attach(){}
+  detach(){}
+  nextInput(){
+    return this.input;
+  }
+}
+
 class Simulator {
   input;
+  controller;
   ee;
   world;
   player;
@@ -24,7 +50,7 @@ class Simulator {
     this.template = template;
     this.mappings = mappings;
     lastSimulator = this;
-    this.input = new Input();
+    this.controller = new FakeController();
     this.world = new World();
 
     const lines = template.trim().split('\n');
@@ -56,12 +82,18 @@ class Simulator {
       }
     }
 
-    this.ee = new EverybodyEdits(defaultScreen, this.input, this.world);
+    this.ee = new EverybodyEdits(new FakeScreen(), this.world);
+    this.ee.attachController(this.controller);
     this.player = new FakePlayer(this.ee.state.player);
   }
 
   wait(ms){
     this.events.push({kind: 'wait', ms});
+    while (ms >= Config.physics_ms_per_tick){
+      this.ee.advanceTime(Config.physics_ms_per_tick);
+      this.ee.draw();
+      ms -= Config.physics_ms_per_tick;
+    }
     this.ee.advanceTime(ms);
     return this;
   }
@@ -69,9 +101,9 @@ class Simulator {
   setKey(key, keyDown){
     this.events.push({kind: 'setKey', key, keyDown});
     if (keyDown)
-      this.input.down(key);
+      this.controller.input |= key;
     else
-      this.input.up(key);
+      this.controller.input &= 0x1f ^ key;
     return this;
   }
 
@@ -95,26 +127,26 @@ class Simulator {
 
   noDir(){
     return this
-      .setKey('ArrowUp', false)
-      .setKey('ArrowRight', false)
-      .setKey('ArrowDown', false)
-      .setKey('ArrowLeft', false);
+      .setKey(Input.UP   , false)
+      .setKey(Input.RIGHT, false)
+      .setKey(Input.DOWN , false)
+      .setKey(Input.LEFT , false);
   }
 
   up(){
     return this
-      .setKey('ArrowUp', true)
-      .setKey('ArrowRight', false)
-      .setKey('ArrowDown', false)
-      .setKey('ArrowLeft', false);
+      .setKey(Input.UP   , true)
+      .setKey(Input.RIGHT, false)
+      .setKey(Input.DOWN , false)
+      .setKey(Input.LEFT , false);
   }
 
   upRight(){
     return this
-      .setKey('ArrowUp', true)
-      .setKey('ArrowRight', true)
-      .setKey('ArrowDown', false)
-      .setKey('ArrowLeft', false);
+      .setKey(Input.UP   , true)
+      .setKey(Input.RIGHT, true)
+      .setKey(Input.DOWN , false)
+      .setKey(Input.LEFT , false);
   }
 
   rightUp(){
@@ -123,18 +155,18 @@ class Simulator {
 
   right(){
     return this
-      .setKey('ArrowUp', false)
-      .setKey('ArrowRight', true)
-      .setKey('ArrowDown', false)
-      .setKey('ArrowLeft', false);
+      .setKey(Input.UP   , false)
+      .setKey(Input.RIGHT, true)
+      .setKey(Input.DOWN , false)
+      .setKey(Input.LEFT , false);
   }
 
   rightDown(){
     return this
-      .setKey('ArrowUp', false)
-      .setKey('ArrowRight', true)
-      .setKey('ArrowDown', true)
-      .setKey('ArrowLeft', false);
+      .setKey(Input.UP   , false)
+      .setKey(Input.RIGHT, true)
+      .setKey(Input.DOWN , true)
+      .setKey(Input.LEFT , false);
   }
 
   downRight(){
@@ -143,18 +175,18 @@ class Simulator {
 
   down(){
     return this
-      .setKey('ArrowUp', false)
-       .setKey('ArrowRight', false)
-      .setKey('ArrowDown', true)
-      .setKey('ArrowLeft', false);
+      .setKey(Input.UP   , false)
+      .setKey(Input.RIGHT, false)
+      .setKey(Input.DOWN , true)
+      .setKey(Input.LEFT , false);
   }
 
   downLeft(){
     return this
-      .setKey('ArrowUp', false)
-      .setKey('ArrowRight', false)
-      .setKey('ArrowDown', true)
-      .setKey('ArrowLeft', true);
+      .setKey(Input.UP   , false)
+      .setKey(Input.RIGHT, false)
+      .setKey(Input.DOWN , true)
+      .setKey(Input.LEFT , true);
   }
 
   leftDown(){
@@ -163,18 +195,18 @@ class Simulator {
 
   left(){
     return this
-      .setKey('ArrowUp', false)
-      .setKey('ArrowRight', false)
-      .setKey('ArrowDown', false)
-      .setKey('ArrowLeft', true);
+      .setKey(Input.UP   , false)
+      .setKey(Input.RIGHT, false)
+      .setKey(Input.DOWN , false)
+      .setKey(Input.LEFT , true);
   }
 
   leftUp(){
     return this
-      .setKey('ArrowUp', true)
-      .setKey('ArrowRight', false)
-      .setKey('ArrowDown', false)
-      .setKey('ArrowLeft', true);
+      .setKey(Input.UP   , true)
+      .setKey(Input.RIGHT, false)
+      .setKey(Input.DOWN , false)
+      .setKey(Input.LEFT , true);
   }
 
   upLeft(){
@@ -182,11 +214,11 @@ class Simulator {
   }
 
   jump(){
-    return this.setKey('Space', true);
+    return this.setKey(Input.JUMP, true);
   }
 
   noJump(){
-    return this.setKey('Space', false);
+    return this.setKey(Input.JUMP, false);
   }
 
   draw(){
@@ -326,13 +358,9 @@ class TestSuite {
       try {
         test.func();
       } catch (e){
-        if (e instanceof ExpectError){
-          pass = false;
-          console.error('Test failed:', test.name);
-          console.error(e);
-        }
-        else
-          throw e;
+        pass = false;
+        console.error('Test failed:', test.name);
+        console.error(e);
       }
 
       const simulator = lastSimulator;
@@ -358,6 +386,7 @@ class TestSuite {
       btnTd.appendChild(btn);
       btn.addEventListener('click', () => {
         window.sim = simulator.clone();
+        window.sim.ee.setScreen(defaultScreen);
         let events = JSON.parse(JSON.stringify(simulator.events));
         const totalTime = events.filter(k => k.kind === 'wait').reduce((v, k) => v + k.ms, 0);
         let timeLeft = totalTime;
@@ -406,13 +435,12 @@ class TestSuite {
             : `Hit Space ${totalTime - timeLeft}/${totalTime}`
           );
         };
-        window.onTestKey = (key, down) => {
-          if (!down)
-            return;
+        window.onTestKey = key => {
           if (key === 'Space' && timeLeft > 0)
             advanceMs(Math.min(timeLeft, Config.physics_ms_per_tick));
           if (key === 'KeyR'){
             window.sim = simulator.clone();
+            window.sim.ee.setScreen(defaultScreen);
             events = JSON.parse(JSON.stringify(simulator.events));
             timeLeft = totalTime;
           }
@@ -451,6 +479,10 @@ async function runTests(){
     autoalign_range: 2
   };
   //defaultScreen.debug = true;
+  window.addEventListener('keydown', e => {
+    if (window.onTestKey)
+      window.onTestKey(e.code);
+  });
   defaultScreen.drawBanner('Running tests...');
   loadTests(TestSuite.it, TestSuite.expect);
   defaultScreen.drawBanner((await TestSuite.run()) ? 'Pass' : 'Fail');
