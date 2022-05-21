@@ -205,7 +205,7 @@ button:active div {
         Jump: Space<br />
         Rewind: Backspace<br />
         Forward: Any other key<br />
-        EEOTAS Compatibility: <input type="checkbox" checked oninput="javascript: Config.eeotasBugs = this.checked;">
+        EEOTAS Compatibility: <input type="checkbox" id="eeotas" checked oninput="javascript: if (eeGame) eeGame.setEEOTASBugs(this.checked);">
       </p>
     </div>
   </div>

@@ -2,6 +2,17 @@ let tasController, nextFrameInput = 0;
 let tasHistory = [], lastInputRow, lastEelvl, playingIndex = false;
 const listDiv = document.getElementById('list');
 
+function createNewEE(eelvl){
+  if (eeGame)
+    eeGame.destroy();
+  const world = new World();
+  world.loadEelvl(eelvl);
+  eeGame = new EverybodyEdits(defaultScreen, world);
+  eeGame.setEEOTASBugs(document.getElementById('eeotas').checked);
+  eeGame.attachController(tasController);
+  tasController.blur();
+}
+
 function inputText(row){
   return `\xa0\xa0\xa0\xa0\xa0${row.toString()}`.substr(-5) + '\xa0' +
     (nextFrameInput & Input.JUMP  ? 'O' : '\xa0') + '\xa0' +
@@ -35,7 +46,6 @@ function advanceTime(){
 }
 
 function runTAS(){
-  Config.eeotasBugs = true;
   tasController = new TASController();
 
   const onKeyCode = (code, down) => {
@@ -45,7 +55,7 @@ function runTAS(){
       if (down)
         nextFrameInput |= b;
       else
-        nextFrameInput &= 0x1f ^ b;
+        nextFrameInput &= 0xffff ^ b;
     };
     if      (code === 'KeyW' || code === 'ArrowUp'   ) onKey(Input.UP);
     else if (code === 'KeyD' || code === 'ArrowRight') onKey(Input.RIGHT);
@@ -54,13 +64,7 @@ function runTAS(){
     else if (code === 'Space') onKey(Input.JUMP);
     else if (code === 'Backspace' && down){
       if (tasHistory.length > 0){
-        const world = new World();
-        world.loadEelvl(lastEelvl);
-        if (eeGame)
-          eeGame.destroy();
-        eeGame = new EverybodyEdits(defaultScreen, world);
-        eeGame.attachController(tasController);
-        tasController.blur();
+        createNewEE(lastEelvl);
         const rem = tasHistory.pop();
         rem.node.parentElement.removeChild(rem.node);
         for (const inp of tasHistory){
@@ -97,12 +101,7 @@ function loadEelvl(eelvl){
   clearHistory();
   lastEelvl = eelvl;
   defaultScreen.drawBanner('Loading level...');
-  const world = new World();
-  world.loadEelvl(eelvl);
-  if (eeGame)
-    eeGame.destroy();
-  eeGame = new EverybodyEdits(defaultScreen, world);
-  eeGame.attachController(tasController);
+  createNewEE(eelvl);
   eeGame.draw();
 }
 
@@ -110,13 +109,7 @@ function playTAS(){
   if (playingIndex === false){
     playingIndex = 0;
     document.getElementById('play').innerText = 'Stop';
-    const world = new World();
-    world.loadEelvl(lastEelvl);
-    if (eeGame)
-      eeGame.destroy();
-    eeGame = new EverybodyEdits(defaultScreen, world);
-    eeGame.attachController(tasController);
-    tasController.blur();
+    createNewEE(lastEelvl);
 
     let lastTick = Date.now();
     let accumulatedTime = 0;
@@ -161,13 +154,7 @@ async function loadTAS(file){
     r.readAsText(file);
   });
   clearHistory();
-  const world = new World();
-  world.loadEelvl(lastEelvl);
-  if (eeGame)
-    eeGame.destroy();
-  eeGame = new EverybodyEdits(defaultScreen, world);
-  eeGame.attachController(tasController);
-  tasController.blur();
+  createNewEE(lastEelvl);
   nextFrameInput = 0;
   for (let i = 0; i < data.length; i++){
     nextFrameInput = data.charCodeAt(i) - 48;

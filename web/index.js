@@ -2,6 +2,7 @@ let defaultScreen, eeGame, controllerGamepad;
 let campaignsZip, campaignsLoaded = false, lastCampaign = {c: 0, w: 0}, ignorePlayerInput = false;
 let lastSqlFile = false;
 const sqlWorker = new Worker('worker.sql-wasm.js');
+const rootFolder = new RootFolder();
 
 function loadBlob(url){
   return fetch(url).then(response => response.blob());
@@ -129,6 +130,7 @@ async function loadResources(){
 
   defaultScreen.drawBanner('Loading campaigns...');
   campaignsZip = await blobToZipObj(await loadBlob('../media/campaigns/campaigns.zip'));
+  rootFolder.add(new CampaignFolder(campaignsZip));
 }
 
 function restoreMenu(){

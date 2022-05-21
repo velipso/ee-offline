@@ -103,7 +103,7 @@ class Simulator {
     if (keyDown)
       this.controller.input |= key;
     else
-      this.controller.input &= 0x1f ^ key;
+      this.controller.input &= 0xffff ^ key;
     return this;
   }
 

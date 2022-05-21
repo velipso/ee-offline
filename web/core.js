@@ -364,7 +364,7 @@ class ItemId {
           (122 <= id && id <= 217) ||
           (id >= 1001 && id <= 1499)
         ) &&
-        id != 83 && id != 77
+        id !== ItemId.DRUMS && id !== ItemId.PIANO
       );
   }
 
@@ -794,6 +794,7 @@ class Util {
 //
 
 class Config {
+  static stringSeparator             = '᎙';
   static globalPing                  = 0.2;
   static maxThrust                   = 0.2;
   static thrustBurnOff               = 0.01;
@@ -833,9 +834,6 @@ class Config {
   static effectMultijump             = 9;
   static effectGravity               = 10;
   static effectPoison                = 11;
-
-  // TODO: relocate
-  static eeotasBugs = false;
 }
 
 //
@@ -870,7 +868,7 @@ class ControllerKeyboard extends Controller {
     this.element.removeEventListener('blur', this.blur);
   }
 
-  keyToBit(code){
+  keyToBit(code, shiftKey){
     switch (code){
       case 'Space':
         return Input.JUMP;
@@ -886,20 +884,26 @@ class ControllerKeyboard extends Controller {
       case 'ArrowDown':
       case 'KeyS':
         return Input.DOWN;
+      case 'KeyY':
+        return Input.RISKY;
+      case 'KeyR':
+        if (shiftKey === true || shiftKey === null)
+          return Input.RETRY;
+        break;
     }
     return -1;
   }
 
   keyDown = e => {
-    const b = this.keyToBit(e.code);
+    const b = this.keyToBit(e.code, e.shiftKey);
     if (b > 0)
       this.input |= b;
   };
 
   keyUp = e => {
-    const b = this.keyToBit(e.code);
+    const b = this.keyToBit(e.code, null);
     if (b >= 0)
-      this.input &= 0x1f ^ b;
+      this.input &= 0xffff ^ b;
   };
 
   blur = () => {
@@ -946,7 +950,10 @@ class Input {
   static RIGHT = 4;
   static UP    = 8;
   static DOWN  = 16;
+  static RISKY = 32;
+  static RETRY = 64;
 
+  eeotasBugs = false;
   lastFrame = 0;
   thisFrame = 0;
   controllers = [];
@@ -975,32 +982,36 @@ class Input {
     this.controllers.splice(0, this.controllers.length);
   }
 
+  setEEOTASBugs(v){
+    this.eeotasBugs = v;
+  }
+
   get horizontal(){
     const h = this.thisFrame & (Input.LEFT | Input.RIGHT);
-    return h === Input.LEFT
-      ? -1
-      : h === Input.RIGHT
-      ? 1
-      : 0;
+    return h === Input.LEFT ? -1 : h === Input.RIGHT ? 1 : 0;
   }
 
   get vertical(){
     const h = this.thisFrame & (Input.UP | Input.DOWN);
-    return h === Input.UP
-      ? -1
-      : h === Input.DOWN
-      ? 1
-      : 0;
+    return h === Input.UP ? -1 : h === Input.DOWN ? 1 : 0;
   }
 
-  get jumpDown(){
+  get jump(){
     return !!(this.thisFrame & Input.JUMP);
   }
 
   get jumpJustPressed(){
-    if (Config.eeotasBugs)
+    if (this.eeotasBugs)
       return !!(this.thisFrame & Input.JUMP);
     return (this.thisFrame & Input.JUMP) && !(this.lastFrame & Input.JUMP);
+  }
+
+  get risky(){
+    return (this.thisFrame & Input.RISKY) && !(this.lastFrame & Input.RISKY);
+  }
+
+  get retry(){
+    return (this.thisFrame & Input.RETRY) && !(this.lastFrame & Input.RETRY);
   }
 }
 
@@ -1207,17 +1218,7 @@ class ItemBrick {
   }
 
   draw(target, ox, oy){
-    target.copyPixels(
-      this.bmd,
-      this.offset * 16,
-      0,
-      16,
-      16,
-      ox,
-      oy,
-      16,
-      16
-    );
+    target.copyPixels(this.bmd, this.offset * 16, 0, 16, 16, ox, oy, 16, 16);
     target.debugText(`${this.debugId}`, ox + 8, oy + 8);
   }
 
@@ -4324,7 +4325,7 @@ class ItemManager {
         frames = srcBmd.width / 16;
       const width = 16;
       const height = 16;
-      ItemManager[sprName] = new BlockSprite(srcBmd, offset, width, height, frames, shadow);
+      ItemManager[sprName] = new BlSprite(srcBmd, offset, width, height, frames, shadow);
     }
 
     BS('sprCheckpoint'                , 'specialBlocksBMD'          , 154,    2, false);
@@ -4819,14 +4820,14 @@ class CampaignPage {
       const tempWorld = tempCamp.worlds[tierId];
 
       if (entry.name.substr(entry.name.lastIndexOf('/') + 1) === 'campaign.info'){
-        const campInfo = entry.data.toString().split('᎙');
+        const campInfo = entry.data.toString().split(Config.stringSeparator);
         tempCamp.diff = campInfo[i++];
         tempCamp.name = campInfo[i++];
         tempCamp.desc = campInfo[i++];
       }
       else if (fileType === 'info'){
         // TODO: tempWorld.img = previews[campId][tierId];
-        const tierInfo = entry.data.toString().split('᎙');
+        const tierInfo = entry.data.toString().split(Config.stringSeparator);
         tempWorld.diff = tierInfo[i++];
         tempWorld.creators = tierInfo[i++];
         tempWorld.targetTimes = [];
@@ -5006,6 +5007,10 @@ class EverybodyEdits {
     this.input.destroy();
   }
 
+  setEEOTASBugs(v){
+    this.input.setEEOTASBugs(v);
+  }
+
   screenToggleDebug(){
     this.screen.debug = !this.screen.debug;
   }
@@ -5031,7 +5036,7 @@ class EverybodyEdits {
     this.state.player.resetDeath();
     this.state.player.isOnFire = false;
     if (!this.state.player.completeTime)
-      this.state.player.usedGodModeToComplete = true;
+      this.state.player.validRun = false;
     //TODO: this.world.setShowAllSecrets(this.player.isInGodMode);
   }
 
@@ -5186,47 +5191,6 @@ class BlSprite extends BlObject {
 }
 
 //
-// BlockSprite
-//
-
-// TODO: is this any different than BlSprite..???
-class BlockSprite extends BlSprite {
-  constructor(srcBmd, offset, width, height, frames, shadow){
-    super(srcBmd, offset, width, height, frames, shadow)
-  }
-
-  /*
-  private function drawWithShadow(bmd:BitmapData):BitmapData {
-    var newBmd:BitmapData = new BitmapData(frames * (width + 2), (height + 2), true, 0x0);
-    for (var i:int = 0; i < frames; i++) {
-      var blockBmd:BitmapData = drawWithShadowSingle(bmd, i);
-      newBmd.copyPixels(blockBmd, blockBmd.rect, new Point(i * (width + 2), 0));
-    }
-    return newBmd;
-  }
-
-  private function drawWithShadowSingle(bmd:BitmapData, blockOffset:int):BitmapData {
-    // Get single block from source
-    var copyBmd:BitmapData = new BitmapData(width, height, true, 0x0);
-    copyBmd.copyPixels(bmd, new Rectangle((offset + blockOffset) * width, 0, width, height), new Point(0, 0));
-
-    // Matrix that moves the shadow 2 pixels to the right and down
-    var m:Matrix = new Matrix();
-    m.translate(2,2);
-
-    var newBmd:BitmapData = new BitmapData(width + 2, height + 2, true, 0x0);
-
-    // Draw shadow
-    newBmd.draw(copyBmd, m, new ColorTransform(0,0,0,.30,0,0,0,0));
-    // Draw original bitmap
-    newBmd.draw(copyBmd);
-
-    return newBmd;
-  }
-  */
-}
-
-//
 // World
 //
 
@@ -5236,6 +5200,7 @@ class World extends BlObject {
   playState;
   lookup;
   spawnPoints = [];
+  nextSpawnPos = [];
   depth = 0;
   gravity;
   worldName = 'Unknown World';
@@ -5395,9 +5360,9 @@ class World extends BlObject {
         }
 
         switch (type){
-          case 83:
-          case 77:
-          case 1520:
+          case ItemId.DRUMS:
+          case ItemId.PIANO:
+          case ItemId.GUITAR:
             this.lookup.setInt(nx, ny, rotation);
             break;
           case ItemId.SPIKE:
@@ -5519,11 +5484,12 @@ class World extends BlObject {
     }
 
     // removing save-breaking symbols
+    const stripSeparator = new RegExp(Config.stringSeparator, 'g');
     if (properties && properties.text != null)
-      properties.text = properties.text.replace(/᎙/g, '');
+      properties.text = properties.text.replace(stripSeparator, '');
     if (properties && properties.messages != null){
       for (let i = 0; i < properties.messages.length; i++)
-        properties.messages[i] = properties.messages[i].replace(/᎙/g, '');
+        properties.messages[i] = properties.messages[i].replace(stripSeparator, '');
     }
 
     switch (type){
@@ -5582,9 +5548,9 @@ class World extends BlObject {
         if (properties.text != null && properties.signtype != null)
           this.lookup.setTextSign(x, y, {text: properties.text, type: properties.signtype});
         break;
-      case 83:
-      case 77:
-      case 1520:
+      case ItemId.DRUMS:
+      case ItemId.PIANO:
+      case ItemId.GUITAR:
         this.lookup.setInt(x, y, properties.rotation);
         this.lookup.setBlink(x, y, 30);
         break;
@@ -5658,7 +5624,18 @@ class World extends BlObject {
     if (type == ItemId.COIN_BLUE && old == ItemId.COLLECTEDBLUECOIN)
       return;
 
-    // TOOD: (Global.base.state as PlayState).unsavedChanges = true;
+    // TODO: (Global.base.state as PlayState).unsavedChanges = true;
+  }
+
+  resetCoins(){
+    for (let y = 0; y < this.height; y++){
+      for (let x = 0; x < this.width; x++){
+        if (this.realMap[0][y][x] === 110)
+          this.setTile(0, x, y, 100);
+        if (this.realMap[0][y][x] === 111)
+          this.setTile(0, x, y, 101);
+      }
+    }
   }
 
   getKey(color){
@@ -5716,6 +5693,12 @@ class World extends BlObject {
               else
                 this.lookup.updateBlink(cx, cy, 1);
             }
+            break;
+          case ItemId.DRUMS:
+          case ItemId.PIANO:
+          case ItemId.GUITAR:
+            if (this.lookup.isBlink(cx, cy) && this.lookup.updateBlink(cx, cy, -1) <= 0)
+              this.lookup.deleteBlink(cx, cy);
             break;
         }
       }
@@ -6336,28 +6319,28 @@ class World extends BlObject {
           case ItemId.ZOMBIE_GATE:
             ItemManager.sprDoors.drawPoint(target, x, y, this.player.zombie ? 13 : 12);
             continue;
+          case ItemId.DRUMS:
+            if (this.lookup.isBlink(cx, cy)){
+              ItemManager.sprDrumsBlink.drawPoint(target, x, y,
+                (this.lookup.getBlink(cx, cy) / 6) << 0);
+              continue;
+            }
+            break;
+          case ItemId.PIANO:
+            if (this.lookup.isBlink(cx, cy)){
+              ItemManager.sprPianoBlink.drawPoint(target, x, y,
+                (this.lookup.getBlink(cx, cy) / 6) << 0);
+              continue;
+            }
+            break;
+          case ItemId.GUITAR:
+            if (this.lookup.isBlink(cx, cy)){
+              ItemManager.sprGuitarBlink.drawPoint(target, x, y,
+                (this.lookup.getBlink(cx, cy) / 6) << 0);
+              continue;
+            }
+            break;
           /*
-          case 83:{
-            if (lookup.isBlink(cx, cy)) {
-              ItemManager.sprDrumsBlink.drawPoint(target, point, (lookup.getBlink(cx, cy)/6)<<0);
-              if (lookup.updateBlink(cx, cy, -1) <= 0) {
-                lookup.deleteBlink(cx, cy);
-              }
-              continue;
-            }
-            break;
-          }
-          case 77:{
-            if (lookup.isBlink(cx, cy)) {
-              ItemManager.sprPianoBlink.drawPoint(target, point, (lookup.getBlink(cx, cy)/6)<<0);
-              if (lookup.updateBlink(cx, cy, -1) <= 0) {
-                lookup.deleteBlink(cx, cy);
-              }
-              continue;
-            }
-            break;
-          }
-
           //If user can edit, draw shadow coins
           case 110:{
             if(Bl.data.canEdit){
@@ -6400,39 +6383,31 @@ class World extends BlObject {
               p.rotation * 15 + (((this.aniOffset / 1.5 >> 0) + cx + cy) % 15) + 1);
             continue;
           }
-          /*
-          case ItemId.PORTAL_INVISIBLE: {
-            if ((Bl.data.canEdit && player.isFlying) || full) {
-              var pInv:Portal = lookup.getPortal(cx,cy);
-              ItemManager.sprPortalInvisible.drawPoint(target, point, pInv.rotation);
+          case ItemId.PORTAL_INVISIBLE:
+            if (this.player.isFlying || full){
+              const pInv = this.lookup.getPortal(cx, cy);
+              ItemManager.sprPortalInvisible.drawPoint(target, x, y, pInv.rotation);
             }
             continue;
-          }
-
-          case ItemId.WORLD_PORTAL:{
-            ItemManager.sprPortalWorld.drawPoint(target, point, (((offset/2 >> 0)+cx+cy)%21));
-
-            if (Math.random()*100<18) {
-              addParticle(new Particle(this, Math.random()*100<50?6:7, (cx*16)+6, (cy*16)+6, .7, .7, 0.013, 0.013, Math.random()*360, Math.random()*115, true));
-            }
+          case ItemId.WORLD_PORTAL:
+            ItemManager.sprPortalWorld.drawPoint(target, x, y,
+              (((this.aniOffset / 2 >> 0) + cx + cy) % 21));
+            // TODO: particles
+            //if (Math.random() < 0.18)
+            //  addParticle(new Particle(this, Math.random()*100<50?6:7, (cx*16)+6, (cy*16)+6, .7, .7, 0.013, 0.013, Math.random()*360, Math.random()*115, true));
             continue;
-          }
-
-          case ItemId.DIAMOND:{
-            ItemManager.sprDiamond.drawPoint(target, point, ((offset/5 >> 0)+cx+cy)%13)
+          case ItemId.DIAMOND:
+            ItemManager.sprDiamond.drawPoint(target, x, y,
+              ((this.aniOffset / 5 >> 0) + cx + cy) % 13);
             continue;
-          }
-
-          case ItemId.CAKE:{
-            ItemManager.sprCake.drawPoint(target, point, ((offset/5 >> 0)+cx+cy)%5)
+          case ItemId.CAKE:
+            ItemManager.sprCake.drawPoint(target, x, y,
+              ((this.aniOffset / 5 >> 0) + cx + cy) % 5);
             continue;
-          }
-
-          case ItemId.HOLOGRAM:{
-            ItemManager.sprHologram.drawPoint(target, point, ((offset/5 >> 0)+cx+cy)%5)
+          case ItemId.HOLOGRAM:
+            ItemManager.sprHologram.drawPoint(target, x, y,
+              ((this.aniOffset / 5 >> 0) + cx + cy) % 5);
             continue;
-          }
-          */
           case ItemId.EFFECT_TEAM:
             ItemManager.sprTeamEffect.drawPoint(target, x, y, this.lookup.getInt(cx, cy));
             continue;
@@ -6581,17 +6556,6 @@ class World extends BlObject {
                 lookup.setBlink(cx,cy, 11);
             }
             continue;
-          }
-          case 1520:{
-            if (lookup.isBlink(cx, cy)) {
-              ItemManager.sprGuitarBlink.drawPoint(target, point, (lookup.getBlink(cx, cy)/6)<<0);
-              if (lookup.updateBlink(cx, cy, -1) <= 0) {
-                lookup.deleteBlink(cx, cy);
-              }
-              continue;
-            }
-
-            break;
           }
           case ItemId.FIREWORKS: {
             if (lookup.isBlink(cx, cy)) {
@@ -6820,8 +6784,8 @@ class World extends BlObject {
   }
 
   drawDialogs(target, ox, oy){
-    const startX = Math.max(0, Math.min(this.width - 1, this.player.x >> 4));
-    const startY = Math.max(0, Math.min(this.height - 1, this.player.y >> 4));
+    const startX = Math.max(0, Math.min(this.width - 1, (this.player.x - 1) >> 4));
+    const startY = Math.max(0, Math.min(this.height - 1, (this.player.y - 1) >> 4));
     const endX = Math.max(0, Math.min(this.width - 1, (this.player.x + 16) >> 4));
     const endY = Math.max(0, Math.min(this.height - 1, (this.player.y + 16) >> 4));
 
@@ -6831,54 +6795,52 @@ class World extends BlObject {
       let y = (cy << 4) + oy;
       for (let cx = startX; cx <= endX; cx++){
         let x = (cx << 4) + ox;
-
-        /*
+        const dist = Math.abs((cx << 4) - this.player.x) + Math.abs((cy << 4) - this.player.y);
+        const closerSign = !textSign || dist < textSign.dist;
+        const isTouching = cx === ((this.player.x + 8) >> 4) && cy === ((this.player.y + 8) >> 4);
         switch (this.decoration[cy][cx]){
           case ItemId.WORLD_PORTAL:
-            worldportaltext.update(lookup.getWorldPortal(cx, cy), player.isInGodMode);
-            worldportaltext.drawPoint(target, point);
+            if (closerSign && isTouching){
+              /* TODO: validate we have access to wp.id */
+              const wp = this.lookup.getWorldPortal(cx, cy);
+              const text = `${wp.id}\nPress Y to enter`;
+              const color = '#ffffff';
+              textSign = {dist, text, color, x, y};
+              // */
+            }
             break;
           case ItemId.PORTAL:
           case ItemId.PORTAL_INVISIBLE:
-            if (player.isFlying && Bl.data.canEdit){
-              textSignBubble.update("ID: " + lookup.getPortal(cx, cy).id + "\nTARGET: " + lookup.getPortal(cx, cy).target);
-              textSignBubble.drawPoint(target, point);
-            }
-            break;
-          case ItemId.EFFECT_CURSE:
-          case ItemId.EFFECT_ZOMBIE:
-          case ItemId.EFFECT_POISON:
-            if (player.isFlying && Bl.data.canEdit){
-              var duration:int = lookup.getInt(cx, cy);
-              if (duration == 0) break;
-              textSignBubble.update("Duration: " + duration);
-              textSignBubble.drawPoint(target, point);
+            if (closerSign && this.player.isFlying){
+              const portal = this.lookup.getPortal(cx, cy);
+              const text = `ID: ${portal.id}\nTARGET: ${portal.target}`;
+              const color = '#ffffff';
+              textSign = {dist, text, color, x, y};
             }
             break;
         }
-        */
-
-        const dist = Math.abs((cx << 4) - this.player.x) + Math.abs((cy << 4) - this.player.y);
         switch (this.above[cy][cx]){
           case ItemId.BRICK_COMPLETE:
-            if (this.player.completeTime && (!textSign || dist < textSign.dist)){
+            if (this.player.completeTime && closerSign){
               const text = `${(this.player.completeTime / 1000).toFixed(2)} seconds`;
-              const color = this.player.usedGodModeToComplete ? '#6699ff' : '#ffd11a';
+              const color = this.player.validRun ? '#ffd11a' : '#6699ff';
               textSign = {dist, text, color, x, y};
             }
             break;
           case ItemId.TEXT_SIGN:
-            if (!textSign || dist < textSign.dist){
+            if (closerSign){
               const {text, type} = this.lookup.getTextSign(cx, cy);
               const color = (['#ffffff', '#6699ff', '#ff5050', '#ffd11a'])[type];
               textSign = {dist, text, color, x, y};
             }
             break;
-          /*
           case ItemId.RESET_POINT:
-            resetPopup.drawPoint(target, point);
+            if (closerSign && isTouching && !this.player.isFlying){
+              const text = 'Press Y to restart world';
+              const color = '#ffffff';
+              textSign = {dist, text, color, x, y};
+            }
             break;
-          */
         }
 
         // TODO: placer tool
@@ -6915,36 +6877,12 @@ class SynchronizedObject extends BlObject {
   _speedY = 0;
   _modifierX = 0;
   _modifierY = 0;
-
-  _baseDragX          = Config.physics_base_drag;
-  _baseDragY          = Config.physics_base_drag;
-  _no_modifier_dragX  = Config.physics_no_modifier_drag;
-  _no_modifier_dragY  = Config.physics_no_modifier_drag;
-  _water_drag         = Config.physics_water_drag;
-  _water_buoyancy     = Config.physics_water_buoyancy;
-  _mud_drag           = Config.physics_mud_drag;
-  _mud_buoyancy       = Config.physics_mud_buoyancy;
-  _lava_drag          = Config.physics_lava_drag;
-  _lava_buoyancy      = Config.physics_lava_buoyancy;
-  _toxic_drag         = Config.physics_toxic_drag;
-  _toxic_buoyancy     = Config.physics_toxic_buoyancy;
-  _boost              = Config.physics_boost;
-  _gravity            = Config.physics_gravity;
-
   mox = 0;
   moy = 0;
   mx = 0;
   my = 0;
-
-  last = 0;
   offset = 0;
-
   mult = Config.physics_variable_multiplyer;
-
-  constructor(){
-    super();
-    this.last = Date.now();
-  }
 
   get speedX(){
     if (isNaN(this._speedX))
@@ -7062,6 +7000,7 @@ class Player extends SynchronizedSprite {
   deaths = 0;
   checkpoint_x = -1;
   checkpoint_y = -1;
+  worldSpawn = 0;
 
   // coins
   coins = 0;
@@ -7125,7 +7064,7 @@ class Player extends SynchronizedSprite {
 
   // crowns/gold
   completeTime = false;
-  usedGodModeToComplete = false;
+  validRun = true;
   hasGoldCrown = false;
   hasSilverCrown = false;
   collideWithGoldCrownDoorGate = false;
@@ -7231,7 +7170,7 @@ class Player extends SynchronizedSprite {
     this.isDead = false;
     this.isOnFire = false;
     // TODO: this.last_respawn = this.state.now();
-    // TODO: this.tilequeue = [];
+    this.resetQueues();
 
     this.placeAtSpawn(true);
 
@@ -7239,6 +7178,12 @@ class Player extends SynchronizedSprite {
     this.setEffect(Config.effectZombie, false);
     this.setEffect(Config.effectFire, false);
     this.setEffect(Config.effectPoison, false);
+  }
+
+  resetQueues(){
+    this.switchQueue = [];
+    this.teamQueue = [];
+    this.state.resetQueues();
   }
 
   placeAtSpawn(checkpoint){
@@ -7250,22 +7195,18 @@ class Player extends SynchronizedSprite {
       ny = this.checkpoint_y;
     }
     else if (this.world.spawnPoints.length > 0){
-      const worldSpawn = 0;
-      if (!this.world.spawnPoints[worldSpawn])
-        this.world.spawnPoints[worldSpawn] = [];
-      const spawnID = this.world.spawnPoints[worldSpawn].length > 0 ? worldSpawn : 0;
-
-      /* TODO: next spawn position
-      if (!world.nextSpawnPos[spawnID] ||
-        world.nextSpawnPos[spawnID] >= world.spawnPoints[spawnID].length)
-        world.nextSpawnPos[spawnID] = 0;
-      */
-      const nextSpawnPos = 0;
-
+      if (!this.world.spawnPoints[this.worldSpawn])
+        this.world.spawnPoints[this.worldSpawn] = [];
+      const spawnID = this.world.spawnPoints[this.worldSpawn].length > 0 ? this.worldSpawn : 0;
+      if (
+        !this.world.nextSpawnPos[spawnID] ||
+        this.world.nextSpawnPos[spawnID] >= this.world.spawnPoints[spawnID].length
+      )
+        this.world.nextSpawnPos[spawnID] = 0;
       if (this.world.spawnPoints[spawnID].length > 0){
-        nx = this.world.spawnPoints[spawnID][nextSpawnPos][0];
-        ny = this.world.spawnPoints[spawnID][nextSpawnPos][1];
-        // TODO: world.nextSpawnPos[spawnID]++;
+        nx = this.world.spawnPoints[spawnID][this.world.nextSpawnPos[spawnID]][0];
+        ny = this.world.spawnPoints[spawnID][this.world.nextSpawnPos[spawnID]][1];
+        this.world.nextSpawnPos[spawnID]++;
       }
     }
     nx *= 16;
@@ -7273,6 +7214,40 @@ class Player extends SynchronizedSprite {
     this.state.offset(this.x - nx, this.y - ny);
     this.x = nx;
     this.y = ny;
+  }
+
+  resetPlayer(load = false, clear = false, worldSpawnID = -1){
+    if (this.isFlying && !load && !clear)
+      return;
+    if (worldSpawnID >= 0)
+      this.worldSpawn = worldSpawnID;
+    else{
+      this.state.tickCount = 0;
+      this.validRun = true;
+    }
+    this.completeTime = false;
+    this.hasGoldCrown = false;
+    this.hasSilverCrown = false;
+    this.state.checkGoldCrown(false);
+    this.state.checkSilverCrown(false);
+    this.collideWithGoldCrownDoorGate = false;
+    this.collideWithSilverCrownDoorGate = false;
+    this.deaths = 0;
+    this.coins = 0;
+    this.bcoins = 0;
+    this.resetDeath();
+    this.resetEffects();
+    this.resetCheckpoint();
+    this.switches = Array.from({length: 1000}).map(() => false);
+    this.team = 0;
+    this.world.resetCoins();
+    this.gx = [];
+    this.gy = [];
+    this.bx = [];
+    this.by = [];
+    this.world.lookup.resetSecrets();
+    if(!this.isFlying && !clear)
+      this.respawn();
   }
 
   pressPurpleSwitch(switchId, enabled){
@@ -7495,26 +7470,26 @@ class Player extends SynchronizedSprite {
         switch (this.current){
           case ItemId.GRAVITY_LEFT:
           case ItemId.GRAVITY_LEFT_INVISIBLE:
-            this.morx = -this._gravity;
+            this.morx = -Config.physics_gravity;
             this.mory = 0;
             rotateGravitymor = false;
             break;
           case ItemId.GRAVITY_UP:
           case ItemId.GRAVITY_UP_INVISIBLE:
             this.morx = 0;
-            this.mory = -this._gravity;
+            this.mory = -Config.physics_gravity;
             rotateGravitymor = false;
             break;
           case ItemId.GRAVITY_RIGHT:
           case ItemId.GRAVITY_RIGHT_INVISIBLE:
-            this.morx = this._gravity;
+            this.morx = Config.physics_gravity;
             this.mory = 0;
             rotateGravitymor = false;
             break;
           case ItemId.GRAVITY_DOWN:
           case ItemId.GRAVITY_DOWN_INVISIBLE:
             this.morx = 0;
-            this.mory = this._gravity;
+            this.mory = Config.physics_gravity;
             rotateGravitymor = false;
             break;
           case ItemId.SPEED_LEFT:
@@ -7528,19 +7503,19 @@ class Player extends SynchronizedSprite {
             break;
           case ItemId.WATER:
             this.morx = 0;
-            this.mory = this._water_buoyancy;
+            this.mory = Config.physics_water_buoyancy;
             break;
           case ItemId.MUD:
             this.morx = 0;
-            this.mory = this._mud_buoyancy;
+            this.mory = Config.physics_mud_buoyancy;
             break;
           case ItemId.LAVA:
             this.morx = 0;
-            this.mory = this._lava_buoyancy;
+            this.mory = Config.physics_lava_buoyancy;
             break;
           case ItemId.TOXIC_WASTE:
             this.morx = 0;
-            this.mory = this._toxic_buoyancy;
+            this.mory = Config.physics_toxic_buoyancy;
             if (!this.isDead && !this.isInvulnerable) this.killPlayer();
             break;
           case ItemId.FIRE:
@@ -7559,12 +7534,12 @@ class Player extends SynchronizedSprite {
           case ItemId.SPIKE_BLUE:
           case ItemId.SPIKE_BLUE_CENTER:
             this.morx = 0;
-            this.mory = this._gravity;
+            this.mory = Config.physics_gravity;
             if (!this.isDead && !this.isInvulnerable) this.killPlayer();
             break;
           default:
             this.morx = 0;
-            this.mory = this._gravity;
+            this.mory = Config.physics_gravity;
             break;
         }
       }
@@ -7577,26 +7552,26 @@ class Player extends SynchronizedSprite {
         switch (delayed){
           case ItemId.GRAVITY_LEFT:
           case ItemId.GRAVITY_LEFT_INVISIBLE:
-            this.mox = -this._gravity;
+            this.mox = -Config.physics_gravity;
             this.moy = 0;
             rotateGravitymo = false;
             break;
           case ItemId.GRAVITY_UP:
           case ItemId.GRAVITY_UP_INVISIBLE:
             this.mox = 0;
-            this.moy = -this._gravity;
+            this.moy = -Config.physics_gravity;
             rotateGravitymo = false;
             break;
           case ItemId.GRAVITY_RIGHT:
           case ItemId.GRAVITY_RIGHT_INVISIBLE:
-            this.mox = this._gravity;
+            this.mox = Config.physics_gravity;
             this.moy = 0;
             rotateGravitymo = false;
             break;
           case ItemId.GRAVITY_DOWN:
           case ItemId.GRAVITY_DOWN_INVISIBLE:
             this.mox = 0;
-            this.moy = this._gravity;
+            this.moy = Config.physics_gravity;
             rotateGravitymo = false;
             break;
           case ItemId.SPEED_LEFT:
@@ -7610,23 +7585,23 @@ class Player extends SynchronizedSprite {
             break;
           case ItemId.WATER:
             this.mox = 0;
-            this.moy = this._water_buoyancy;
+            this.moy = Config.physics_water_buoyancy;
             break;
           case ItemId.MUD:
             this.mox = 0;
-            this.moy = this._mud_buoyancy;
+            this.moy = Config.physics_mud_buoyancy;
             break;
           case ItemId.LAVA:
             this.mox = 0;
-            this.moy = this._lava_buoyancy;
+            this.moy = Config.physics_lava_buoyancy;
             break;
           case ItemId.TOXIC_WASTE:
             this.mox = 0;
-            this.moy = this._toxic_buoyancy;
+            this.moy = Config.physics_toxic_buoyancy;
             break;
           default:
             this.mox = 0;
-            this.moy = this._gravity;
+            this.moy = Config.physics_gravity;
             break;
         }
       }
@@ -7731,23 +7706,23 @@ class Player extends SynchronizedSprite {
         )
       ){
         this._speedX *= Config.physics_base_drag;
-        this._speedX *= this._no_modifier_dragX;
+        this._speedX *= Config.physics_no_modifier_drag;
       }
       else if (this.current == ItemId.WATER && !isGod){
         this._speedX *= Config.physics_base_drag;
-        this._speedX *= this._water_drag;
+        this._speedX *= Config.physics_water_drag;
       }
       else if (this.current == ItemId.MUD && !isGod){
         this._speedX *= Config.physics_base_drag;
-        this._speedX *= this._mud_drag;
+        this._speedX *= Config.physics_mud_drag;
       }
       else if (this.current == ItemId.LAVA && !isGod){
         this._speedX *= Config.physics_base_drag;
-        this._speedX *= this._lava_drag;
+        this._speedX *= Config.physics_lava_drag;
       }
       else if (this.current == ItemId.TOXIC_WASTE && !isGod){
         this._speedX *= Config.physics_base_drag;
-        this._speedX *= this._toxic_drag;
+        this._speedX *= Config.physics_toxic_drag;
       }
       else if (this.slippery > 0 && !isGod){
         if (this.mx != 0 && !(
@@ -7786,23 +7761,23 @@ class Player extends SynchronizedSprite {
         )
       ){
         this._speedY *= Config.physics_base_drag;
-        this._speedY *= this._no_modifier_dragY;
+        this._speedY *= Config.physics_no_modifier_drag;
       }
       else if (this.current == ItemId.WATER && !isGod){
         this._speedY *= Config.physics_base_drag;
-        this._speedY *= this._water_drag;
+        this._speedY *= Config.physics_water_drag;
       }
       else if (this.current == ItemId.MUD && !isGod){
         this._speedY *= Config.physics_base_drag;
-        this._speedY *= this._mud_drag;
+        this._speedY *= Config.physics_mud_drag;
       }
       else if (this.current == ItemId.LAVA && !isGod){
         this._speedY *= Config.physics_base_drag;
-        this._speedY *= this._lava_drag;
+        this._speedY *= Config.physics_lava_drag;
       }
       else if (this.current == ItemId.TOXIC_WASTE && !isGod){
         this._speedY *= Config.physics_base_drag;
-        this._speedY *= this._toxic_drag;
+        this._speedY *= Config.physics_toxic_drag;
       }
       else if (this.slippery > 0 && !isGod){
         if (this.my != 0 && !(
@@ -7829,16 +7804,16 @@ class Player extends SynchronizedSprite {
     if (!isGod){
       switch (this.current){
         case ItemId.SPEED_LEFT:
-          this._speedX = -this._boost;
+          this._speedX = -Config.physics_boost;
           break;
         case ItemId.SPEED_RIGHT:
-          this._speedX = this._boost;
+          this._speedX = Config.physics_boost;
           break;
         case ItemId.SPEED_UP:
-          this._speedY = -this._boost;
+          this._speedY = -Config.physics_boost;
           break;
         case ItemId.SPEED_DOWN:
-          this._speedY = this._boost;
+          this._speedY = Config.physics_boost;
           break;
       }
 
@@ -7938,32 +7913,20 @@ class Player extends SynchronizedSprite {
       this.current = this.world.getTile(0, cx, cy);
 
       if (!isGod && this.current === ItemId.WORLD_PORTAL){
-        /* TODO: world portals
-        if (KeyBinding.risky.isDown() && !resetSend) {
-          var wp:WorldPortal = world.lookup.getWorldPortal(cx, cy);
+        if (input.risky){ // TODO: && !resetSend
+          const wp = this.world.lookup.getWorldPortal(cx, cy);
+          console.log(wp);
+          /*
           if (wp.id.length > 0) {
             resetSend = true;
-            //if (wp.id != connection.roomId) {
-              //if (connection.connected) {
-                //connection.disconnect();
-              //}
-              //var d:NavigationEvent = new NavigationEvent(NavigationEvent.JOIN_WORLD,true,false);
-              //d.world_id = wp.id;
-              //d.joindata.spawnid = wp.target;
-              //d.joindata.lastowner = Global.ownerID;
-              //d.joindata.lastcrew = Global.currentLevelCrew;
-              //Global.base.dispatchEvent(d);
-            //} else {
-              //connection.send('reset', cx, cy);
-            //}
             var id:int = parseInt(wp.id);
             if (Global.isValidWorldIndex(id)) {
               Global.base.campaigns.joinWorld(id, wp.target);
             }
             else resetPlayer(false, false, wp.target);
           }
+          */
         }
-        */
       }
 
       if (isGod ||
@@ -8119,7 +8082,7 @@ class Player extends SynchronizedSprite {
         }
       }
 
-      this.touchBlock(cx, cy, isGod);
+      this.touchBlock(cx, cy, input, isGod);
       this.sendMovement(cx, cy);
     }
 
@@ -8269,7 +8232,7 @@ class Player extends SynchronizedSprite {
 
   // overridden in Me
   getPlayerInput(input){}
-  touchBlock(cx, cy, isGod){}
+  touchBlock(cx, cy, input, isGod){}
   sendMovement(cx, cy){}
 }
 
@@ -8294,17 +8257,17 @@ class Me extends Player {
     this.horizontal = input.horizontal;
     this.vertical = input.vertical;
     this.spaceJustDown = input.jumpJustPressed;
-    this.spaceDown = input.jumpDown;
+    this.spaceDown = input.jump;
   }
 
-  touchBlock(cx, cy, isGod){
+  touchBlock(cx, cy, input, isGod){
     // TODO: multiJumpEffectDisplay.update();
     this.coinCountChanged = false;
 
     switch (this.current){
       case ItemId.COIN_GOLD:
       case ItemId.COIN_BLUE:
-        // TODO: SoundManager.playMiscSound(SoundId.COIN);
+        this.state.playCollectCoinSound();
         this.world.setTileComplex(0, cx, cy, this.current + 10, null); // 100 -> 110; 101 -> 111
         if (this.current == ItemId.COIN_GOLD) {
           this.coins++;
@@ -8321,10 +8284,27 @@ class Me extends Player {
         //for (var k:int = 0; k < 4; k++)
         // spawnCoinPatricle(cx, cy, current == ItemId.COIN_BLUE);
         break;
+      case ItemId.RESET_POINT:
+        if (!isGod && input.risky)
+          this.resetPlayer();
+        break;
     }
 
     if (this.pastX !== cx || this.pastY !== cy){ // only just-entered blocks
-      // TODO: piano, drums, guitar
+      switch (this.current){ // blocks that don't care about godmode
+        case ItemId.PIANO:
+          this.state.playPianoSound(this.world.lookup.getInt(cx, cy));
+          this.world.lookup.setBlink(cx, cy, 30);
+          break;
+        case ItemId.DRUMS:
+          this.state.playDrumSound(this.world.lookup.getInt(cx, cy));
+          this.world.lookup.setBlink(cx, cy, 30);
+          break;
+        case ItemId.GUITAR:
+          this.state.playGuitarSound(this.world.lookup.getInt(cx, cy));
+          this.world.lookup.setBlink(cx, cy, 30);
+          break;
+      }
 
       if (!isGod){
         switch (this.current){
@@ -8576,6 +8556,25 @@ class PlayState extends BlObject {
     return (this.tickCount + 1000) * Config.physics_ms_per_tick;
   }
 
+  playCollectCoinSound(){ // TODO: this
+  }
+
+  playPianoSound(note){ // TODO: this
+  }
+
+  playDrumSound(note){ // TODO: this
+  }
+
+  playGuitarSound(note){ // TODO: this
+  }
+
+  resetQueues(){
+    this.keysQueue = [];
+    this.goldCrownQueue = [];
+    this.silverCrownQueue = [];
+    this.orangeSwitchQueue = [];
+  }
+
   checkGoldCrown(collide){
     this.player.collideWithGoldCrownDoorGate = collide;
     if (this.world.overlaps(this.player)){
@@ -8606,6 +8605,11 @@ class PlayState extends BlObject {
   }
 
   tick(input){
+    if (input.retry){
+      this.player.resetPlayer();
+      return;
+    }
+
     this.world.tick(input);
     this.player.tick(input);
 
@@ -9175,5 +9179,412 @@ class Screen {
     this.resolution = res[(res.indexOf(this.resolution) + 1) % res.length];
     this.resize(this.lastResize.w, this.lastResize.h);
     return this.resolution;
+  }
+}
+
+//
+// File Loading
+//
+
+class FSFolder {
+  kind = 'folder';
+  name;
+  desc;
+
+  constructor(name, desc){
+    this.name = name;
+    this.desc = desc;
+  }
+
+  async list(){
+    throw new Error('Not implemented');
+  }
+}
+
+class FSWorld {
+  kind = 'world';
+  id;
+  name;
+  desc;
+  owner;
+  crew;
+  width;
+  height;
+  gravity;
+
+  constructor(id, name, desc, owner, crew, width, height, gravity){
+    this.id = id;
+    this.name = name;
+    this.desc = desc;
+    this.owner = owner;
+    this.crew = crew;
+    this.width = width;
+    this.height = height;
+    this.gravity = gravity;
+  }
+
+  async load(){
+    throw new Error('Not implemented');
+  }
+}
+
+class LayerDataWorld extends FSWorld {
+  data;
+  metadata;
+
+  constructor(id, name, desc, owner, crew, width, height, gravity, data, metadata){
+    super(id, name, desc, owner, crew, width, height, gravity);
+    this.data = data;
+    this.metadata = metadata;
+  }
+
+  async load(){
+    const world = new World();
+    world.worldName = this.name;
+    world.clearWorld(this.width, this.height, this.gravity);
+    world.loadLayerData(this.data);
+    return world;
+  }
+}
+
+class EelvlWorld extends LayerDataWorld {
+  constructor(id, eelvl){
+    const data = eelvl.inflate();
+    const owner = data.readUTF();
+    const name = data.readUTF();
+    const width = data.readInt();
+    const height = data.readInt();
+    const gravity = data.readFloat();
+    const background = data.readUnsignedInt();
+    const desc = data.readUTF();
+    const campaign = data.readBoolean();
+    const crewId = data.readUTF();
+    const crewName = data.readUTF();
+    const crewStatus = data.readInt();
+    const minimap = data.readBoolean();
+    const ownerID = data.readUTF();
+    super(id, name, desc, owner, crewName, width, height, gravity, data, {
+      background,
+      campaign,
+      crewId,
+      crewStatus,
+      minimap,
+      ownerID
+    });
+  }
+}
+
+class CampaignSubfolder extends FSFolder {
+  worlds = [];
+
+  constructor(){
+    super('Unknown Campaign', '');
+  }
+
+  async list(){
+    return this.worlds.filter(a => !!a);
+  }
+}
+
+class CampaignFolder extends FSFolder {
+  camps = [];
+  static idMap = {
+    // Tutorials
+    '0.0': 'PWL17t1R6bbUI',
+    '0.1': 'PWwYocqKOGbUI',
+    '0.2': 'PWZxZVtyWma0I',
+    '0.3': 'PWNDdLqe0GbEI',
+    // Ancient Ruins
+    '1.0': 'PWGLfVn_oob0I',
+    '1.1': 'PW9plKxGpDbUI',
+    '1.2': 'PWsBNdyfvhbkI',
+    '1.3': 'PWzvK4_8KVb0I',
+    // Spring
+    '2.0': 'PW5m6ANVwRcEI',
+    '2.1': 'PW4ua-CWcRcEI',
+    '2.2': 'PWBIi0ZYXFb0I',
+    '2.3': 'PWE8LaNkYRcEI',
+    '2.4': 'PWPy8n38CZbUI',
+    '2.5': 'PWZLUPeLFza0I',
+    // Animal Antics
+    '3.0': 'PWX_m7vwmHb0I',
+    '3.1': 'PWcVwXDmnDb0I',
+    '3.2': 'PWbIBJSWA3cUI',
+    '3.3': 'PWxQcz6ccwbUI',
+    '3.4': 'PWoYMVVWUacEI',
+    // Nostalgia
+    '4.0': 'PWAJyyrgZta0I',
+    '4.1': 'PWzT9zHuFDcEI',
+    '4.2': 'PWAEAk9rmia0I',
+    '4.3': 'PWZmirlWLwbkI',
+    // Journey
+    '5.0': 'PWY5u2PpVycEI',
+    '5.1': 'PWMRo6EZ2tcEI',
+    '5.2': 'PW6cHyrN_Vb0I',
+    '5.3': 'PWlz012mS0cEI',
+    '5.4': 'PW_3jU6Riyb0I',
+    // Altered Reality
+    '6.0': 'PW87xHNGimbEI',
+    '6.1': 'PW-NmWMhuobUI',
+    '6.2': 'PWmKZcYpfWbEI',
+    '6.3': 'PWmTcai7lobEI',
+    '6.4': 'PWO4rC6ZGibEI',
+    // Adventure League
+    '7.0': 'PWa7N4Mju-a0I',
+    '7.1': 'PW76IY0MXia0I',
+    '7.2': 'PWTzwAF6dla0I',
+    '7.3': 'PWte50lfdObEI',
+    // Video Game 1
+    '8.0': 'PWqSFP6ewubUI',
+    '8.1': 'PW14vzcgokcEI',
+    '8.2': 'PWkc8chNTybUI',
+    '8.3': 'PWZfovhaMUbUI',
+    '8.4': 'PWmnlTK7nkbkI',
+    // Video Game 2
+    '9.0': 'PWTzx8K4a4b0I',
+    '9.1': 'PWk_0jrbwMbEI',
+    '9.2': 'PWTZCVK6KBbEI',
+    '9.3': 'PW5WNPqd3ia0I',
+    '9.4': 'PWJOGeKJUCb0I',
+    // Christmas
+    '10.0': 'PW5tMMIEpXcEI',
+    '10.1': 'PW3surELxUcEI',
+    '10.2': 'PW4Q8WQXphcEI',
+    '10.3': 'PWdA2jl1BecEI',
+    '10.4': 'PWw4g4itMFbkI',
+    '10.5': 'PWbc7Vf5QubEI',
+    // Technology
+    '11.0': 'PWANzs-YCDa0I',
+    '11.1': 'PWoCKSzuwYbEI',
+    '11.2': 'PWZpFcbX6lbEI',
+    '11.3': 'PW8puZ4EH4bEI',
+    // Story Time
+    '12.0': 'PW_50PNCBxb0I',
+    '12.1': 'PWgxmS-oCNbUI',
+    '12.2': 'PW85ftBsBNbUI',
+    '12.3': 'PWGd9IWQ7XbkI',
+    // Speedrun
+    '13.0': 'PWriHvcgm2b0I',
+    '13.1': 'PWCH0cFHHhb0I',
+    '13.2': 'PWE_KQFaM-b0I',
+    '13.3': 'PWp7HvfpAbb0I',
+    // Summer
+    '14.0': 'PWlnFPQFIlcEI',
+    '14.1': 'PWAA8zrKovcEI',
+    '14.2': 'PW31mT_sUcb0I',
+    '14.3': 'PW9xXWcpK3a0I',
+    '14.4': 'PWFcNS_lcucEI',
+    '14.5': 'PWkBzWwP62cEI',
+    '14.6': 'PWuxgct7TYb0I',
+    // Bouncy
+    '15.0': 'PWfNrz_tB7bkI',
+    '15.1': 'PWcHdv7pmib0I',
+    '15.2': 'PWADTqKBJta0I',
+    '15.3': 'PW1xmiJhEacEI',
+    // Tunnel Rats
+    '16.0': 'PW4dt06vvya0I',
+    '16.1': 'PWAdYbyoQJbkI',
+    '16.2': 'PWsylONd9nbkI',
+    '16.3': 'PW2BFPxWfbbUI',
+    // Monochrome
+    '17.0': 'PW8QSzG6sMb0I',
+    '17.1': 'PWi673e6f0cEI',
+    '17.2': 'PWUK7KoGiObkI',
+    '17.3': 'PW-Z8FiO6CcUI',
+    // Halloween 1
+    '18.0': 'PWgAWBX29_a0I',
+    '18.1': 'PWRysEhScKbEI',
+    '18.2': 'PWjwXetUUSbEI',
+    '18.3': 'PWeTI0z4m3a0I',
+    // Halloween 2
+    '19.0': 'PWtxfwDE2dcEI',
+    '19.1': 'PWSS_93c1XcEI',
+    '19.2': 'PWArWJDbd5b0I',
+    '19.3': 'PWTZxwX9MRbEI',
+    // Halloween 3
+    '20.0': 'PWDW59Z6U-cUI',
+    '20.1': 'PW8YSz6jhnbkI',
+    '20.2': 'PWtys4KcLCb0I',
+    '20.3': 'PWbtT77xK2b0I',
+    // Non-Stop
+    '21.0': 'PWEa8JYAMjcUI',
+    '21.1': 'PWZD60ChO2bkI',
+    '21.2': 'PWNxcCaxnncEI',
+    '21.3': 'PWRuYku989bkI',
+    // Colourful
+    '22.0': 'PWAGSVmRePa0I',
+    '22.1': 'PWs8y8WQmDbEI',
+    '22.2': 'PWPeWZw4y7a0I',
+    '22.3': 'PWnwS8Rypgb0I',
+    // Puzzle Pack 1
+    '23.1': 'PWT5CTj2ymbEI',
+    '23.0': 'PWvawbBYxEbEI',
+    '23.2': 'PW7daUKhdSbEI',
+    '23.3': 'PWczAToIbAa0I',
+    // Puzzle Pack 2
+    '24.0': 'PWKk0U4ASucEI',
+    '24.1': 'PWGMIryN4BcEI',
+    '24.2': 'PWrbs5tjjCb0I',
+    '24.3': 'PW_NvguMLob0I',
+    '24.4': 'PWt8s2OMT4bkI',
+    // Relativity
+    '25.0': 'PWe-bF5HaicEI',
+    '25.1': 'PW98HyI6aQcEI',
+    '25.2': 'PWpGzzMZ9scEI',
+    '25.3': 'PWm6MdTHEIcEI',
+    '25.4': 'PWRwiZ5QOfcEI',
+    // Advent Calendar
+    '26.0': 'PWxigUsIQDcEI',
+    '26.1': 'PWAJxPmkCva0I',
+    '26.2': 'PWssMzVQrTcEI',
+    '26.3': 'PWI5gpNV7CcEI',
+    '26.4': 'PWZfMmd9sabUI',
+    // Wintery Wonders
+    '27.0': 'PWAIxKAlqia0I',
+    '27.1': 'PW8NgXSsIrbUI',
+    '27.2': 'PWqUws4rsPbUI',
+    '27.3': 'PWMBPWuQoxbEI',
+    '27.4': 'PWeUTEF4-ZcEI',
+    '27.5': 'PWKrIf05ClbkI',
+    // High Score
+    '28.0': 'PW26XYwxQTcEI',
+    '28.1': 'PWZy1ITyisbEI',
+    '28.2': 'PWW9ghHhEacEI',
+    '28.3': 'PWaCH3atA1cEI',
+    // Looks Can Deceive
+    '29.0': 'PWkwAAAA',
+    '29.1': 'PWLpmNPxDCa0I',
+    '29.2': 'PWgW35mkRLbEI',
+    '29.3': 'PW1Cy-zQpzbUI',
+    // Endurance
+    '30.0': 'PWg7bAoYIgbEI',
+    '30.1': 'PWiude_hH-bkI',
+    '30.2': 'PWnp8Dff3Pa0I',
+    '30.3': 'PWAJwkxnxta0I',
+    // Bittersweet
+    '31.0': 'PW8LOUFtN8bUI',
+    '31.1': 'PW8H7HNTCab0I',
+    '31.2': 'PW8CdbR1nmb0I',
+    '31.3': 'PWktTt9PcHcEI',
+    '31.4': 'PWxOUb2l5qcEI',
+    // Perpetual Frustration
+    '32.0': 'PWeOM7vic8bEI',
+    '32.1': 'PW4OueyYELbEI',
+    '32.2': 'PWABBzi-KNa0I',
+    '32.3': 'PW2hy-hS3Lb0I',
+    '32.4': 'PWK4vMtLA4cEI',
+    '32.5': 'PW_B5037pccEI',
+    // Trial & Terror
+    '33.0': 'PWAMABPuCza0I',
+    '33.1': 'PWgRNYXk92cEI',
+    '33.2': 'PWp1ks2X7dbkI',
+    '33.4': 'PWXRKJq64RcUI',
+    '33.3': 'PWq8iZ6MBJbUI',
+    '33.5': 'PW2GIc2MBvcEI',
+    // Fractured Fingers
+    '34.0': 'PWGjnrH_3ZbEI',
+    '34.1': 'PWUmV_Pi2IbEI',
+    '34.2': 'PWVQEdv5HBbUI',
+    '34.3': 'PW3s4sdloGbEI',
+    '34.4': 'PWrAEJNqJja0I',
+    // Best of EE
+    '35.0': 'PWsQAAAA',
+    '35.1': 'PWev8LKPlda0I',
+    '35.2': 'PWP7D66Ld4a0I',
+    '35.3': 'PW87AG7vc4bEI',
+    '35.4': 'PWbNLA2_00bkI',
+    '35.5': 'PW92lNQMR4bkI',
+    '35.6': 'PWjLR-B6Lrb0I',
+    '35.7': 'PWFq4xyNAEcUI',
+    '35.8': 'PWstKyB-p7cEI',
+    '35.9': 'PWfTLL3gckcEI',
+    // Elemental - Fire
+    '36.0': 'PWXnxH4yZ6cEI',
+    '36.1': 'PWaf_JSCRHcEI',
+    '36.2': 'PW4jIb5Jmib0I',
+    '36.3': 'PWcT2Sfee4a0I',
+    '36.4': 'PW2TQCXlUkbUI',
+    // Elemental - Earth
+    '37.0': 'PWCAwKIWaecEI',
+    '37.1': 'PWkCGWQlQLcUI',
+    '37.2': 'PWLs2QMWUccEI',
+    '37.3': 'PWC95EK3mjcEI',
+    '37.4': 'PW6WtPOBKDbkI',
+    // Elemental - Wind
+    '38.0': 'PWuWhemKAccEI',
+    '38.1': 'PWulMWA1pNbEI',
+    '38.2': 'PWImrW4axua0I',
+    '38.3': 'PWkE1F8dAycUI',
+    '38.4': 'PWWwSGp3kocEI',
+    // Elemental - Water
+    '39.0': 'PWED-5sqb7cEI',
+    '39.1': 'PWHxJQUPwzcUI',
+    '39.2': 'PWZ00-LhsTbkI',
+    '39.3': 'PWzrFyl7QvcEI',
+    '39.4': 'PWcqnnMZzBcEI',
+    // Elemental - Space
+    '40.0': 'PWzp3nrUhbb0I',
+    '40.1': 'PWF_ENQuz5bkI',
+    '40.2': 'PWGfMjgaLAa0I',
+    '40.3': 'PWgT832KmlbkI',
+    '40.4': 'PW9zZUV3Z2b0I',
+    // Worst
+    '41.0': 'PWnsRoOK0_cEI',
+    '41.1': 'PW0B5RcvBbb0I',
+    '41.2': 'PWp8s4xhwHcUI',
+    '41.3': 'PWE7zf-vf9cEI',
+    '41.4': 'PWwIUGWdaJcEI'
+  };
+  // extras???
+  //   Nostalgia 2  0  PWHAEAAA
+  //   Nostalgia 2  1  PWAHTpVViSa0I
+  //   Nostalgia 2  2  PWNewYear10
+  //   Nostalgia 2  3  PWpgEAAA
+  //   Nostalgia 2  4  PWwOSVUPOLbEI
+  //   Best of Everybody Edits  0  PWTe3JvOPwcEI
+  //   Elemental  0  PWZsXY5zABcUI
+  //   Scavenger Hunt  0  PWahKy9wI2cUI
+
+  static getId(c, d){
+    return CampaignFolder.idMap[`${c}.${d}`];
+  }
+
+  constructor(zipObj){
+    super('Campaigns', 'Campaigns included in Everybody Edits: Offline');
+    for (const entry of zipObj){
+      const campId = parseInt(entry.name.substr(0, entry.name.indexOf('/')), 10);
+      if (!this.camps[campId])
+        this.camps[campId] = new CampaignSubfolder();
+      const camp = this.camps[campId];
+      if (entry.name.substr(entry.name.lastIndexOf('/')) === '/campaign.info'){
+        const campInfo = entry.data.toString().split(Config.stringSeparator);
+        camp.name = campInfo[1];
+        camp.desc = campInfo[2];
+      }
+      else if (entry.name.substr(entry.name.indexOf('.')) === '.eelvl'){
+        const tierId = parseInt(entry.name.substr(entry.name.indexOf('/') + 1), 10);
+        camp.worlds[tierId] = new EelvlWorld(CampaignFolder.getId(campId, tierId), entry.data);
+      }
+    }
+  }
+
+  async list(){
+    return this.camps.filter(a => !!a);
+  }
+}
+
+class RootFolder extends FSFolder {
+  contents = [];
+
+  constructor(){
+    super('Root', 'Root');
+  }
+
+  async list(){
+    return this.contents;
+  }
+
+  add(folder){
+    this.contents.push(folder);
   }
 }
