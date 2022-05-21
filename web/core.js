@@ -5030,6 +5030,8 @@ class EverybodyEdits {
     this.state.player.isInGodMode = !this.state.player.isInGodMode;
     this.state.player.resetDeath();
     this.state.player.isOnFire = false;
+    if (!this.state.player.completeTime)
+      this.state.player.usedGodModeToComplete = true;
     //TODO: this.world.setShowAllSecrets(this.player.isInGodMode);
   }
 
@@ -6856,16 +6858,22 @@ class World extends BlObject {
         }
         */
 
+        const dist = Math.abs((cx << 4) - this.player.x) + Math.abs((cy << 4) - this.player.y);
         switch (this.above[cy][cx]){
-          case ItemId.TEXT_SIGN:{
-            const dist = Math.abs((cx << 4) - this.player.x) + Math.abs((cy << 4) - this.player.y);
+          case ItemId.BRICK_COMPLETE:
+            if (this.player.completeTime && (!textSign || dist < textSign.dist)){
+              const text = `${(this.player.completeTime / 1000).toFixed(2)} seconds`;
+              const color = this.player.usedGodModeToComplete ? '#6699ff' : '#ffd11a';
+              textSign = {dist, text, color, x, y};
+            }
+            break;
+          case ItemId.TEXT_SIGN:
             if (!textSign || dist < textSign.dist){
               const {text, type} = this.lookup.getTextSign(cx, cy);
               const color = (['#ffffff', '#6699ff', '#ff5050', '#ffd11a'])[type];
               textSign = {dist, text, color, x, y};
             }
             break;
-          }
           /*
           case ItemId.RESET_POINT:
             resetPopup.drawPoint(target, point);
@@ -7117,6 +7125,7 @@ class Player extends SynchronizedSprite {
 
   // crowns/gold
   completeTime = false;
+  usedGodModeToComplete = false;
   hasGoldCrown = false;
   hasSilverCrown = false;
   collideWithGoldCrownDoorGate = false;

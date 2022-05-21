@@ -27,7 +27,6 @@ function blobToZipObj(blob){
 async function loadResources(){
   const dpr = window.devicePixelRatio || 1;
   const cnv = document.createElement('canvas');
-  cnv.tabIndex = 1;
   document.body.appendChild(cnv);
   const ctx = cnv.getContext('2d');
 
