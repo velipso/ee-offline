@@ -82,7 +82,7 @@ class Simulator {
       }
     }
 
-    this.ee = new EverybodyEdits(new FakeScreen(), this.world);
+    this.ee = new EverybodyEdits(new FakeScreen(), this.world, new EmptyWorldResolver());
     this.ee.attachController(this.controller);
     this.player = new FakePlayer(this.ee.state.player);
   }
@@ -498,4 +498,53 @@ function hideTestMenu(){
   document.getElementById('menu').style.display = 'none';
   document.getElementById('menu-closed').style.display = '';
   return false;
+}
+
+async function loadResources(){
+  const dpr = window.devicePixelRatio || 1;
+  const cnv = document.createElement('canvas');
+  document.body.appendChild(cnv);
+  const ctx = cnv.getContext('2d');
+
+  defaultScreen = new Screen(cnv, ctx, dpr);
+
+  new ResizeObserver(entries => {
+    for (const e of entries) {
+      const c = e.contentRect;
+      defaultScreen.resize(
+        Math.round(c.width - (window.screenRightMargin || 0)), // screen right margin for tas.html
+        Math.round(c.height)
+      );
+    }
+  }).observe(document.body);
+
+  window.addEventListener('keydown', e => {
+    const result = (() => {
+      switch (e.code){
+        case 'F10':
+          if (eeGame){
+            eeGame.screenToggleDebug();
+            return true;
+          }
+          break;
+        case 'Escape':
+          if (document.getElementById('menu').style.display === '')
+            hideTestMenu();
+          else
+            showTestMenu();
+          return true;
+      }
+      return false;
+    })();
+    if (result){
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }
+  });
+
+  await EverybodyEdits.init((done, total) => {
+    defaultScreen.drawLoading(done, total);
+  });
+  await document.fonts.ready;
 }

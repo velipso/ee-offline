@@ -33,33 +33,71 @@ a:hover, a:active {
   color: #fff;
   text-decoration: none;
 }
-#menu {
+#menu-wrap2 {
+  position: absolute;
+  bottom: 50px;
+  left: 50px;
+  top: 50px;
+  right: 50px;
+}
+#menu-wrap {
+  position: relative;
+  display: flex;
+  flex-flow: column nowrap;
   font-family: ee_nokiafc22;
   font-size: 16px;
-  overflow: auto;
   color: #fff;
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  width: 300px;
-  height: 300px;
+  height: 100%;
+  max-width: 600px;
+  margin: 0 auto;
   border: 2px solid #2ac;
   border-radius: 10px;
   background-color: #278;
-  padding: 0 10px;
+  box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.8);
 }
-#menu p {
-  margin: 10px 0;
+#menu-top {
+  flex: none;
+  height: 40px;
+  display: flex;
+  flex-flow: row nowrap;
 }
-#menu p:last-child {
-  margin-bottom: 0;
-}
-.menu-x {
-  position: absolute;
-  top: 10px;
-  right: 10px;
+#menu-back {
+  width: 85px;
+  height: 40px;
   display: block;
-  z-index: 9;
+  white-space: nowrap;
+  flex: none;
+  text-align: center;
+  line-height: 45px;
+}
+#menu-title {
+  flex: auto;
+  height: 40px;
+  line-height: 40px;
+  font-size: 140%;
+  text-align: center;
+}
+#menu-x {
+  width: 40px;
+  margin-left: 45px;
+  height: 40px;
+  display: block;
+  flex: none;
+  text-align: center;
+  line-height: 42px;
+}
+#menu {
+  flex: auto;
+  overflow: auto;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  background-color: #156;
+  padding: 20px;
+  font-size: 18px;
+  margin: 2px;
+}
+#menu p:first-child {
+  margin-top: 0;
 }
 #menu-closed {
   display: block;
@@ -77,6 +115,7 @@ a:hover, a:active {
   border-radius: 10px;
   background-color: #278;
   padding: 0;
+  box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.9);
 }
 #menu-closed p {
   text-align: center;
@@ -104,46 +143,11 @@ button:hover div {
 button:active div {
   transform: translate(0, 2px);
 }
-input[type=text] {
+input[type=text], select {
   border-radius: 5px;
   border: 2px solid #2ac;
   font-size: 15px;
   padding: 6px 10px;
-}
-#worlds {
-  font-family: ee_nokiafc22;
-  font-size: 16px;
-  color: #fff;
-  position: absolute;
-  bottom: 50px;
-  left: 50px;
-  top: 50px;
-  right: 50px;
-  border: 2px solid #2ac;
-  border-radius: 10px;
-  background-color: #278;
-  padding: 0 10px;
-}
-#worlds .menu-x {
-  right: 30px;
-}
-#worlds p {
-  margin: 10px 0;
-}
-#worlds p:last-child {
-  margin-bottom: 0;
-}
-#world-list {
-  position: absolute;
-  overflow: auto;
-  top: 0px;
-  left: 20px;
-  right: 0px;
-  bottom: 0px;
-}
-#world-list ul {
-  list-style-type: none;
-  padding-left: 20px;
 }
 #fps {
   font-size: 10px;
@@ -151,38 +155,85 @@ input[type=text] {
   width: 55px;
   text-align: right;
 }
+.listing {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+.listing li {
+  line-height: 30px;
+}
+.options-table {
+  padding: 0;
+  border-spacing: 0;
+  border: none;
+}
+.options-table td {
+  padding: 4px 10px;
+}
+.loading {
+  display: inline-block;
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+.loading div {
+  position: absolute;
+  border: 2px solid #fff;
+  opacity: 1;
+  border-radius: 50%;
+  animation: loading-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+.loading div:nth-child(2) {
+  animation-delay: -0.5s;
+}
+@keyframes loading-ripple {
+  0% {
+    top: 16px;
+    left: 16px;
+    width: 0;
+    height: 0;
+    opacity: 0;
+  }
+  4.9% {
+    top: 16px;
+    left: 16px;
+    width: 0;
+    height: 0;
+    opacity: 0;
+  }
+  5% {
+    top: 16px;
+    left: 16px;
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+  100% {
+    top: 0px;
+    left: 0px;
+    width: 32px;
+    height: 32px;
+    opacity: 0;
+  }
+}
 </style>
 </head>
 <body>
-  <div id="menu" style="display: none;">
-    <a class="menu-x" href="#" onclick="javascript: return hideMenu();">X</a>
-    <p>
-      Controls:
-    </p>
-    <p>
-      Move: W / S / A / D / Arrows<br />
-      Jump: Space<br />
-      God Mode: G<br />
-      Debug: F1<br />
-      Full screen: F2<br />
-      Zoom: F3 / F4<br />
-      Resolution: F5 (<span id="resolution">max</span>)<br />
-      Hide Background: F6<br />
-      Toggle Gamepad: F7
-    </p>
-    <p>
-      <input type="file" id="file" hidden oninput="javascript: playFile(this.files[0]);" />
-      <button onclick="javascript: document.getElementById('file').click();"><div>Upload</div></button>
-      <button onclick="javascript: playCampaigns();"><div>Campaigns</div></button>
-      <span id="fps"></span>
-    </p>
+  <div id="menu-wrap2" style="display: none;">
+    <div id="menu-wrap">
+      <div id="menu-top">
+        <a id="menu-back" style="visibility: hidden;" href="#"
+          onclick="javascript: return menuBack();">&lt; Back</a>
+        <div id="menu-title">Welcome</div>
+        <a id="menu-x" href="#" onclick="javascript: return menuClose();">X</a>
+      </div>
+      <div id="menu">
+      </div>
+    </div>
   </div>
-  <a id="menu-closed" href="#" style="display: none;" onclick="javascript: return showMenu();">
+  <a id="menu-closed" href="#" style="display: none;" onclick="javascript: return menuOpen();">
     <p>-<br />-<br />-</p>
-  </div>
-  <div id="worlds" style="display: none;">
-    <a class="menu-x" href="#" onclick="javascript: return hideWorlds();">X</a>
-    <div id="world-list"></div>
   </div>
   <script src="jszip.min.js"></script>
   <script src="pako_inflate.min.js"></script>
@@ -190,20 +241,5 @@ input[type=text] {
   <script src="lzma.shim.js"></script>
   <script src="core.js"></script>
   <script src="index.js"></script>
-  <script>
-    function loadEelvl(eelvl){
-      defaultScreen.drawBanner('Loading level...');
-      const world = new World();
-      world.loadEelvl(eelvl);
-      if (eeGame)
-        eeGame.destroy();
-      eeGame = new EverybodyEdits(defaultScreen, world);
-      eeGame.attachController(new ControllerKeyboard(window));
-      if (controllerGamepad)
-        eeGame.attachController(controllerGamepad);
-      eeGame.run();
-    }
-    loadResources().then(() => playCampaigns());
-  </script>
 </body>
 </html>

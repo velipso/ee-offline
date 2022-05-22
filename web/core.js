@@ -844,9 +844,10 @@ class Controller {
   attach(){}
   detach(){}
   nextInput(){}
+  nextPaused(){}
 }
 
-class ControllerKeyboard extends Controller {
+class KeyboardController extends Controller {
   element;
   input;
 
@@ -915,16 +916,48 @@ class ControllerKeyboard extends Controller {
   }
 }
 
-class ControllerGamepad extends Controller {
+class GamepadController extends Controller {
+  lastToggleGodMode = false;
+  lastTogglePause = false;
+  onToggleGodMode;
+  onTogglePause;
+
+  constructor(onToggleGodMode, onTogglePause){
+    super();
+    this.onToggleGodMode = onToggleGodMode;
+    this.onTogglePause = onTogglePause;
+  }
+
   attach(){}
   detach(){}
+  checkPaused(gp){
+    if (gp.buttons.length > 9 && gp.buttons[9].pressed){
+      if (!this.lastTogglePause)
+        this.onTogglePause();
+      this.lastTogglePause = true;
+    }
+    else
+      this.lastTogglePause = false;
+  }
+  nextPaused(){
+    for (const gp of navigator.getGamepads())
+      this.checkPaused(gp);
+  }
   nextInput(){
     let input = 0;
     for (const gp of navigator.getGamepads()){
-      for (let i = 0; i < Math.min(4, gp.buttons.length); i++){
-        if (gp.buttons[i].pressed)
-          input |= Input.JUMP;
+      this.checkPaused(gp);
+      const btn = i => gp.buttons.length > i && gp.buttons[i].pressed;
+      if (btn(0)) input |= Input.JUMP;
+      if (btn(1)) input |= Input.RISKY;
+      if (btn(8)) input |= Input.RETRY;
+      if (btn(3)){
+        if (!this.lastToggleGodMode)
+          this.onToggleGodMode();
+        this.lastToggleGodMode = true;
       }
+      else
+        this.lastToggleGodMode = false;
       if (gp.axes.length >= 2){
         if (gp.axes[0] < -0.5)
           input |= Input.LEFT;
@@ -967,6 +1000,11 @@ class Input {
     const i = this.controllers.indexOf(controller);
     if (i >= 0)
       this.controllers.splice(i, 1)[0].detach();
+  }
+
+  nextPaused(){
+    for (const controller of this.controllers)
+      controller.nextPaused();
   }
 
   startTick(){
@@ -4735,7 +4773,7 @@ class Lookup {
   }
 
   getWorldPortal(x, y){
-    return this.worldPortalLookup[x + y * this.width] || {id: '', target: 0};
+    return this.worldPortalLookup[x + y * this.width] || {id: '', name: '', target: 0};
   }
 
   setWorldPortal(x, y, value){
@@ -4949,11 +4987,11 @@ class EverybodyEdits {
     ItemManager.init();
   }
 
-  constructor(screen, world){
+  constructor(screen, world, worldResolver, spawnTarget){
     this.screen = screen;
     this.input = new Input();
     this.world = world;
-    this.state = new PlayState(world);
+    this.state = new PlayState(world, worldResolver, spawnTarget);
   }
 
   attachController(controller){
@@ -4986,8 +5024,10 @@ class EverybodyEdits {
   }
 
   advanceTime(dt){
-    if (this.paused)
+    if (this.paused){
+      this.input.nextPaused();
       return;
+    }
     this.accumulatedTime += dt;
     while (this.accumulatedTime >= Config.physics_ms_per_tick){
       this.input.startTick();
@@ -5002,6 +5042,8 @@ class EverybodyEdits {
 
   draw(){
     this.screen.drawState(this.state);
+    if (this.paused)
+      this.screen.drawPaused();
   }
 
   stop(){
@@ -5011,6 +5053,47 @@ class EverybodyEdits {
   destroy(){
     this.stop();
     this.input.destroy();
+  }
+
+  setOptions(options){
+    if ('eeotasBugs' in options)
+      this.input.setEEOTASBugs(options.eeotasBugs);
+    if ('iceBugs' in options)
+      this.state.player.iceBugs = options.iceBugs;
+    if ('screenDebug' in options)
+      this.screen.debug = options.screenDebug;
+    if ('screenFull' in options)
+      this.screen.fullScreen = options.screenFull;
+    if ('showFPS' in options)
+      this.screen.showFPS = options.showFPS;
+    if ('zoom' in options)
+      this.screen.setZoom(options.zoom);
+    if ('screenResolution' in options)
+      this.screen.setResolution(options.screenResolution);
+    if ('worldBackground' in options)
+      this.world.showBackground = options.worldBackground;
+  }
+
+  getOptions(){
+    return {
+      eeotasBugs: this.input.eeotasBugs,
+      iceBugs: this.state.player.iceBugs,
+      screenDebug: this.screen.debug,
+      screenFull: this.screen.fullScreen,
+      showFPS: this.screen.showFPS,
+      zoom: this.screen.zoom,
+      screenResolution: this.screen.resolution,
+      worldBackground: this.world.showBackground
+    };
+  }
+
+  playerToggleGodMode(){
+    this.state.player.isInGodMode = !this.state.player.isInGodMode;
+    this.state.player.resetDeath();
+    this.state.player.isOnFire = false;
+    if (!this.state.player.completeTime)
+      this.state.player.validRun = false;
+    //TODO: this.world.setShowAllSecrets(this.player.isInGodMode);
   }
 
   setEEOTASBugs(v){
@@ -5035,15 +5118,6 @@ class EverybodyEdits {
 
   worldToggleBackground(){
     this.world.toggleBackground();
-  }
-
-  playerToggleGodMode(){
-    this.state.player.isInGodMode = !this.state.player.isInGodMode;
-    this.state.player.resetDeath();
-    this.state.player.isOnFire = false;
-    if (!this.state.player.completeTime)
-      this.state.player.validRun = false;
-    //TODO: this.world.setShowAllSecrets(this.player.isInGodMode);
   }
 
   playerToggleIceBugs(){
@@ -5203,7 +5277,7 @@ class BlSprite extends BlObject {
 class World extends BlObject {
   showBackground = true;
   player;
-  playState;
+  state;
   lookup;
   spawnPoints = [];
   nextSpawnPos = [];
@@ -5241,6 +5315,7 @@ class World extends BlObject {
   hideTimedoorOffset = 0;
   labels = [];
   showAllSecrets = false;
+  unresolvedWorlds = [];
 
   toggleBackground(){
     this.showBackground = !this.showBackground;
@@ -5249,6 +5324,7 @@ class World extends BlObject {
   clearWorld(width, height, gravity){
     this.lookup = new Lookup(width, height);
     this.gravity = typeof gravity === 'number' ? gravity : 1;
+    this.unresolvedWorlds = [];
     const layers = [];
     for (let l = 0; l < 2; l++){
       const cols = [];
@@ -5384,9 +5460,12 @@ class World extends BlObject {
           case ItemId.PORTAL:
             this.lookup.setPortal(nx, ny, {id, target: tar, rotation, type});
             break
-          case ItemId.WORLD_PORTAL:
-            this.lookup.setWorldPortal(nx, ny, {id: target_world, target: tar});
+          case ItemId.WORLD_PORTAL:{
+            const wp = {id: target_world, name: '', target: tar};
+            this.lookup.setWorldPortal(nx, ny, wp);
+            this.unresolvedWorlds.push({nx, ny, wp});
             break;
+          }
           case ItemId.SPAWNPOINT:
           case ItemId.WORLD_PORTAL_SPAWN:
             if(!this.spawnPoints[rotation])
@@ -5430,8 +5509,16 @@ class World extends BlObject {
     this.player = p;
   }
 
-  setPlayState(playState){
-    this.playState = playState;
+  async setPlayState(state){
+    this.state = state;
+    while (this.unresolvedWorlds.length > 0){
+      const {nx, ny, wp} = this.unresolvedWorlds.shift();
+      const name = await state.worldResolver.findName(wp.id);
+      if (name){
+        wp.name = name;
+        this.lookup.setWorldPortal(nx, ny, wp);
+      }
+    }
   }
 
   setMapArray(map){
@@ -5673,7 +5760,7 @@ class World extends BlObject {
 
     for (const color of Object.keys(this.keys)){
       if (this.keys[color] && ((this.aniOffset - this.keysTimer[color]) / 30) >= 5)
-        this.playState.switchKey(color, false, false);
+        this.state.switchKey(color, false, false);
     }
 
     if (((this.aniOffset - this.hideTimedoorOffset) / 30) >= 5)
@@ -6800,12 +6887,12 @@ class World extends BlObject {
         switch (this.decoration[cy][cx]){
           case ItemId.WORLD_PORTAL:
             if (closerSign && isTouching){
-              /* TODO: validate we have access to wp.id */
               const wp = this.lookup.getWorldPortal(cx, cy);
-              const text = `${wp.id}\nPress Y to enter`;
-              const color = '#ffffff';
-              textSign = {dist, text, color, x, y};
-              // */
+              if (wp.name){
+                const text = `${wp.name}\nPress Y to enter`;
+                const color = '#ffffff';
+                textSign = {dist, text, color, x, y};
+              }
             }
             break;
           case ItemId.PORTAL:
@@ -7912,19 +7999,14 @@ class Player extends SynchronizedSprite {
       this.current = this.world.getTile(0, cx, cy);
 
       if (!isGod && this.current === ItemId.WORLD_PORTAL){
-        if (input.risky){ // TODO: && !resetSend
+        if (input.risky){
           const wp = this.world.lookup.getWorldPortal(cx, cy);
-          console.log(wp);
-          /*
-          if (wp.id.length > 0) {
-            resetSend = true;
-            var id:int = parseInt(wp.id);
-            if (Global.isValidWorldIndex(id)) {
-              Global.base.campaigns.joinWorld(id, wp.target);
-            }
-            else resetPlayer(false, false, wp.target);
+          if (wp.name){
+            this.state.worldResolver.loadWorld(wp.id, wp.target);
+            return true;
           }
-          */
+          else
+            console.warn('Failed to resolve:', wp);
         }
       }
 
@@ -8013,7 +8095,8 @@ class Player extends SynchronizedSprite {
     };
 
     while ((currentSX !== 0 && !doneX) || (currentSY !== 0 && !doneY)){
-      processPortals();
+      if (processPortals())
+        return;
       this.ox = this.x;
       this.oy = this.y;
 
@@ -8524,6 +8607,7 @@ class Me extends Player {
 class PlayState extends BlObject {
   player;
   world;
+  worldResolver;
   coins = 0;
   bcoins = 0;
   keysQueue = [];
@@ -8533,16 +8617,19 @@ class PlayState extends BlObject {
   tickCount = 0;
   effectIcons = [];
 
-  constructor(world){
+  constructor(world, worldResolver, spawnTarget){
     super();
 
     this.world = world;
+    this.worldResolver = worldResolver;
 
     const coinCount = this.world.getCoinCount();
     this.coins = coinCount.coins;
     this.bcoins = coinCount.bcoins;
 
     this.player = new Me(this.world, 'player', this);
+    if (typeof spawnTarget === 'number')
+      this.player.worldSpawn = spawnTarget;
     this.player.placeAtSpawn(false);
     this.player.worldGravityMultiplier = this.world.gravity;
     this.x = -this.player.x + Config.bw / 2;
@@ -8853,6 +8940,7 @@ class PlayState extends BlObject {
 //
 
 class Screen {
+  static resolutions = ['8', '12', '16', '32', 'max'];
   cnv;
   ctx;
   dpr;
@@ -8864,6 +8952,8 @@ class Screen {
   lastState = false;
   debug = false;
   fullScreen = true;
+  showFPS = false;
+  fpsText = '?';
   zoom = 1;
   boundary = {x: 0, y: 0, w: Config.bw, h: Config.bh};
   resolution = 'max';
@@ -8882,6 +8972,11 @@ class Screen {
     this.lastStatus = false;
     this.lastState = false;
     this.ctx.fillStyle = '#000';
+    this.ctx.fillRect(0, 0, this.cnv.width, this.cnv.height);
+  }
+
+  drawPaused(){
+    this.ctx.fillStyle = '#00000044';
     this.ctx.fillRect(0, 0, this.cnv.width, this.cnv.height);
   }
 
@@ -8926,11 +9021,22 @@ class Screen {
     this.frameCount++;
     const now = Date.now();
     if (this.lastFPS + 1000 <= now){
-      const fps = document.getElementById('fps');
-      if (fps)
-        fps.innerText = `${this.frameCount} FPS`;
+      this.fpsText = `${this.frameCount} FPS`;
       this.lastFPS = now;
       this.frameCount = 0;
+    }
+
+    if (this.showFPS){
+      const x = this.worldToScreenX(Math.round(this.boundary.x + this.boundary.w / 2));
+      const y = this.worldToScreenY(this.boundary.y + 5);
+      this.ctx.font = `${12 * this.scale}px monospace`;
+      this.ctx.fillStyle = '#fff';
+      this.ctx.textAlign = 'center';
+      this.ctx.textBaseline = 'top';
+      this.ctx.strokeStyle = '#000';
+      this.ctx.lineWidth = 2 * this.scale;
+      this.ctx.strokeText(this.fpsText, x, y);
+      this.ctx.fillText(this.fpsText, x, y);
     }
   }
 
@@ -9166,18 +9272,26 @@ class Screen {
       this.drawStatus(lastStatus);
   }
 
-  multiplyZoom(m){
-    this.zoom = Math.min(1, this.zoom * m);
+  setZoom(z){
+    this.zoom = z;
     if (this.zoom > 0.95)
       this.zoom = 1;
     this.resize(this.lastResize.w, this.lastResize.h);
   }
 
+  multiplyZoom(m){
+    this.setZoom(Math.min(1, this.zoom * m));
+  }
+
   nextResolution(){
-    const res = ['8', '12', '16', '32', 'max'];
-    this.resolution = res[(res.indexOf(this.resolution) + 1) % res.length];
+    this.setResolution(Screen.resolutions[
+      (Screen.resolutions.indexOf(this.resolution) + 1) % Screen.resolutions.length
+    ]);
+  }
+
+  setResolution(resolution){
+    this.resolution = resolution;
     this.resize(this.lastResize.w, this.lastResize.h);
-    return this.resolution;
   }
 }
 
@@ -9185,19 +9299,33 @@ class Screen {
 // File Loading
 //
 
+class WorldResolver {
+  async findName(id){ throw new Error('Not implemented'); }
+  async loadWorld(id, spawnTarget){ throw new Error('Not implemented'); }
+}
+
+class EmptyWorldResolver extends WorldResolver {
+  async findName(){ return false; }
+  async loadWorld(){ return false; }
+}
+
 class FSFolder {
   kind = 'folder';
   name;
   desc;
+  isPublicIdResolver = false;
 
   constructor(name, desc){
     this.name = name;
     this.desc = desc;
   }
 
-  async list(){
-    throw new Error('Not implemented');
+  markPublic(){
+    this.isPublicIdResolver = true;
   }
+
+  async list(){ throw new Error('Not implemented'); }
+  async findWorld(){ return false; }
 }
 
 class FSWorld {
@@ -9206,33 +9334,31 @@ class FSWorld {
   name;
   desc;
   owner;
-  crew;
   width;
   height;
   gravity;
 
-  constructor(id, name, desc, owner, crew, width, height, gravity){
+  constructor(id, name, desc, owner, width, height, gravity){
     this.id = id;
     this.name = name;
     this.desc = desc;
     this.owner = owner;
-    this.crew = crew;
     this.width = width;
     this.height = height;
     this.gravity = gravity;
   }
 
-  async load(){
-    throw new Error('Not implemented');
-  }
+  async load(){ throw new Error('Not implemented'); }
 }
 
 class LayerDataWorld extends FSWorld {
+  startPosition;
   data;
   metadata;
 
-  constructor(id, name, desc, owner, crew, width, height, gravity, data, metadata){
-    super(id, name, desc, owner, crew, width, height, gravity);
+  constructor(id, name, desc, owner, width, height, gravity, data, metadata){
+    super(id, name, desc, owner, width, height, gravity);
+    this.startPosition = data.position;
     this.data = data;
     this.metadata = metadata;
   }
@@ -9241,6 +9367,7 @@ class LayerDataWorld extends FSWorld {
     const world = new World();
     world.worldName = this.name;
     world.clearWorld(this.width, this.height, this.gravity);
+    this.data.position = this.startPosition;
     world.loadLayerData(this.data);
     return world;
   }
@@ -9262,10 +9389,11 @@ class EelvlWorld extends LayerDataWorld {
     const crewStatus = data.readInt();
     const minimap = data.readBoolean();
     const ownerID = data.readUTF();
-    super(id, prefix + name, desc, owner, crewName, width, height, gravity, data, {
+    super(id, prefix + name, desc, owner, width, height, gravity, data, {
       background,
       campaign,
       crewId,
+      crewName,
       crewStatus,
       minimap,
       ownerID
@@ -9273,23 +9401,47 @@ class EelvlWorld extends LayerDataWorld {
   }
 }
 
-class CampaignSubfolder extends FSFolder {
-  worlds = [];
-
-  constructor(){
-    super('Unknown Campaign', '');
-  }
+class GenericFolder extends FSFolder {
+  listing = [];
 
   async list(){
-    return {
-      more: false,
-      listing: this.worlds.filter(a => !!a)
-    };
+    return {more: false, listing: this.listing.filter(a => !!a)};
+  }
+
+  add(item){
+    this.listing.push(item);
+  }
+
+  addEelvl(basename, data){
+    // attempt to extract a public ID from the basename
+    let id = '?';
+    const m = basename.match(/_-_(P[a-zA-Z0-9]+)$/);
+    if (m && m[1]){
+      id = m[1];
+      this.markPublic();
+    }
+    this.add(new EelvlWorld(id, data, ''));
+  }
+
+  async findWorld(id){
+    for (const it of this.listing){
+      if (!it)
+        continue;
+      if (it.kind === 'world'){
+        if (it.id === id)
+          return it;
+      }
+      else if (it.kind === 'folder'){
+        const w = await it.findWorld(id);
+        if (w)
+          return w;
+      }
+    }
+    return false;
   }
 }
 
-class CampaignFolder extends FSFolder {
-  camps = [];
+class CampaignFolder extends GenericFolder {
   static idMap = {
     // Tutorials
     '0.0': 'PWL17t1R6bbUI',
@@ -9555,9 +9707,9 @@ class CampaignFolder extends FSFolder {
     super('Campaigns', 'Campaigns included in Everybody Edits: Offline.');
     for (const entry of zipObj){
       const campId = parseInt(entry.name.substr(0, entry.name.indexOf('/')), 10);
-      if (!this.camps[campId])
-        this.camps[campId] = new CampaignSubfolder();
-      const camp = this.camps[campId];
+      if (!this.listing[campId])
+        this.listing[campId] = new GenericFolder();
+      const camp = this.listing[campId];
       if (entry.name.substr(entry.name.lastIndexOf('/')) === '/campaign.info'){
         const campInfo = entry.data.toString().split(Config.stringSeparator);
         let s = `${campId + 1}`;
@@ -9568,7 +9720,7 @@ class CampaignFolder extends FSFolder {
       }
       else if (entry.name.substr(entry.name.indexOf('.')) === '.eelvl'){
         const tierId = parseInt(entry.name.substr(entry.name.indexOf('/') + 1), 10);
-        camp.worlds[tierId] = new EelvlWorld(
+        camp.listing[tierId] = new EelvlWorld(
           CampaignFolder.getId(campId, tierId),
           entry.data,
           `${tierId + 1 < 10 ? '0' : ''}${tierId + 1}. `
@@ -9576,117 +9728,313 @@ class CampaignFolder extends FSFolder {
       }
     }
   }
-
-  async list(){
-    return {
-      more: false,
-      listing: this.camps.filter(a => !!a)
-    };
-  }
 }
 
-class RootFolder extends FSFolder {
-  contents = [];
-
-  constructor(){
-    super('Root', '');
+function SQLitePrefixToWhere(column, prefix){
+  if (prefix === false){
+    const where = [];
+    for (let i = 0; i < 10; i++)
+      where.push(`${column} LIKE '${i}%'`);
+    for (let i = 0; i < 26; i++)
+      where.push(`${column} LIKE '${String.fromCharCode(65 + i)}%'`);
+    return `(NOT (${where.join(' OR ')}))`;
   }
-
-  async list(){
-    return {
-      more: false,
-      listing: this.contents
-    };
-  }
-
-  add(folder){
-    this.contents.push(folder);
-  }
+  else if (prefix.length === 1)
+    return `(${column} LIKE '${prefix[0]}%')`;
+  const where = [];
+  for (let i = prefix[0].charCodeAt(0); i <= prefix[1].charCodeAt(0); i++)
+    where.push(`${column} LIKE '${String.fromCharCode(i)}%'`);
+  return `(${where.join(' OR ')})`;
 }
 
-class SqliteOrderByFolder extends FSFolder {
+function decompressSqliteLevelData(data){
+  const decoder = new LZMA.Decoder();
+  const header = decoder.decodeHeader(new LZMA.iStream(
+    [93, 0, 0, 16, 0, 255, 255, 255, 255]));
+  const output = new LZMA.oStream();
+  decoder.setProperties(header);
+  if (decoder.decodeBody(new LZMA.iStream(data), output, header.uncompressedSize))
+    return new FlashByteArray(output.toUint8Array());
+  return false;
+}
+
+class SqliteGenericSelectFolder extends FSFolder {
   isSorted = true;
-  orderBy;
   select;
-  sqlWorker;
+  innerJoin;
+  where;
+  orderBy;
+  params;
+  sqlExec;
 
-  constructor(name, select, orderBy, sqlWorker){
-    super(name);
-    this.select = select;
-    this.orderBy = orderBy;
-    this.sqlWorker = sqlWorker;
+  constructor(name, sqlExec, options){
+    super(name, options.desc || '');
+    this.select = [
+      'world.id',
+      'world.name',
+      'world.description',
+      'player.name',
+      'world.width',
+      'world.height',
+      'world.gravity',
+      'world.data'
+    ];
+    if (options.select)
+      this.select = this.select.concat(options.select);
+    this.innerJoin = options.innerJoin || '';
+    this.where = options.where || '';
+    this.orderBy = options.orderBy || '';
+    this.params = options.params || {};
+    this.sqlExec = sqlExec;
   }
 
   async list(page){
-    const {data: {results}} = await new Promise((resolve, reject) => {
-      this.sqlWorker.onmessage = resolve;
-      this.sqlWorker.postMessage({
-        action: 'exec',
-        sql: `
-          SELECT
-            world.id,
-            world.name,
-            description,
-            player.name,
-            crew.name,
-            width,
-            height,
-            gravity,
-            data${this.select}
-          FROM world
-          INNER JOIN player ON world.owner = player.rowid
-          INNER JOIN crew ON world.crew = crew.rowid
-          ORDER BY ${this.orderBy}
-          LIMIT ${(page || 0) * 30},31
-        `
-      });
-    });
-    if (results.length < 0 || results[0].values.length <= 0)
+    const sql = `
+      SELECT ${this.select.join(',')}
+      FROM world
+      INNER JOIN player ON world.owner = player.rowid
+      ${this.innerJoin}
+      ${this.where ? `WHERE ${this.where}` : ''}
+      ${this.orderBy ? `ORDER BY ${this.orderBy}` : ''}
+      LIMIT ${(page || 0) * 30},31;
+    `;
+    const {results, error} = await this.sqlExec(sql, this.params);
+    if (error)
+      console.error(error, '\n', sql);
+    if (!results || results.length <= 0 || results[0].values.length <= 0)
       return {more: false, listing: []};
     const values = results[0].values;
     const listing = [];
     for (let i = 0; i < Math.min(30, values.length); i++){
-      const [id, name, desc, owner, crew, width, height, gravity, data] = values[i];
-
-      const decoder = new LZMA.Decoder();
-      const header = decoder.decodeHeader(new LZMA.iStream(
-        [93, 0, 0, 16, 0, 255, 255, 255, 255]));
-      const output = new LZMA.oStream();
-      decoder.setProperties(header);
-      if (decoder.decodeBody(new LZMA.iStream(data), output, header.uncompressedSize)){
-        const decomp = new FlashByteArray(output.toUint8Array());
-        listing.push(new LayerDataWorld(
-          id, name, desc, owner, crew, width, height, gravity, decomp, {}));
-      }
+      const [id, name, desc, owner, width, height, gravity, data] = values[i];
+      const decomp = decompressSqliteLevelData(data);
+      if (decomp)
+        listing.push(new LayerDataWorld(id, name, desc, owner, width, height, gravity, decomp, {}));
     }
     return {more: values.length > 30, listing};
   }
 }
 
-class SqliteByPopularityFolder extends SqliteOrderByFolder {
-  constructor(sqlWorker){
-    super('By Popularity', '', `
-      (SELECT COUNT(*) FROM player_like WHERE player_like.world = world.rowid) DESC,
-      LOWER(world.name),
-      world.id
-      `, sqlWorker);
+class SqliteByLikesFolder extends SqliteGenericSelectFolder {
+  constructor(sqlExec){
+    super('By Likes', sqlExec, {
+      orderBy: `
+        (SELECT COUNT(*) FROM player_like WHERE player_like.world = world.rowid) DESC,
+        LOWER(world.name),
+        world.id
+      `
+    });
   }
 }
 
-class SqliteByNameFolder extends SqliteOrderByFolder {
-  constructor(sqlWorker){
-    super('By Name', '', 'LOWER(world.name), world.id', sqlWorker);
+class SqliteByFavoritesFolder extends SqliteGenericSelectFolder {
+  constructor(sqlExec){
+    super('By Favorites', sqlExec, {
+      orderBy: `
+        (SELECT COUNT(*) FROM player_favorite WHERE player_favorite.world = world.rowid) DESC,
+        LOWER(world.name),
+        world.id
+      `
+    });
   }
 }
 
-class SqliteByRandomFolder extends SqliteOrderByFolder {
-  constructor(sqlWorker){
-    super('By Random', `, SIN(world.rowid * ${Math.random() * 1000}) AS r`, 'r', sqlWorker);
+class SqliteByWorldFolder extends SqliteGenericSelectFolder {
+  constructor(prefix, sqlExec){
+    super(prefix === false ? 'Misc' : prefix.join('-'), sqlExec, {
+      where: SQLitePrefixToWhere('world.name', prefix),
+      orderBy: 'LOWER(world.name), world.id'
+    });
+  }
+}
+
+class SqliteByRandomFolder extends SqliteGenericSelectFolder {
+  constructor(sqlExec){
+    super('By Random', sqlExec, {
+      select: [`SIN(world.rowid * ${Math.random() * 1000}) AS r`],
+      orderBy: 'r'
+    });
+  }
+}
+
+class SqliteByOneCampaignFolder extends SqliteGenericSelectFolder {
+  constructor(id, name, desc, sqlExec){
+    super(name, sqlExec, {
+      desc,
+      innerJoin: `
+        INNER JOIN campaign_world ON world.rowid = campaign_world.world
+        INNER JOIN campaign ON campaign.rowid = campaign_world.campaign
+      `,
+      where: 'campaign.rowid = $c',
+      orderBy: 'campaign_world.stage',
+      params: {'$c': id}
+    });
+  }
+}
+
+class SqliteByCampaignFolder extends FSFolder {
+  isSorted = true;
+  sqlExec;
+
+  constructor(sqlExec){
+    super('By Campaign');
+    this.sqlExec = sqlExec;
+  }
+
+  async list(){
+    const sql = `
+      SELECT rowid, name, description
+      FROM campaign
+      ORDER BY LOWER(name)
+    `;
+    const {results, error} = await this.sqlExec(sql);
+    if (error)
+      console.error(error, '\n', sql);
+    if (!results || results.length <= 0 || results[0].values.length <= 0)
+      return {more: false, listing: []};
+    const values = results[0].values;
+    const listing = [];
+    for (let i = 0; i < values.length; i++){
+      const [id, name, desc] = values[i];
+      listing.push(new SqliteByOneCampaignFolder(id, name, desc, this.sqlExec));
+    }
+    return {more: false, listing};
+  }
+}
+
+class SqliteByOneCrewFolder extends SqliteGenericSelectFolder {
+  constructor(id, crew, sqlExec){
+    super(crew, sqlExec, {
+      where: 'world.crew = $c',
+      orderBy: 'LOWER(world.name), world.id',
+      params: {'$c': id}
+    });
+  }
+}
+
+class SqliteByCrewFolder extends FSFolder {
+  isSorted = true;
+  prefix;
+  sqlExec;
+
+  constructor(prefix, sqlExec){
+    super(prefix === false ? 'Misc' : prefix.join('-'));
+    this.prefix = prefix;
+    this.sqlExec = sqlExec;
+  }
+
+  async list(){
+    const sql = `
+      SELECT
+        rowid,
+        name,
+        (SELECT COUNT(*) FROM world WHERE world.crew = crew.rowid) AS count
+      FROM crew
+      WHERE ${SQLitePrefixToWhere('name', this.prefix)} AND count > 0
+      ORDER BY LOWER(name)
+    `;
+    const {results, error} = await this.sqlExec(sql);
+    if (error)
+      console.error(error, '\n', sql);
+    if (!results || results.length <= 0 || results[0].values.length <= 0)
+      return {more: false, listing: []};
+    const values = results[0].values;
+    const listing = [];
+    for (let i = 0; i < values.length; i++){
+      const [id, crew, count] = values[i];
+      listing.push(new SqliteByOneCrewFolder(id, `${crew} (${count})`, this.sqlExec));
+    }
+    return {more: false, listing};
+  }
+}
+
+class SqliteByOneOwnerFolder extends SqliteGenericSelectFolder {
+  constructor(id, name, sqlExec){
+    super(name, sqlExec, {
+      where: 'world.owner = $c',
+      orderBy: 'LOWER(world.name), world.id',
+      params: {'$c': id}
+    });
+  }
+}
+
+class SqliteSearchFolder extends SqliteGenericSelectFolder {
+  constructor(term, sqlExec){
+    super(term, sqlExec, {
+      where: ([
+        'world.name LIKE $c',
+        'world.id LIKE $c',
+        'world.description LIKE $c',
+        'player.name LIKE $c'
+      ]).join(' OR '),
+      orderBy: `
+        (SELECT COUNT(*) FROM player_like WHERE player_like.world = world.rowid) DESC,
+        LOWER(world.name),
+        world.id
+      `,
+      params: {'$c': `%${term.trim()}%`}
+    });
+  }
+}
+
+class SqliteByOwnerFolder extends FSFolder {
+  isSorted = true;
+  prefix;
+  sqlExec;
+
+  constructor(prefix, sqlExec){
+    super(prefix === false ? 'Misc' : prefix.join('-'));
+    this.prefix = prefix;
+    this.sqlExec = sqlExec;
+  }
+
+  async list(){
+    const sql = `
+      SELECT
+        rowid,
+        name,
+        (SELECT COUNT(*) FROM world WHERE world.owner = player.rowid) AS count
+      FROM player
+      WHERE ${SQLitePrefixToWhere('name', this.prefix)} AND count > 0
+      ORDER BY LOWER(name)
+    `;
+    const {results, error} = await this.sqlExec(sql);
+    if (error)
+      console.error(error, '\n', sql);
+    if (!results || results.length <= 0 || results[0].values.length <= 0)
+      return {more: false, listing: []};
+    const values = results[0].values;
+    const listing = [];
+    for (let i = 0; i < values.length; i++){
+      const [id, name, count] = values[i];
+      listing.push(new SqliteByOneOwnerFolder(id, `${name} (${count})`, this.sqlExec));
+    }
+    return {more: false, listing};
+  }
+}
+
+class LetterFolder extends FSFolder {
+  isSorted = true;
+  createFunc;
+
+  constructor(name, createFunc){
+    super(name);
+    this.createFunc = createFunc;
+  }
+
+  async list(){
+    const listing = [this.createFunc(['0', '9'])];
+    for (let i = 0; i < 26; i++)
+      listing.push(this.createFunc([String.fromCharCode(65 + i)]));
+    listing.push(this.createFunc(false));
+    return {more: false, listing};
   }
 }
 
 class SqliteFolder extends FSFolder {
   sqlWorker = new Worker('worker.sql-wasm.js');
+  pendingExec = [];
+  waitingOnExec = false;
   ready;
 
   constructor(name, buffer){
@@ -9713,15 +10061,122 @@ class SqliteFolder extends FSFolder {
     }
   }
 
+  sqlExec = async (sql, params) => {
+    return new Promise((resolve, reject) => {
+      this.pendingExec.push({sql, params, resolve, reject});
+      this.nextPendingExec();
+    });
+  };
+
+  nextPendingExec(){
+    if (this.waitingOnExec || this.pendingExec.length <= 0)
+      return;
+    this.waitingOnExec = true;
+    const {sql, params, resolve, reject} = this.pendingExec.shift();
+    this.sqlWorker.onerror = e => {
+      console.error(e);
+      reject(e);
+      this.waitingOnExec = false;
+      this.nextPendingExec();
+    };
+    this.sqlWorker.onmessage = m => {
+      resolve(m.data);
+      this.waitingOnExec = false;
+      this.nextPendingExec();
+    };
+    this.sqlWorker.postMessage({action: 'exec', sql, params});
+  }
+
   async list(){
     await this.ready;
     return {
       more: false,
       listing: [
-        new SqliteByPopularityFolder(this.sqlWorker),
-        new SqliteByNameFolder(this.sqlWorker),
-        new SqliteByRandomFolder(this.sqlWorker)
+        new SqliteByLikesFolder(this.sqlExec),
+        new SqliteByFavoritesFolder(this.sqlExec),
+        new SqliteByCampaignFolder(this.sqlExec),
+        new LetterFolder('By World', prefix => new SqliteByWorldFolder(prefix, this.sqlExec)),
+        new SqliteByRandomFolder(this.sqlExec),
+        new LetterFolder('By Crew', prefix => new SqliteByCrewFolder(prefix, this.sqlExec)),
+        new LetterFolder('By Owner', prefix => new SqliteByOwnerFolder(prefix, this.sqlExec))
       ]
     };
+  }
+
+  async findWorld(findId){
+    const sql = `
+      SELECT
+        world.id,
+        world.name,
+        world.description,
+        player.name,
+        world.width,
+        world.height,
+        world.gravity,
+        world.data
+      FROM world
+      INNER JOIN player ON world.owner = player.rowid
+      WHERE world.id = $id
+      LIMIT 0,1
+    `;
+    const {results, error} = await this.sqlExec(sql, {'$id': findId});
+    if (error)
+      console.error(error, '\n', sql);
+    if (!results || results.length <= 0 || results[0].values.length <= 0)
+      return false;
+    const values = results[0].values;
+    const [id, name, desc, owner, width, height, gravity, data] = values[0];
+    const decomp = decompressSqliteLevelData(data);
+    if (!decomp)
+      return false;
+    return new LayerDataWorld(id, name, desc, owner, width, height, gravity, decomp, {});
+  }
+
+  search(term){
+    return new SqliteSearchFolder(term, this.sqlExec);
+  }
+}
+
+class EelvlsFolder extends GenericFolder {
+  constructor(name, zip){
+    super(name);
+    for (const file of zip){
+      if (!file.name.toLowerCase().endsWith('.eelvl'))
+        continue;
+      const hyphen = file.name.indexOf(' - ');
+      this.add(new EelvlWorld(hyphen < 0 ? '?' : file.name.substr(0, hyphen), file.data, ''));
+    }
+  }
+}
+
+class ZipFolder extends GenericFolder {
+  constructor(name, zip){
+    super(name);
+    for (const file of zip){
+      if (!file.name.toLowerCase().endsWith('.eelvl'))
+        continue;
+      const path = file.name.split('/').filter(p => !!p);
+      if (path.length <= 0)
+        continue;
+      let here = this;
+      for (let i = 0; i < path.length - 1; i++){
+        const sub = path[i];
+        const next = here.listing.find(it => it instanceof GenericFolder && it.name === sub);
+        if (next)
+          here = next;
+        else{
+          const newNext = new GenericFolder(sub);
+          here.add(newNext);
+          here = newNext;
+        }
+      }
+      here.addEelvl(path[path.length - 1], file.data);
+    }
+
+    // unwrap first folder if that's all there is
+    if (this.listing.length === 1 && this.listing[0] instanceof GenericFolder){
+      this.name = this.listing[0].name;
+      this.listing = this.listing[0].listing;
+    }
   }
 }

@@ -9,10 +9,6 @@ available so far by clicking here:
 
 [Play Game](https://cdn.githubraw.com/velipso/ee-offline/main/web/index.html)
 
-There is also a TAS frontend, but it's pretty basic at this point:
-
-[TAS Frontend](https://cdn.githubraw.com/velipso/ee-offline/main/web/tas.html)
-
 You can run the test suite here (inspired by [SirJosh](https://github.com/SirJosh3917/smiley-face-game)):
 
 [Test Suite](https://cdn.githubraw.com/velipso/ee-offline/main/web/test.html)
