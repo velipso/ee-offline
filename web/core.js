@@ -4864,6 +4864,7 @@ class EverybodyEdits {
   world;
   running = false;
   accumulatedTime = 0;
+  paused = false;
 
   static async init(progressCallback){
     function loadImg(logicalWidth, logicalHeight, src){
@@ -4968,7 +4969,6 @@ class EverybodyEdits {
   }
 
   run(){
-    ignorePlayerInput = false;
     this.running = true;
 
     let lastTick = Date.now();
@@ -4986,12 +4986,18 @@ class EverybodyEdits {
   }
 
   advanceTime(dt){
+    if (this.paused)
+      return;
     this.accumulatedTime += dt;
     while (this.accumulatedTime >= Config.physics_ms_per_tick){
       this.input.startTick();
       this.state.tick(this.input);
       this.accumulatedTime -= Config.physics_ms_per_tick;
     }
+  }
+
+  setPause(v){
+    this.paused = v;
   }
 
   draw(){
@@ -6340,22 +6346,15 @@ class World extends BlObject {
               continue;
             }
             break;
-          /*
-          //If user can edit, draw shadow coins
-          case 110:{
-            if(Bl.data.canEdit){
-              ItemManager.sprCoinShadow.drawPoint(target, point, ((offset >> 0)+cx+cy)%12)
-            }
+          // If user can edit, draw shadow coins
+          case ItemId.COLLECTEDCOIN:
+            // TODO: if(Bl.data.canEdit)
+            //  ItemManager.sprCoinShadow.drawPoint(target, point, ((offset >> 0)+cx+cy)%12)
             continue;
-          }
-
-          case 111:{
-            if(Bl.data.canEdit){
-              ItemManager.sprBonusCoinShadow.drawPoint(target, point, ((offset >> 0)+cx+cy)%12)
-            }
+          case ItemId.COLLECTEDBLUECOIN:
+            // TODO: if(Bl.data.canEdit)
+            //  ItemManager.sprBonusCoinShadow.drawPoint(target, point, ((offset >> 0)+cx+cy)%12)
             continue;
-          }
-          */
           case ItemId.SPIKE:
             ItemManager.sprSpikes.drawPoint(target, x, y, this.lookup.getInt(cx, cy));
             continue;
@@ -9248,7 +9247,7 @@ class LayerDataWorld extends FSWorld {
 }
 
 class EelvlWorld extends LayerDataWorld {
-  constructor(id, eelvl){
+  constructor(id, eelvl, prefix){
     const data = eelvl.inflate();
     const owner = data.readUTF();
     const name = data.readUTF();
@@ -9263,7 +9262,7 @@ class EelvlWorld extends LayerDataWorld {
     const crewStatus = data.readInt();
     const minimap = data.readBoolean();
     const ownerID = data.readUTF();
-    super(id, name, desc, owner, crewName, width, height, gravity, data, {
+    super(id, prefix + name, desc, owner, crewName, width, height, gravity, data, {
       background,
       campaign,
       crewId,
@@ -9282,7 +9281,10 @@ class CampaignSubfolder extends FSFolder {
   }
 
   async list(){
-    return this.worlds.filter(a => !!a);
+    return {
+      more: false,
+      listing: this.worlds.filter(a => !!a)
+    };
   }
 }
 
@@ -9550,7 +9552,7 @@ class CampaignFolder extends FSFolder {
   }
 
   constructor(zipObj){
-    super('Campaigns', 'Campaigns included in Everybody Edits: Offline');
+    super('Campaigns', 'Campaigns included in Everybody Edits: Offline.');
     for (const entry of zipObj){
       const campId = parseInt(entry.name.substr(0, entry.name.indexOf('/')), 10);
       if (!this.camps[campId])
@@ -9558,18 +9560,28 @@ class CampaignFolder extends FSFolder {
       const camp = this.camps[campId];
       if (entry.name.substr(entry.name.lastIndexOf('/')) === '/campaign.info'){
         const campInfo = entry.data.toString().split(Config.stringSeparator);
-        camp.name = campInfo[1];
+        let s = `${campId + 1}`;
+        while (s.length <= 1)
+          s = `0${s}`;
+        camp.name = `${s}. ${campInfo[1]}`;
         camp.desc = campInfo[2];
       }
       else if (entry.name.substr(entry.name.indexOf('.')) === '.eelvl'){
         const tierId = parseInt(entry.name.substr(entry.name.indexOf('/') + 1), 10);
-        camp.worlds[tierId] = new EelvlWorld(CampaignFolder.getId(campId, tierId), entry.data);
+        camp.worlds[tierId] = new EelvlWorld(
+          CampaignFolder.getId(campId, tierId),
+          entry.data,
+          `${tierId + 1 < 10 ? '0' : ''}${tierId + 1}. `
+        );
       }
     }
   }
 
   async list(){
-    return this.camps.filter(a => !!a);
+    return {
+      more: false,
+      listing: this.camps.filter(a => !!a)
+    };
   }
 }
 
@@ -9577,14 +9589,130 @@ class RootFolder extends FSFolder {
   contents = [];
 
   constructor(){
-    super('Root', 'Root');
+    super('Root', '');
   }
 
   async list(){
-    return this.contents;
+    return {
+      more: false,
+      listing: this.contents
+    };
   }
 
   add(folder){
     this.contents.push(folder);
+  }
+}
+
+class SqliteOrderByFolder extends FSFolder {
+  isSorted = true;
+  orderBy;
+  select;
+  sqlWorker;
+
+  constructor(name, select, orderBy, sqlWorker){
+    super(name);
+    this.select = select;
+    this.orderBy = orderBy;
+    this.sqlWorker = sqlWorker;
+  }
+
+  async list(page){
+    const {data: {results}} = await new Promise((resolve, reject) => {
+      this.sqlWorker.onmessage = resolve;
+      this.sqlWorker.postMessage({
+        action: 'exec',
+        sql: `
+          SELECT
+            world.id,
+            world.name,
+            description,
+            player.name,
+            crew.name,
+            width,
+            height,
+            gravity,
+            data${this.select}
+          FROM world
+          INNER JOIN player ON world.owner = player.rowid
+          INNER JOIN crew ON world.crew = crew.rowid
+          ORDER BY ${this.orderBy}
+          LIMIT ${(page || 0) * 30},31
+        `
+      });
+    });
+    if (results.length < 0 || results[0].values.length <= 0)
+      return {more: false, listing: []};
+    const values = results[0].values;
+    const listing = [];
+    for (let i = 0; i < Math.min(30, values.length); i++){
+      const [id, name, desc, owner, crew, width, height, gravity, data] = values[i];
+      listing.push(new LayerDataWorld(
+        id, name, desc, owner, crew, width, height, gravity, data, {}));
+    }
+    return {more: values.length > 30, listing};
+  }
+}
+
+class SqliteByPopularityFolder extends SqliteOrderByFolder {
+  constructor(sqlWorker){
+    super('By Popularity', '', `
+      (SELECT COUNT(*) FROM player_like WHERE player_like.world = world.rowid) DESC,
+      LOWER(world.name),
+      world.id
+      `, sqlWorker);
+  }
+}
+
+class SqliteByNameFolder extends SqliteOrderByFolder {
+  constructor(sqlWorker){
+    super('By Name', '', 'LOWER(world.name), world.id', sqlWorker);
+  }
+}
+
+class SqliteByRandomFolder extends SqliteOrderByFolder {
+  constructor(sqlWorker){
+    super('By Random', `, SIN(world.rowid * ${Math.random() * 1000}) AS r`, 'r', sqlWorker);
+  }
+}
+
+class SqliteFolder extends FSFolder {
+  sqlWorker = new Worker('worker.sql-wasm.js');
+  ready;
+
+  constructor(name, buffer){
+    super(name);
+    let readyResolve, readyReject;
+    this.ready = new Promise((resolve, reject) => {
+      readyResolve = resolve;
+      readyReject = reject;
+    });
+    this.sqlWorker.onerror = e => {
+      console.error(e);
+    };
+    this.sqlWorker.onmessage = m => {
+      if (m && m.data && m.data.ready)
+        readyResolve();
+      else
+        readyReject();
+    };
+    try {
+      this.sqlWorker.postMessage({ action: 'open', buffer }, [buffer]);
+    } catch (e) {
+      console.error(e);
+      this.sqlWorker.postMessage({ action: 'open', buffer });
+    }
+  }
+
+  async list(){
+    await this.ready;
+    return {
+      more: false,
+      listing: [
+        new SqliteByPopularityFolder(this.sqlWorker),
+        new SqliteByNameFolder(this.sqlWorker),
+        new SqliteByRandomFolder(this.sqlWorker)
+      ]
+    };
   }
 }

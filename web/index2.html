@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>Everybody Edits: Offline [web port by velipso]</title>
+  <style>
+@font-face {
+  font-family: ee_nokiafc22;
+  src: url('../media/nokiafc22.ttf');
+}
+@font-face {
+  font-family: ee_visitor;
+  src: url('../media/visitor.ttf');
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #000;
+  height: 100%;
+  overflow: hidden;
+}
+canvas {
+  user-select: none;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+a {
+  color: #6ef;
+  text-decoration: none;
+}
+a:hover, a:active {
+  color: #fff;
+  text-decoration: none;
+}
+#menu-wrap {
+  font-family: ee_nokiafc22;
+  font-size: 16px;
+  color: #fff;
+  position: absolute;
+  bottom: 50px;
+  left: 50px;
+  top: 50px;
+  right: 50px;
+  border: 2px solid #2ac;
+  border-radius: 10px;
+  background-color: #278;
+}
+#menu-top {
+  height: 40px;
+  display: flex;
+  flex-flow: row nowrap;
+}
+#menu-back {
+  width: 80px;
+  height: 40px;
+  display: block;
+  white-space: nowrap;
+  flex: none;
+  text-align: center;
+  line-height: 40px;
+}
+#menu-title {
+  flex: auto;
+  height: 40px;
+  line-height: 40px;
+  font-size: 140%;
+  text-align: center;
+}
+#menu-x {
+  width: 40px;
+  margin-left: 40px;
+  height: 40px;
+  display: block;
+  flex: none;
+  text-align: center;
+  line-height: 40px;
+}
+#menu {
+  position: absolute;
+  overflow: auto;
+  top: 40px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  background-color: #156;
+  padding: 20px;
+  font-size: 18px;
+}
+#menu p:first-child {
+  margin-top: 0;
+}
+#menu-closed {
+  display: block;
+  font-family: ee_nokiafc22;
+  font-size: 16px;
+  line-height: 5px;
+  overflow: hidden;
+  color: #fff;
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 30px;
+  height: 30px;
+  border: 2px solid #2ac;
+  border-radius: 10px;
+  background-color: #278;
+  padding: 0;
+}
+#menu-closed p {
+  text-align: center;
+  margin-left: 1px;
+  margin-top: 9px;
+}
+button {
+  display: inline-block;
+  font-family: ee_nokiafc22;
+  font-size: 15px;
+  height: 40px;
+  background-color: transparent;
+  border: none;
+}
+button div {
+  padding: 5px 10px;
+  background-color: #6ef;
+  color: #2ac;
+  border: 2px solid #2ac;
+  border-radius: 5px;
+}
+button:hover div {
+  color: #fff;
+}
+button:active div {
+  transform: translate(0, 2px);
+}
+input[type=text] {
+  border-radius: 5px;
+  border: 2px solid #2ac;
+  font-size: 15px;
+  padding: 6px 10px;
+}
+#fps {
+  font-size: 10px;
+  display: inline-block;
+  width: 55px;
+  text-align: right;
+}
+.loading {
+  display: inline-block;
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+.loading div {
+  position: absolute;
+  border: 2px solid #fff;
+  opacity: 1;
+  border-radius: 50%;
+  animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+.loading div:nth-child(2) {
+  animation-delay: -0.5s;
+}
+.listing {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+.listing li {
+  line-height: 30px;
+}
+@keyframes lds-ripple {
+  0% {
+    top: 16px;
+    left: 16px;
+    width: 0;
+    height: 0;
+    opacity: 0;
+  }
+  4.9% {
+    top: 16px;
+    left: 16px;
+    width: 0;
+    height: 0;
+    opacity: 0;
+  }
+  5% {
+    top: 16px;
+    left: 16px;
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+  100% {
+    top: 0px;
+    left: 0px;
+    width: 32px;
+    height: 32px;
+    opacity: 0;
+  }
+}
+</style>
+</head>
+<body>
+  <div id="menu-wrap" style="display: none;">
+    <div id="menu-top">
+      <a id="menu-back" style="visibility: hidden;" href="#"
+        onclick="javascript: return menuBack();">&lt; Back</a>
+      <div id="menu-title">Welcome</div>
+      <a id="menu-x" href="#" onclick="javascript: return menuClose();">X</a>
+    </div>
+    <div id="menu">
+    </div>
+  </div>
+  <a id="menu-closed" href="#" style="display: none;" onclick="javascript: return menuOpen();">
+    <p>-<br />-<br />-</p>
+  </div>
+  <script src="jszip.min.js"></script>
+  <script src="pako_inflate.min.js"></script>
+  <script src="lzma.js"></script>
+  <script src="lzma.shim.js"></script>
+  <script src="core.js"></script>
+  <script src="index2.js"></script>
+</body>
+</html>

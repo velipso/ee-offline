@@ -1,5 +1,5 @@
 let defaultScreen, eeGame, controllerGamepad;
-let campaignsZip, campaignsLoaded = false, lastCampaign = {c: 0, w: 0}, ignorePlayerInput = false;
+let campaignsZip, campaignsLoaded = false, lastCampaign = {c: 0, w: 0};
 let lastSqlFile = false;
 const sqlWorker = new Worker('worker.sql-wasm.js');
 const rootFolder = new RootFolder();
@@ -274,8 +274,8 @@ function loadSqlite(buffer){
       topBar.style.marginTop = '10px';
       list.appendChild(topBar);
       const search = createElement('input');
-      search.addEventListener('focus', () => { ignorePlayerInput = true; });
-      search.addEventListener('blur', () => { ignorePlayerInput = false; });
+      search.addEventListener('focus', () => { if (eeGame) eeGame.setPause(true); });
+      search.addEventListener('blur', () => { if (eeGame) eeGame.setPause(false); });
       search.addEventListener('keydown', e => {
         if (e.code === 'Enter')
           query(search.value, 0);
