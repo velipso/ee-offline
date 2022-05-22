@@ -9647,8 +9647,17 @@ class SqliteOrderByFolder extends FSFolder {
     const listing = [];
     for (let i = 0; i < Math.min(30, values.length); i++){
       const [id, name, desc, owner, crew, width, height, gravity, data] = values[i];
-      listing.push(new LayerDataWorld(
-        id, name, desc, owner, crew, width, height, gravity, data, {}));
+
+      const decoder = new LZMA.Decoder();
+      const header = decoder.decodeHeader(new LZMA.iStream(
+        [93, 0, 0, 16, 0, 255, 255, 255, 255]));
+      const output = new LZMA.oStream();
+      decoder.setProperties(header);
+      if (decoder.decodeBody(new LZMA.iStream(data), output, header.uncompressedSize)){
+        const decomp = new FlashByteArray(output.toUint8Array());
+        listing.push(new LayerDataWorld(
+          id, name, desc, owner, crew, width, height, gravity, decomp, {}));
+      }
     }
     return {more: values.length > 30, listing};
   }

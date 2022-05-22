@@ -39,6 +39,8 @@ class HelpFolder extends FSFolder {
           text: `
             &nbsp;&nbsp;Move: W / S / A / D / Arrows
             &nbsp;&nbsp;Jump: Space
+            &nbsp;&nbsp;Toggle Menu: Escape
+            &nbsp;&nbsp;Retry: Shift + R
             &nbsp;&nbsp;God Mode: G
             &nbsp;&nbsp;Debug: F1
             &nbsp;&nbsp;Full screen: F2
