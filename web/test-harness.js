@@ -504,9 +504,8 @@ async function loadResources(){
   const dpr = window.devicePixelRatio || 1;
   const cnv = document.createElement('canvas');
   document.body.appendChild(cnv);
-  const ctx = cnv.getContext('2d');
 
-  defaultScreen = new Screen(cnv, ctx, dpr);
+  defaultScreen = new Screen(cnv, dpr);
 
   new ResizeObserver(entries => {
     for (const e of entries) {

@@ -77,6 +77,7 @@ class HelpFolder extends FSFolder {
 class OptionsFolder extends FSFolder {
   sortIndex = 2;
   iconSrc = 'options.png';
+  table;
 
   constructor(){
     super('Options');
@@ -86,19 +87,18 @@ class OptionsFolder extends FSFolder {
     return {more: false, listing: [{kind: 'page', page: this.page}]};
   }
 
-  page = menu => {
-    if (!eeGame){
-      menu.appendChild(document.createTextNode('No game loaded :('));
-      return;
-    }
+  redraw(){
+    this.table.innerHTML = '';
 
     const opt = eeGame.getOptions();
+    const setOptions = () => {
+      persistOptions(opt);
+      restoreOptions();
+    };
 
-    const table = document.createElement('table');
-    table.className = 'options-table';
-    menu.appendChild(table);
-
-    function addBool(name, key){
+    const addBool = (name, key) => {
+      if (!(key in opt))
+        return;
       const tr = document.createElement('tr');
       const nameTd = document.createElement('td');
       nameTd.appendChild(document.createTextNode(name));
@@ -110,15 +110,36 @@ class OptionsFolder extends FSFolder {
       check.style.height = '20px';
       check.addEventListener('input', () => {
         opt[key] = check.checked;
-        eeGame.setOptions(opt);
+        setOptions();
+        this.redraw();
       });
       inpTd.appendChild(check);
       tr.appendChild(nameTd);
       tr.appendChild(inpTd);
-      table.appendChild(tr);
-    }
+      this.table.appendChild(tr);
+    };
 
-    function addGenericSelect(name, options, value, onSelect){
+    const addText = (name, key) => {
+      if (!(key in opt))
+        return;
+      const tr = document.createElement('tr');
+      const nameTd = document.createElement('td');
+      nameTd.appendChild(document.createTextNode(name));
+      const inpTd = document.createElement('td');
+      const text = document.createElement('input');
+      text.type = 'text';
+      text.value = opt[key];
+      text.addEventListener('input', () => {
+        opt[key] = text.value;
+        setOptions();
+      });
+      inpTd.appendChild(text);
+      tr.appendChild(nameTd);
+      tr.appendChild(inpTd);
+      this.table.appendChild(tr);
+    };
+
+    const addGenericSelect = (name, options, value, onSelect) => {
       const tr = document.createElement('tr');
       const nameTd = document.createElement('td');
       nameTd.appendChild(document.createTextNode(name));
@@ -138,53 +159,67 @@ class OptionsFolder extends FSFolder {
       inpTd.appendChild(select);
       tr.appendChild(nameTd);
       tr.appendChild(inpTd);
-      table.appendChild(tr);
-    }
+      this.table.appendChild(tr);
+    };
 
-    function addSelect(name, options, key){
+    const addSelect = (name, options, key) => {
+      if (!(key in opt))
+        return;
       addGenericSelect(name, options, opt[key], index => {
         opt[key] = options[index];
-        eeGame.setOptions(opt);
+        setOptions();
       });
-    }
+    };
 
-    {
+    const addNumberSelect = (name, low, high, key) => {
+      if (!(key in opt))
+        return;
+      const options = [];
+      for (let i = low; i <= high; i++)
+        options.push(`${i}`);
+      addGenericSelect(name, options, `${opt[key]}`, index => {
+        opt[key] = low + index;
+        setOptions();
+      });
+    };
+
+    const addHeader = (text) => {
+      for (let i = 0; i < 2; i++){
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.appendChild(i === 0
+          ? document.createElement('hr')
+          : document.createTextNode(text));
+        td.colSpan = 2;
+        td.style.textAlign = 'center';
+        if (i === 1)
+          td.style.paddingBottom = '15px';
+        tr.appendChild(td);
+        this.table.appendChild(tr);
+      }
+    };
+
+    if ('zoom' in opt){
       const tr = document.createElement('tr');
       const nameTd = document.createElement('td');
       nameTd.appendChild(document.createTextNode('Zoom (F1 / F2)'));
       const inpTd = document.createElement('td');
       inpTd.appendChild(createButton('In', () => {
-        opt.zoom *= 1.1;
-        eeGame.setOptions(opt);
-        opt.zoom = eeGame.getOptions().zoom;
+        opt.zoom = eeGame.screen.clampZoom(opt.zoom * 1.1);
+        setOptions();
       }));
       inpTd.appendChild(createButton('Out', () => {
-        opt.zoom *= 1 / 1.1;
-        eeGame.setOptions(opt);
-        opt.zoom = eeGame.getOptions().zoom;
+        opt.zoom = eeGame.screen.clampZoom(opt.zoom / 1.1);
+        setOptions();
       }));
       tr.appendChild(nameTd);
       tr.appendChild(inpTd);
-      table.appendChild(tr);
+      this.table.appendChild(tr);
     }
 
-    addGenericSelect(
-      'Gamepads',
-      ['Disable', 'Enable'],
-      gamepadController ? 'Enable' : 'Disable',
-      index => {
-        if (index === 1 && !gamepadController){
-          gamepadController = createGamepadController();
-          eeGame.attachController(gamepadController);
-        }
-        else if (index === 0 && gamepadController){
-          eeGame.detachController(gamepadController);
-          gamepadController = false;
-        }
-      }
-    );
-
+    addBool('Gamepads', 'gamepads');
     addSelect('Resolution', Screen.resolutions, 'screenResolution');
+    addBool('Cap FPS', 'capFPS');
     addBool('Show FPS', 'showFPS');
     addBool('Full Screen', 'screenFull');
     addBool('Draw Background', 'worldBackground');
@@ -192,7 +227,66 @@ class OptionsFolder extends FSFolder {
     addBool('EEO TAS Bugs', 'eeotasBugs');
     addBool('Ice Bugs', 'iceBugs');
 
-    menu.appendChild(table);
+    addHeader('Keyboard Options');
+    addText('Jump Key', 'jumpKey');
+    addText('Up Key', 'upKey');
+    addText('Right Key', 'rightKey');
+    addText('Down Key', 'downKey');
+    addText('Left Key', 'leftKey');
+    addText('Confirmation Key', 'riskyKey');
+    addText('Retry Key', 'retryKey');
+    addText('Pause Key', 'pauseKey');
+    addText('God Mode Key', 'godKey');
+
+    if (opt.gamepads){
+      addHeader('Gamepad Options');
+      addBool('Use Joystick Axis', 'directionAxis');
+      addNumberSelect('Jump Button', 0, 16, 'jumpButton');
+      addNumberSelect('Up Button', 0, 16, 'upButton');
+      addNumberSelect('Right Button', 0, 16, 'rightButton');
+      addNumberSelect('Down Button', 0, 16, 'downButton');
+      addNumberSelect('Left Button', 0, 16, 'leftButton');
+      addNumberSelect('Confirmation Button', 0, 16, 'riskyButton');
+      addNumberSelect('Retry Button', 0, 16, 'retryButton');
+      addNumberSelect('Pause Button', 0, 16, 'pauseButton');
+      addNumberSelect('God Mode Button', 0, 16, 'godButton');
+    }
+
+    {
+      const tr = document.createElement('tr');
+      const td = document.createElement('td');
+      tr.appendChild(td);
+      td.colSpan = 2;
+      td.style.textAlign = 'center';
+      td.style.paddingTop = '15px';
+      td.appendChild(createButton('Reset Defaults', () => {
+        if (confirm('Are you sure?')){
+          const cnv = document.createElement('canvas');
+          const s = new Screen(cnv, 1);
+          const w = new World();
+          w.clearWorld(1, 1, 1);
+          const ee = new EverybodyEdits(s, w, new EmptyWorldResolver(), 0);
+          ee.attachController(new KeyboardController(cnv, ()=>{}, ()=>{}));
+          ee.attachController(new GamepadController(()=>{}, ()=>{}));
+          Object.assign(opt, ee.getOptions());
+          ee.destroy();
+          setOptions();
+          this.redraw();
+        }
+      }));
+      this.table.appendChild(tr);
+    }
+  }
+
+  page = (menu) => {
+    if (!eeGame){
+      menu.appendChild(document.createTextNode('No game loaded :('));
+      return;
+    }
+    this.table = document.createElement('table');
+    this.table.className = 'options-table';
+    menu.appendChild(this.table);
+    this.redraw();
   };
 }
 
@@ -274,9 +368,8 @@ async function loadResources(){
   const dpr = window.devicePixelRatio || 1;
   const cnv = document.createElement('canvas');
   document.body.appendChild(cnv);
-  const ctx = cnv.getContext('2d');
 
-  defaultScreen = new Screen(cnv, ctx, dpr);
+  defaultScreen = new Screen(cnv, dpr);
 
   new ResizeObserver(entries => {
     for (const e of entries) {
@@ -305,19 +398,6 @@ async function loadResources(){
           break;
         case 'F3':
           if (eeGame){
-            if (gamepadController){
-              eeGame.detachController(gamepadController);
-              gamepadController = false;
-            }
-            else{
-              gamepadController = createGamepadController();
-              eeGame.attachController(gamepadController);
-            }
-            return true;
-          }
-          break;
-        case 'F4':
-          if (eeGame){
             eeGame.screenNextResolution();
             return true;
           }
@@ -343,15 +423,6 @@ async function loadResources(){
         case 'F10':
           if (eeGame){
             eeGame.screenToggleDebug();
-            return true;
-          }
-          break;
-        case 'Escape':
-          menuToggle();
-          return true;
-        case 'KeyG':
-          if (eeGame){
-            eeGame.playerToggleGodMode();
             return true;
           }
           break;
@@ -543,8 +614,9 @@ function menuShowFolder(folder, onHere, rootContainer){
   menuAddFolder(folder, 0, onHere, rootContainer);
 }
 
-function createGamepadController(){
-  return new GamepadController(() => { if (eeGame) eeGame.playerToggleGodMode(); }, menuToggle);
+function godModeToggle(){
+  if (eeGame)
+    eeGame.playerToggleGodMode();
 }
 
 async function loadWorld(worldItem, container, spawnId){
@@ -558,13 +630,41 @@ async function loadWorld(worldItem, container, spawnId){
 
 function loadWorldIntoEE(world, container, spawnId){
   defaultScreen.drawBanner('Loading level...');
-  if (eeGame)
+  if (eeGame){
     eeGame.destroy();
+    gamepadController = false;
+  }
   eeGame = new EverybodyEdits(defaultScreen, world, new EEWorldResolver(world, container), spawnId);
-  eeGame.attachController(new KeyboardController(window));
-  if (gamepadController)
-    eeGame.attachController(gamepadController);
+  eeGame.attachController(new KeyboardController(window, godModeToggle, menuToggle));
+  restoreOptions();
   eeGame.run();
+}
+
+function persistOptions(opt){
+  opt._eev = 1;
+  window.eeOptions = opt;
+  try {
+    localStorage.setItem('eeOptions', JSON.stringify(opt));
+  } catch (e) {}
+}
+
+function restoreOptions(){
+  try {
+    const data = JSON.parse(localStorage.getItem('eeOptions'));
+    if ('_eev' in data && data._eev === 1)
+      window.eeOptions = data;
+  } catch (e){}
+  if ('eeOptions' in window){
+    eeGame.setOptions(window.eeOptions);
+    if (window.eeOptions.gamepads && !gamepadController){
+      gamepadController = new GamepadController(godModeToggle, menuToggle);
+      eeGame.attachController(gamepadController);
+    }
+    else if (!window.eeOptions.gamepads && gamepadController){
+      eeGame.detachController(gamepadController);
+      gamepadController = false;
+    }
+  }
 }
 
 async function menuAddFolder(folder, page, onHere, rootContainer){

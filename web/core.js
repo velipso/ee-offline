@@ -841,6 +841,8 @@ class Config {
 //
 
 class Controller {
+  setOptions(){}
+  getOptions(){ return {}; }
   attach(){}
   detach(){}
   nextInput(){}
@@ -850,11 +852,59 @@ class Controller {
 class KeyboardController extends Controller {
   element;
   input;
+  onToggleGodMode;
+  onTogglePause;
+  jumpKey  = 'Space';
+  upKey    = 'ArrowUp, KeyW';
+  rightKey = 'ArrowRight, KeyD';
+  downKey  = 'ArrowDown, KeyS';
+  leftKey  = 'ArrowLeft, KeyA';
+  riskyKey = 'KeyY';
+  retryKey = 'Shift+KeyR';
+  pauseKey = 'Escape';
+  godKey   = 'KeyG';
 
-  constructor(element){
+  constructor(element, onToggleGodMode, onTogglePause){
     super();
     this.element = element;
     this.input = 0;
+    this.onToggleGodMode = onToggleGodMode;
+    this.onTogglePause = onTogglePause;
+  }
+
+  setOptions(options){
+    if ('jumpKey' in options)
+      this.jumpKey = options.jumpKey;
+    if ('upKey' in options)
+      this.upKey = options.upKey;
+    if ('rightKey' in options)
+      this.rightKey = options.rightKey;
+    if ('downKey' in options)
+      this.downKey = options.downKey;
+    if ('leftKey' in options)
+      this.leftKey = options.leftKey;
+    if ('riskyKey' in options)
+      this.riskyKey = options.riskyKey;
+    if ('retryKey' in options)
+      this.retryKey = options.retryKey;
+    if ('pauseKey' in options)
+      this.pauseKey = options.pauseKey;
+    if ('godKey' in options)
+      this.godKey = options.godKey;
+  }
+
+  getOptions(){
+    return {
+      jumpKey: this.jumpKey,
+      upKey: this.upKey,
+      rightKey: this.rightKey,
+      downKey: this.downKey,
+      leftKey: this.leftKey,
+      riskyKey: this.riskyKey,
+      retryKey: this.retryKey,
+      pauseKey: this.pauseKey,
+      godKey: this.godKey
+    };
   }
 
   attach(){
@@ -869,40 +919,45 @@ class KeyboardController extends Controller {
     this.element.removeEventListener('blur', this.blur);
   }
 
-  keyToBit(code, shiftKey){
-    switch (code){
-      case 'Space':
-        return Input.JUMP;
-      case 'ArrowLeft':
-      case 'KeyA':
-        return Input.LEFT;
-      case 'ArrowRight':
-      case 'KeyD':
-        return Input.RIGHT;
-      case 'ArrowUp':
-      case 'KeyW':
-        return Input.UP;
-      case 'ArrowDown':
-      case 'KeyS':
-        return Input.DOWN;
-      case 'KeyY':
-        return Input.RISKY;
-      case 'KeyR':
-        if (shiftKey === true || shiftKey === null)
-          return Input.RETRY;
-        break;
-    }
+  keyToBit(codeMix, isDown, shiftKey, ctrlKey, altKey, metaKey){
+    const code = codeMix.toLowerCase();
+    const check = opts => {
+      for (const opt of opts.toLowerCase().replace(/\s/g, '').split(',')){
+        let pass = true;
+        for (const m of opt.split('+')){
+          if      (m === 'shift') pass = !isDown || shiftKey;
+          else if (m === 'ctrl' ) pass = !isDown || ctrlKey;
+          else if (m === 'alt'  ) pass = !isDown || altKey;
+          else if (m === 'meta' ) pass = !isDown || metaKey;
+          else                    pass = m === code;
+          if (!pass)
+            break;
+        }
+        if (pass)
+          return true;
+      }
+      return false;
+    };
+    if (check(this.jumpKey )) return Input.JUMP;
+    if (check(this.upKey   )) return Input.UP;
+    if (check(this.rightKey)) return Input.RIGHT;
+    if (check(this.downKey )) return Input.DOWN;
+    if (check(this.leftKey )) return Input.LEFT;
+    if (check(this.riskyKey)) return Input.RISKY;
+    if (check(this.retryKey)) return Input.RETRY;
+    if (isDown && check(this.pauseKey)) this.onTogglePause();
+    if (isDown && check(this.godKey  )) this.onToggleGodMode();
     return -1;
   }
 
   keyDown = e => {
-    const b = this.keyToBit(e.code, e.shiftKey);
+    const b = this.keyToBit(e.code, true, e.shiftKey, e.ctrlKey, e.altKey, e.metaKey);
     if (b > 0)
       this.input |= b;
   };
 
   keyUp = e => {
-    const b = this.keyToBit(e.code, null);
+    const b = this.keyToBit(e.code, false, e.shiftKey, e.ctrlKey, e.altKey, e.metaKey);
     if (b >= 0)
       this.input &= 0xffff ^ b;
   };
@@ -911,14 +966,28 @@ class KeyboardController extends Controller {
     this.input = 0;
   };
 
+  nextPaused(){
+    // TODO: this
+  }
+
   nextInput(){
     return this.input;
   }
 }
 
 class GamepadController extends Controller {
-  lastToggleGodMode = false;
-  lastTogglePause = false;
+  blockGodMode = 0;
+  blockPause = 0;
+  jumpButton = 0;
+  upButton = 12;
+  rightButton = 15;
+  downButton = 13;
+  leftButton = 14;
+  riskyButton = 1;
+  retryButton = 8;
+  pauseButton = 9;
+  godButton = 3;
+  directionAxis = true;
   onToggleGodMode;
   onTogglePause;
 
@@ -928,16 +997,59 @@ class GamepadController extends Controller {
     this.onTogglePause = onTogglePause;
   }
 
+  setOptions(options){
+    if ('pauseButton' in options)
+      this.pauseButton = options.pauseButton;
+    if ('jumpButton' in options)
+      this.jumpButton = options.jumpButton;
+    if ('riskyButton' in options)
+      this.riskyButton = options.riskyButton;
+    if ('retryButton' in options)
+      this.retryButton = options.retryButton;
+    if ('godButton' in options)
+      this.godButton = options.godButton;
+    if ('upButton' in options)
+      this.upButton = options.upButton;
+    if ('rightButton' in options)
+      this.rightButton = options.rightButton;
+    if ('downButton' in options)
+      this.downButton = options.downButton;
+    if ('leftButton' in options)
+      this.leftButton = options.leftButton;
+    if ('directionAxis' in options)
+      this.directionAxis = options.directionAxis;
+  }
+
+  getOptions(){
+    return {
+      pauseButton: this.pauseButton,
+      jumpButton: this.jumpButton,
+      riskyButton: this.riskyButton,
+      retryButton: this.retryButton,
+      godButton: this.godButton,
+      upButton: this.upButton,
+      rightButton: this.rightButton,
+      downButton: this.downButton,
+      leftButton: this.leftButton,
+      directionAxis: this.directionAxis
+    };
+  }
+
+  btn(gp, i){
+    return gp && gp.buttons && gp.buttons.length > i && gp.buttons[i].pressed;
+  }
+
   attach(){}
   detach(){}
   checkPaused(gp){
-    if (gp && gp.buttons && gp.buttons.length > 9 && gp.buttons[9].pressed){
-      if (!this.lastTogglePause)
+    if (this.btn(gp, this.pauseButton)){
+      if (!this.blockPause){
         this.onTogglePause();
-      this.lastTogglePause = true;
+        this.blockPause = 10;
+      }
     }
-    else
-      this.lastTogglePause = false;
+    else if (this.blockPause > 0)
+      this.blockPause--;
   }
   nextPaused(){
     for (const gp of navigator.getGamepads())
@@ -947,18 +1059,22 @@ class GamepadController extends Controller {
     let input = 0;
     for (const gp of navigator.getGamepads()){
       this.checkPaused(gp);
-      const btn = i => gp && gp.buttons && gp.buttons.length > i && gp.buttons[i].pressed;
-      if (btn(0)) input |= Input.JUMP;
-      if (btn(1)) input |= Input.RISKY;
-      if (btn(8)) input |= Input.RETRY;
-      if (btn(3)){
-        if (!this.lastToggleGodMode)
+      if (this.btn(gp, this.jumpButton  )) input |= Input.JUMP;
+      if (this.btn(gp, this.upButton    )) input |= Input.UP;
+      if (this.btn(gp, this.rightButton )) input |= Input.RIGHT;
+      if (this.btn(gp, this.downButton  )) input |= Input.DOWN;
+      if (this.btn(gp, this.leftButton  )) input |= Input.LEFT;
+      if (this.btn(gp, this.riskyButton )) input |= Input.RISKY;
+      if (this.btn(gp, this.retryButton )) input |= Input.RETRY;
+      if (this.btn(gp, this.godButton)){
+        if (!this.blockGodMode){
           this.onToggleGodMode();
-        this.lastToggleGodMode = true;
+          this.blockGodMode = 10;
+        }
       }
-      else
-        this.lastToggleGodMode = false;
-      if (gp && gp.axes && gp.axes.length >= 2){
+      else if (this.blockGodMode > 0)
+        this.blockGodMode--;
+      if (this.directionAxis && gp && gp.axes && gp.axes.length >= 2){
         if (gp.axes[0] < -0.5)
           input |= Input.LEFT;
         else if (gp.axes[0] > 0.5)
@@ -990,6 +1106,18 @@ class Input {
   lastFrame = 0;
   thisFrame = 0;
   controllers = [];
+
+  setOptions(options){
+    for (const controller of this.controllers)
+      controller.setOptions(options);
+  }
+
+  getOptions(){
+    const options = {};
+    for (const controller of this.controllers)
+      Object.assign(options, controller.getOptions());
+    return options;
+  }
 
   attachController(controller){
     controller.attach();
@@ -4903,6 +5031,8 @@ class EverybodyEdits {
   running = false;
   accumulatedTime = 0;
   paused = false;
+  capFPS = true;
+  gamepads = false;
 
   static async init(progressCallback){
     function loadImg(logicalWidth, logicalHeight, src){
@@ -5016,8 +5146,12 @@ class EverybodyEdits {
       lastTick = now;
       this.advanceTime(dt);
       this.draw();
-      if (this.running)
-        window.requestAnimationFrame(tick);
+      if (this.running){
+        if (this.capFPS)
+          window.requestAnimationFrame(tick);
+        else
+          setTimeout(tick, 0);
+      }
     };
 
     tick();
@@ -5041,9 +5175,7 @@ class EverybodyEdits {
   }
 
   draw(){
-    this.screen.drawState(this.state);
-    if (this.paused)
-      this.screen.drawPaused();
+    this.screen.drawState(this.state, this.paused);
   }
 
   stop(){
@@ -5070,12 +5202,17 @@ class EverybodyEdits {
       this.screen.setZoom(options.zoom);
     if ('screenResolution' in options)
       this.screen.setResolution(options.screenResolution);
+    if ('capFPS' in options)
+      this.capFPS = options.capFPS;
     if ('worldBackground' in options)
       this.world.showBackground = options.worldBackground;
+    if ('gamepads' in options)
+      this.gamepads = options.gamepads;
+    this.input.setOptions(options);
   }
 
   getOptions(){
-    return {
+    return Object.assign({
       eeotasBugs: this.input.eeotasBugs,
       iceBugs: this.state.player.iceBugs,
       screenDebug: this.screen.debug,
@@ -5083,8 +5220,10 @@ class EverybodyEdits {
       showFPS: this.screen.showFPS,
       zoom: this.screen.zoom,
       screenResolution: this.screen.resolution,
-      worldBackground: this.world.showBackground
-    };
+      capFPS: this.capFPS,
+      worldBackground: this.world.showBackground,
+      gamepads: this.gamepads
+    }, this.input.getOptions());
   }
 
   playerToggleGodMode(){
@@ -8940,7 +9079,7 @@ class PlayState extends BlObject {
 //
 
 class Screen {
-  static resolutions = ['8', '12', '16', '32', 'max'];
+  static resolutions = ['8', '12', '16', '24', '32', 'max'];
   cnv;
   ctx;
   dpr;
@@ -8950,6 +9089,7 @@ class Screen {
   lastBanner = false;
   lastStatus = false;
   lastState = false;
+  lastPaused = false;
   debug = false;
   fullScreen = true;
   showFPS = false;
@@ -8961,9 +9101,9 @@ class Screen {
   frameCount = 0;
   lastFPS = 0;
 
-  constructor(cnv, ctx, dpr){
+  constructor(cnv, dpr){
     this.cnv = cnv;
-    this.ctx = ctx;
+    this.ctx = cnv.getContext('2d');
     this.dpr = dpr;
   }
 
@@ -8971,18 +9111,15 @@ class Screen {
     this.lastBanner = false;
     this.lastStatus = false;
     this.lastState = false;
+    this.lastPaused = false;
     this.ctx.fillStyle = '#000';
     this.ctx.fillRect(0, 0, this.cnv.width, this.cnv.height);
   }
 
-  drawPaused(){
-    this.ctx.fillStyle = '#00000044';
-    this.ctx.fillRect(0, 0, this.cnv.width, this.cnv.height);
-  }
-
-  drawState(state){
+  drawState(state, paused){
     this.clear();
     this.lastState = state;
+    this.lastPaused = paused;
     this.ctx.save();
     this.boundary.x = 0;
     this.boundary.y = 0;
@@ -9029,7 +9166,7 @@ class Screen {
     if (this.showFPS){
       const x = this.worldToScreenX(Math.round(this.boundary.x + this.boundary.w / 2));
       const y = this.worldToScreenY(this.boundary.y + 5);
-      this.ctx.font = `${12 * this.scale}px monospace`;
+      this.ctx.font = `${15 * this.scale}px monospace`;
       this.ctx.fillStyle = '#fff';
       this.ctx.textAlign = 'center';
       this.ctx.textBaseline = 'top';
@@ -9037,6 +9174,18 @@ class Screen {
       this.ctx.lineWidth = 2 * this.scale;
       this.ctx.strokeText(this.fpsText, x, y);
       this.ctx.fillText(this.fpsText, x, y);
+    }
+
+    if (paused){
+      this.ctx.fillStyle = '#00000044';
+      this.ctx.fillRect(0, 0, this.cnv.width, this.cnv.height);
+      const x = this.worldToScreenX(Math.round(this.boundary.x + this.boundary.w / 2));
+      const y = this.worldToScreenY(Math.round(this.boundary.y + this.boundary.h / 2));
+      this.ctx.font = `${30 * this.scale}px ee_nokiafc22`;
+      this.ctx.fillStyle = '#fff';
+      this.ctx.textAlign = 'center';
+      this.ctx.textBaseline = 'middle';
+      this.ctx.fillText('Paused', x, y);
     }
   }
 
@@ -9263,24 +9412,26 @@ class Screen {
     this.cnv.style.width = `${w}px`;
     this.cnv.style.height = `${h}px`;
     this.ctx.imageSmoothingEnabled = false;
-    const {lastBanner, lastState, lastStatus} = this;
+    const {lastBanner, lastState, lastPaused, lastStatus} = this;
     if (lastBanner)
       this.drawBanner(lastBanner);
     if (lastState)
-      this.drawState(lastState);
+      this.drawState(lastState, lastPaused);
     if (lastStatus)
       this.drawStatus(lastStatus);
   }
 
+  clampZoom(z){
+    return z > 0.95 ? 1 : z;
+  }
+
   setZoom(z){
-    this.zoom = z;
-    if (this.zoom > 0.95)
-      this.zoom = 1;
+    this.zoom = this.clampZoom(z);
     this.resize(this.lastResize.w, this.lastResize.h);
   }
 
   multiplyZoom(m){
-    this.setZoom(Math.min(1, this.zoom * m));
+    this.setZoom(this.zoom * m);
   }
 
   nextResolution(){
