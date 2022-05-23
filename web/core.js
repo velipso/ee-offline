@@ -931,7 +931,7 @@ class GamepadController extends Controller {
   attach(){}
   detach(){}
   checkPaused(gp){
-    if (gp.buttons.length > 9 && gp.buttons[9].pressed){
+    if (gp && gp.buttons && gp.buttons.length > 9 && gp.buttons[9].pressed){
       if (!this.lastTogglePause)
         this.onTogglePause();
       this.lastTogglePause = true;
@@ -947,7 +947,7 @@ class GamepadController extends Controller {
     let input = 0;
     for (const gp of navigator.getGamepads()){
       this.checkPaused(gp);
-      const btn = i => gp.buttons.length > i && gp.buttons[i].pressed;
+      const btn = i => gp && gp.buttons && gp.buttons.length > i && gp.buttons[i].pressed;
       if (btn(0)) input |= Input.JUMP;
       if (btn(1)) input |= Input.RISKY;
       if (btn(8)) input |= Input.RETRY;
@@ -958,7 +958,7 @@ class GamepadController extends Controller {
       }
       else
         this.lastToggleGodMode = false;
-      if (gp.axes.length >= 2){
+      if (gp && gp.axes && gp.axes.length >= 2){
         if (gp.axes[0] < -0.5)
           input |= Input.LEFT;
         else if (gp.axes[0] > 0.5)
