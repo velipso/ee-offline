@@ -1,4 +1,3 @@
-var ignorePlayerInput; // TODO: delete
 let defaultScreen, eeGame, gamepadController, menuBack;
 const rootFolder = new GenericFolder('root');
 
@@ -74,8 +73,82 @@ class HelpFolder extends FSFolder {
   }
 }
 
-class OptionsFolder extends FSFolder {
+class ModeFolder extends FSFolder {
+  refresh = () => {};
   sortIndex = 2;
+  iconSrc = 'mode-play.png';
+  mode = 'play';
+
+  constructor(){
+    super('Mode: Play');
+  }
+
+  async list(){
+    return {more: false, listing: [{kind: 'page', page: this.page}]};
+  }
+
+  setMode(mode){
+    this.mode = mode;
+    eeGame.setMode(mode);
+    if (!isMenuOpen())
+      document.getElementById('menu-bricks').style.display = eeGame.mode === 'edit' ? '' : 'none';
+    this.refresh();
+  }
+
+  page = (menu) => {
+    const addMode = (hint, mode, desc) => {
+      const btn = createButton(hint, () => { this.setMode(mode); });
+      btn.style.width = '120px';
+      btn.style.marginRight = '10px';
+      btn.firstChild.style.paddingRight = '14px';
+      const img = iconImg(`mode-${mode}.png`);
+      img.style.transform = 'translate(0, 3px)';
+      img.style.marginRight = '5px';
+      btn.firstChild.insertBefore(img, btn.firstChild.firstChild);
+      const p = document.createElement('p');
+      p.appendChild(btn);
+      p.appendChild(document.createTextNode(desc));
+      menu.appendChild(p);
+      return btn;
+    };
+
+    const btnPlay = addMode('Play', 'play', 'Play through levels and have fun');
+    const btnEdit = addMode('Edit', 'edit', 'Edit and download new levels');
+    const btnTAS  = addMode('TAS' , 'tas' , 'Go frame by frame for speedruns');
+
+    this.refresh = () => {
+      switch (this.mode){
+        case 'play':
+          this.iconSrc = 'mode-play.png';
+          this.name = 'Mode: Play';
+          break;
+        case 'edit':
+          this.iconSrc = 'mode-edit.png';
+          this.name = 'Mode: Edit';
+          break;
+        case 'tas':
+          this.iconSrc = 'mode-tas.png';
+          this.name = 'Mode: TAS';
+          break;
+      }
+      btnPlay.disabled = this.mode === 'play';
+      btnPlay.className = this.mode === 'play' ? 'selected' : '';
+      btnPlay.blur();
+      btnEdit.disabled = this.mode === 'edit';
+      btnEdit.className = this.mode === 'edit' ? 'selected' : '';
+      btnEdit.blur();
+      btnTAS.disabled = this.mode === 'tas';
+      btnTAS.className = this.mode === 'tas' ? 'selected' : '';
+      btnTAS.blur();
+      setMenuTitle(this.name);
+    };
+
+    this.refresh();
+  };
+}
+
+class OptionsFolder extends FSFolder {
+  sortIndex = 3;
   iconSrc = 'options.png';
   table;
 
@@ -236,7 +309,8 @@ class OptionsFolder extends FSFolder {
     addText('Confirmation Key', 'riskyKey');
     addText('Retry Key', 'retryKey');
     addText('Pause Key', 'pauseKey');
-    addText('God Mode Key', 'godKey');
+    addText('God Key', 'godKey');
+    addText('Edit Key', 'editKey');
 
     if (opt.gamepads){
       addHeader('Gamepad Options');
@@ -249,7 +323,7 @@ class OptionsFolder extends FSFolder {
       addNumberSelect('Confirmation Button', 0, 16, 'riskyButton');
       addNumberSelect('Retry Button', 0, 16, 'retryButton');
       addNumberSelect('Pause Button', 0, 16, 'pauseButton');
-      addNumberSelect('God Mode Button', 0, 16, 'godButton');
+      addNumberSelect('God Button', 0, 16, 'godButton');
     }
 
     {
@@ -364,12 +438,102 @@ function blobToZipObj(blob){
   });
 }
 
+function installMouseListeners(cnv){
+  let downButton = false, downX, downY;
+
+  const getWorldPos = (clientX, clientY) => {
+    const r = cnv.getBoundingClientRect();
+    return [
+      defaultScreen.screenToWorldX(clientX * cnv.width / r.width),
+      defaultScreen.screenToWorldY(clientY * cnv.height / r.height)
+    ];
+  };
+
+  const placeTiles = (clientX, clientY) => {
+    const [x, y] = getWorldPos(clientX, clientY);
+    eeGame.placeTiles(x, y);
+  };
+
+  cnv.addEventListener('mousedown', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!eeGame)
+      return;
+    downButton = e.which;
+    downX = e.clientX;
+    downY = e.clientY;
+    if (e.which === 1)
+      placeTiles(e.clientX, e.clientY);
+    else if (e.which === 2)
+      eeGame.dragWorld(0, 0);
+    else if (e.which === 3){
+      const [x, y] = getWorldPos(e.clientX, e.clientY);
+      eeGame.startSelection(x, y);
+    }
+  });
+
+  cnv.addEventListener('mousemove', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!eeGame)
+      return;
+    if (downButton === false){
+      const [x, y] = getWorldPos(e.clientX, e.clientY);
+      eeGame.state.mouseOver(x, y);
+    }
+    else if (downButton === 1) // left drag
+      placeTiles(e.clientX, e.clientY);
+    else if (downButton === 2){ // middle drag
+      const [sx, sy] = getWorldPos(downX, downY);
+      const [ex, ey] = getWorldPos(e.clientX, e.clientY);
+      downX = e.clientX;
+      downY = e.clientY;
+      eeGame.dragWorld(ex - sx, ey - sy);
+    }
+    else if (downButton === 3){ // right drag
+      const [x, y] = getWorldPos(e.clientX, e.clientY);
+      eeGame.dragSelection(x, y);
+    }
+  });
+
+  cnv.addEventListener('mouseup', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    downButton = false;
+    if (!eeGame)
+      return;
+  });
+
+  cnv.addEventListener('mouseout', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    downButton = false;
+    if (!eeGame)
+      return;
+    eeGame.state.mouseOut();
+  });
+
+  cnv.addEventListener('contextmenu', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!eeGame)
+      return;
+    downButton = 3;
+    downX = e.clientX;
+    downY = e.clientY;
+    const [x, y] = getWorldPos(e.clientX, e.clientY);
+    eeGame.startSelection(x, y);
+  });
+}
+
 async function loadResources(){
   const dpr = window.devicePixelRatio || 1;
   const cnv = document.createElement('canvas');
   document.body.appendChild(cnv);
 
   defaultScreen = new Screen(cnv, dpr);
+
+  installMouseListeners(cnv);
 
   new ResizeObserver(entries => {
     for (const e of entries) {
@@ -446,6 +610,7 @@ async function loadResources(){
   const campaignFolder = new CampaignFolder(campaignZip);
   rootFolder.add(campaignFolder);
   rootFolder.add(new HelpFolder());
+  //rootFolder.add(new ModeFolder());
   rootFolder.add(new OptionsFolder());
   await loadWorld(campaignFolder.listing[0].listing[0], campaignFolder);
   menuOpen();
@@ -466,6 +631,7 @@ function menuToggle(){
 function menuOpen(){
   document.getElementById('menu-wrap2').style.display = '';
   document.getElementById('menu-closed').style.display = 'none';
+  document.getElementById('menu-bricks').style.display = 'none';
   if (eeGame)
     eeGame.setPause(true);
   return false;
@@ -474,8 +640,12 @@ function menuOpen(){
 function menuClose(){
   document.getElementById('menu-wrap2').style.display = 'none';
   document.getElementById('menu-closed').style.display = '';
-  if (eeGame)
+  if (eeGame){
     eeGame.setPause(false);
+    document.getElementById('menu-bricks').style.display = eeGame.mode === 'edit' ? '' : 'none';
+  }
+  else
+    document.getElementById('menu-bricks').style.display = 'none';
   return false;
 }
 
@@ -614,9 +784,22 @@ function menuShowFolder(folder, onHere, rootContainer){
   menuAddFolder(folder, 0, onHere, rootContainer);
 }
 
-function godModeToggle(){
+function godToggle(){
   if (eeGame)
-    eeGame.playerToggleGodMode();
+    eeGame.playerToggleGod();
+}
+
+async function editToggle(){
+  return;
+  if (eeGame){
+    let newMode = false;
+    if (eeGame.mode === 'play')
+      newMode = 'edit';
+    else if (eeGame.mode === 'edit')
+      newMode = 'play';
+    if (newMode)
+      rootFolder.listing.find(f => f instanceof ModeFolder)?.setMode(newMode);
+  }
 }
 
 async function loadWorld(worldItem, container, spawnId){
@@ -635,8 +818,9 @@ function loadWorldIntoEE(world, container, spawnId){
     gamepadController = false;
   }
   eeGame = new EverybodyEdits(defaultScreen, world, new EEWorldResolver(world, container), spawnId);
-  eeGame.attachController(new KeyboardController(window, godModeToggle, menuToggle));
+  eeGame.attachController(new KeyboardController(window, godToggle, menuToggle, editToggle));
   restoreOptions();
+  rootFolder.listing.find(f => f instanceof ModeFolder)?.setMode(eeGame.mode);
   eeGame.run();
 }
 
@@ -657,7 +841,7 @@ function restoreOptions(){
   if ('eeOptions' in window){
     eeGame.setOptions(window.eeOptions);
     if (window.eeOptions.gamepads && !gamepadController){
-      gamepadController = new GamepadController(godModeToggle, menuToggle);
+      gamepadController = new GamepadController(godToggle, menuToggle, editToggle);
       eeGame.attachController(gamepadController);
     }
     else if (!window.eeOptions.gamepads && gamepadController){

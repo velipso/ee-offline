@@ -387,10 +387,6 @@ class ItemId {
     return false;
   }
 
-  static isBackgroundRotateable(id){
-    return false;
-  }
-
   static isBlockNumbered(id){
     switch (id){
       case ItemId.COINDOOR:
@@ -852,8 +848,9 @@ class Controller {
 class KeyboardController extends Controller {
   element;
   input;
-  onToggleGodMode;
+  onToggleGod;
   onTogglePause;
+  onToggleEdit;
   jumpKey  = 'Space';
   upKey    = 'ArrowUp, KeyW';
   rightKey = 'ArrowRight, KeyD';
@@ -863,13 +860,15 @@ class KeyboardController extends Controller {
   retryKey = 'Shift+KeyR';
   pauseKey = 'Escape';
   godKey   = 'KeyG';
+  editKey  = 'Enter';
 
-  constructor(element, onToggleGodMode, onTogglePause){
+  constructor(element, onToggleGod, onTogglePause, onToggleEdit){
     super();
     this.element = element;
     this.input = 0;
-    this.onToggleGodMode = onToggleGodMode;
+    this.onToggleGod = onToggleGod;
     this.onTogglePause = onTogglePause;
+    this.onToggleEdit = onToggleEdit;
   }
 
   setOptions(options){
@@ -891,6 +890,8 @@ class KeyboardController extends Controller {
       this.pauseKey = options.pauseKey;
     if ('godKey' in options)
       this.godKey = options.godKey;
+    if ('editKey' in options)
+      this.editKey = options.editKey;
   }
 
   getOptions(){
@@ -903,7 +904,8 @@ class KeyboardController extends Controller {
       riskyKey: this.riskyKey,
       retryKey: this.retryKey,
       pauseKey: this.pauseKey,
-      godKey: this.godKey
+      godKey: this.godKey,
+      editKey: this.editKey
     };
   }
 
@@ -946,7 +948,8 @@ class KeyboardController extends Controller {
     if (check(this.riskyKey)) return Input.RISKY;
     if (check(this.retryKey)) return Input.RETRY;
     if (isDown && check(this.pauseKey)) this.onTogglePause();
-    if (isDown && check(this.godKey  )) this.onToggleGodMode();
+    if (isDown && check(this.godKey  )) this.onToggleGod();
+    if (isDown && check(this.editKey )) this.onToggleEdit();
     return -1;
   }
 
@@ -976,7 +979,7 @@ class KeyboardController extends Controller {
 }
 
 class GamepadController extends Controller {
-  blockGodMode = 0;
+  blockGod = 0;
   blockPause = 0;
   jumpButton = 0;
   upButton = 12;
@@ -988,12 +991,12 @@ class GamepadController extends Controller {
   pauseButton = 9;
   godButton = 3;
   directionAxis = true;
-  onToggleGodMode;
+  onToggleGod;
   onTogglePause;
 
-  constructor(onToggleGodMode, onTogglePause){
+  constructor(onToggleGod, onTogglePause){
     super();
-    this.onToggleGodMode = onToggleGodMode;
+    this.onToggleGod = onToggleGod;
     this.onTogglePause = onTogglePause;
   }
 
@@ -1067,13 +1070,13 @@ class GamepadController extends Controller {
       if (this.btn(gp, this.riskyButton )) input |= Input.RISKY;
       if (this.btn(gp, this.retryButton )) input |= Input.RETRY;
       if (this.btn(gp, this.godButton)){
-        if (!this.blockGodMode){
-          this.onToggleGodMode();
-          this.blockGodMode = 10;
+        if (!this.blockGod){
+          this.onToggleGod();
+          this.blockGod = 10;
         }
       }
-      else if (this.blockGodMode > 0)
-        this.blockGodMode--;
+      else if (this.blockGod > 0)
+        this.blockGod--;
       if (this.directionAxis && gp && gp.axes && gp.axes.length >= 2){
         if (gp.axes[0] < -0.5)
           input |= Input.LEFT;
@@ -4775,161 +4778,128 @@ class ItemManager {
 // Lookup
 //
 
+class LookupItem {
+  static defaultPortal      = {id: -1, target: -1, rotation: 0, type: ItemId.PORTAL};
+  static defaultWorldPortal = {id: '', name: '', target: 0};
+  static defaultLabel       = {text: ':)', color: '#ffffff', wrapLength: 200};
+  static defaultBlink       = -999;
+  static defaultSign        = {text: 'Undefined', type: -1};
+
+  num         = 0;
+  portal      = LookupItem.defaultPortal;
+  worldPortal = LookupItem.defaultWorldPortal;
+  label       = LookupItem.defaultLabel;
+  blink       = LookupItem.defaultBlink;
+  sign        = LookupItem.defaultSign;
+  npc         = null;
+  secret      = false;
+
+  reset(){
+    this.num         = 0;
+    this.portal      = LookupItem.defaultPortal;
+    this.worldPortal = LookupItem.defaultWorldPortal;
+    this.label       = LookupItem.defaultLabel;
+    this.blink       = LookupItem.defaultBlink;
+    this.sign        = LookupItem.defaultSign;
+    this.npc         = null;
+    this.secret      = false;
+  }
+}
+
 class Lookup {
   width;
   height;
-  lookup; // common blocks
-  placerLookup; // placer info
-  portalLookup;
-  worldPortalLookup;
-  secretsLookup; // secret blocks
-  labelLookup;
-  blinkLookup; // invisible arrows, halloween eyes etc
-  signLookup;
-  npcLookup;
+  lookup;
 
   constructor(width, height){
     this.width = width;
     this.height = height;
-    this.reset();
-  }
-
-  reset(){
     const size = this.width * this.height;
-    this.lookup = new Array(size);
-    this.placerLookup = new Array(size * 3); // one per layer
-    this.portalLookup = new Array(size);
-    this.worldPortalLookup = new Array(size);
-    this.labelLookup = new Array(size);
-    this.blinkLookup = new Array(size);
-    this.signLookup = new Array(size);
-    this.npcLookup = new Array(size);
-    this.resetSecrets();
+    this.lookup = [];
+    for (let i = 0; i < size; i++)
+      this.lookup.push(new LookupItem());
   }
 
   resetSecrets(){
-    this.secretsLookup = new Array(this.width * this.height);
-  }
-
-  resetSign(x, y){
-    this.signLookup[x + y * this.width] = undefined;
+    const size = this.width * this.height;
+    for (let i = 0; i < size; i++)
+      this.lookup[i].secret = false;
   }
 
   deleteLookup(x, y){
-    const lookupId = x + y * this.width;
-    this.lookup[lookupId] = undefined;
-    this.portalLookup[lookupId] = undefined;
-    this.worldPortalLookup[lookupId] = undefined;
-    this.placerLookup[lookupId] = undefined;
-    this.secretsLookup[lookupId] = undefined;
-    this.blinkLookup[lookupId] = undefined;
-    this.signLookup[lookupId] = undefined;
+    this.lookup[x + y * this.width].reset();
   }
 
   deleteBlink(x, y){
-    this.blinkLookup[x + y * this.width] = undefined;
-  }
-
-  getPlacer(x, y, layer){
-    const k = x + y * this.width + layer * this.width * this.height;
-    return this.placerLookup[k] || '';
-  }
-
-  setPlacer(x, y, layer, placer){
-    const k = x + y * this.width + layer * this.width * this.height;
-    this.placerLookup[k] = placer;
+    this.lookup[x + y * this.width].blink = LookupItem.defaultBlink;
   }
 
   getInt(x, y){
-    return this.lookup[x + y * this.width] || 0;
+    return this.lookup[x + y * this.width].num | 0;
   }
 
   setInt(x, y, value){
-    this.lookup[x + y * this.width] = value;
+    this.lookup[x + y * this.width].num = value | 0;
   }
 
   getNumber(x, y){
-    return this.lookup[x + y * this.width] || 0;
+    return this.lookup[x + y * this.width].num;
   }
 
   setNumber(x, y, value){
-    this.lookup[x + y * this.width] = value;
+    this.lookup[x + y * this.width].num = value;
   }
 
   getBoolean(x, y){
-    return this.lookup[x + y * this.width] || false;
-  }
-
-  setBoolean(x, y, value){
-    this.lookup[x + y * this.width] = value;
-  }
-
-  getText(x, y){
-    return this.lookup[x + y * this.width] || '';
-  }
-
-  setText(x, y, value){
-    this.lookup[x + y * this.width] = value;
-  }
-
-  getSignType(x, y){
-    return this.signLookup[x + y * this.width].type || 0;
+    return this.lookup[x + y * this.width].num !== 0;
   }
 
   getTextSign(x, y){
-    return this.signLookup[x + y * this.width] || {text: 'Undefined', type: -1};
+    return this.lookup[x + y * this.width].sign;
   }
 
   setTextSign(x, y, value){
-    this.signLookup[x + y * this.width] = value;
+    this.lookup[x + y * this.width].sign = value;
   }
 
   getLabel(x, y){
-    return this.labelLookup[x + y * this.width] || {text: ':)', color: '#ffffff', wrapLength: 200};
+    return this.lookup[x + y * this.width].label;
   }
 
   setLabel(x, y, text, color, wrapLength){
-    this.labelLookup[x + y * this.width] = {text, color, wrapLength};
+    this.lookup[x + y * this.width].label = {text, color, wrapLength};
   }
 
   getPortal(x, y){
-    return this.portalLookup[x + y * this.width] || {id: 0, target: 0, location: 0, type: ItemId.PORTAL};
+    return this.lookup[x + y * this.width].portal;
   }
 
   setPortal(x, y, value){
-    this.portalLookup[x + y * this.width] = value;
+    this.lookup[x + y * this.width].portal = value;
   }
 
   getWorldPortal(x, y){
-    return this.worldPortalLookup[x + y * this.width] || {id: '', name: '', target: 0};
+    return this.lookup[x + y * this.width].worldPortal;
   }
 
   setWorldPortal(x, y, value){
-    this.worldPortalLookup[x + y * this.width] = value;
+    this.lookup[x + y * this.width].worldPortal = value;
   }
 
   getSecret(x, y){
-    return this.secretsLookup[x + y * this.width] || false;
+    return this.lookup[x + y * this.width].secret;
   }
 
   setSecret(x, y, value){
-    this.secretsLookup[x + y * this.width] = value;
-  }
-
-  getNpc(x, y){
-    // TODO: return npcLookup[getLookupId(x, y)] || new Npc('&invalid&', ['r','i','p'], new Point(x, y), null);
-    return this.npcLookup[x + y * this.width];
-  }
-
-  setNpc(x, y, name, messages, item){
-    // TODO: npcLookup[getLookupId(x, y)] = new Npc(name, messages, new Point(x, y), item);
+    this.lookup[x + y * this.width].secret = value;
   }
 
   getPortals(portalId){
+    const size = this.width * this.height;
     const portals = [];
-    for (let i = 0; i < this.portalLookup.length; i++){
-      const p = this.portalLookup[i];
-      if (p && p.id === portalId){
+    for (let i = 0; i < size; i++){
+      const p = this.lookup[i].portal;
+      if (p.id === portalId){
         portals.push({
           x: (i % this.width) << 4,
           y: (Math.floor(i / this.width)) << 4
@@ -4940,20 +4910,21 @@ class Lookup {
   }
 
   getBlink(x, y){
-    return this.blinkLookup[x + y * this.width] || 0;
+    return this.lookup[x + y * this.width].blink || 0;
   }
 
   setBlink(x, y, value){
-    this.blinkLookup[x + y * this.width] = value;
+    this.lookup[x + y * this.width].blink = value;
   }
 
   isBlink(x, y){
-    return typeof this.blinkLookup[x + y * this.width] === 'number';
+    return this.lookup[x + y * this.width].blink !== LookupItem.defaultBlink;
   }
 
   updateBlink(x, y, add){
-    const value = (this.blinkLookup[x + y * this.width] || 0) + add;
-    this.blinkLookup[x + y * this.width] = value;
+    const k = x + y * this.width;
+    const value = (this.lookup[k].blink || 0) + add;
+    this.lookup[k].blink = value;
     return value;
   }
 }
@@ -5136,6 +5107,43 @@ class EverybodyEdits {
     this.screen = screen;
   }
 
+  get mode(){
+    return this.state.mode;
+  }
+
+  setMode(mode){
+    this.state.mode = mode;
+    if (mode === 'edit' && !this.state.player.completeTime)
+      this.state.player.validRun = false;
+  }
+
+  lockPlayerToCamera(){
+  }
+
+  dragWorld(dx, dy){
+    if (this.mode !== 'edit')
+      return;
+    this.state.dragWorld(dx, dy);
+  }
+
+  startSelection(worldX, worldY){
+    if (this.mode !== 'edit')
+      return;
+    this.state.startSelection(worldX, worldY);
+  }
+
+  dragSelection(worldX, worldY){
+    if (this.mode !== 'edit')
+      return;
+    this.state.dragSelection(worldX, worldY);
+  }
+
+  placeTiles(worldX, worldY){
+    if (this.mode !== 'edit')
+      return;
+    this.state.placeTiles(worldX, worldY);
+  }
+
   run(){
     this.running = true;
 
@@ -5226,13 +5234,14 @@ class EverybodyEdits {
     }, this.input.getOptions());
   }
 
-  playerToggleGodMode(){
-    this.state.player.isInGodMode = !this.state.player.isInGodMode;
+  playerToggleGod(){
+    if (this.mode !== 'play')
+      return;
+    this.state.player.isGod = !this.state.player.isGod;
     this.state.player.resetDeath();
     this.state.player.isOnFire = false;
     if (!this.state.player.completeTime)
       this.state.player.validRun = false;
-    //TODO: this.world.setShowAllSecrets(this.player.isInGodMode);
   }
 
   setEEOTASBugs(v){
@@ -5422,6 +5431,7 @@ class World extends BlObject {
   nextSpawnPos = [];
   depth = 0;
   gravity;
+  bgColor;
   worldName = 'Unknown World';
   realMap;
   background;
@@ -5453,16 +5463,16 @@ class World extends BlObject {
   timedoorState = false;
   hideTimedoorOffset = 0;
   labels = [];
-  showAllSecrets = false;
   unresolvedWorlds = [];
 
   toggleBackground(){
     this.showBackground = !this.showBackground;
   }
 
-  clearWorld(width, height, gravity){
+  clearWorld(width, height, gravity = 1, bgColor = ''){
     this.lookup = new Lookup(width, height);
-    this.gravity = typeof gravity === 'number' ? gravity : 1;
+    this.gravity = gravity;
+    this.bgColor = bgColor;
     this.unresolvedWorlds = [];
     const layers = [];
     for (let l = 0; l < 2; l++){
@@ -5476,28 +5486,6 @@ class World extends BlObject {
       layers.push(cols);
     }
     this.setMapArray(layers);
-  }
-
-  loadEelvl(worldData){
-    // CampaignPage::onFileLoaded
-    const data = worldData.inflate();
-    const owner = data.readUTF();
-    const worldName = data.readUTF();
-    const width = data.readInt();
-    const height = data.readInt();
-    const gravity = data.readFloat();
-    const background = data.readUnsignedInt();
-    const description = data.readUTF();
-    const campaign = data.readBoolean();
-    const crewId = data.readUTF();
-    const crewName = data.readUTF();
-    const crewStatus = data.readInt();
-    const minimap = data.readBoolean();
-    const ownerID = data.readUTF();
-
-    this.worldName = worldName;
-    this.clearWorld(width, height, gravity);
-    this.loadLayerData(data);
   }
 
   loadLayerData(data){
@@ -6174,20 +6162,21 @@ class World extends BlObject {
   }
 
   draw(target, ox, oy){
-    this.onDraw(target, ox, oy, false);
+    const {startX, startY, endX, endY} = this.getDrawBoundary(target, ox, oy, false);
+    this.drawRange(target, ox, oy, startX, startY, endX, endY);
   }
 
   getDrawBoundary(target, ox, oy, full){
     const size = 16;
-    const width_ = full ? this.width * size : target.boundary.w / size;
-    const height_ = full ? this.height * size : target.boundary.h / size;
+    const width = full ? this.width * size : target.boundary.w / size;
+    const height = full ? this.height * size : target.boundary.h / size;
 
     const bx = ox - target.boundary.x;
     const by = oy - target.boundary.y;
     const startX = Math.max(0, Math.floor(-bx / size - 1));
     const startY = Math.max(0, Math.floor(-by / size - 1));
-    const endX = Math.min(this.width, startX + width_ + 2);
-    const endY = Math.min(this.height, startY + height_ + 2);
+    const endX = Math.min(this.width, startX + width + 2);
+    const endY = Math.min(this.height, startY + height + 2);
 
     return {startX, startY, endX, endY};
   }
@@ -6205,8 +6194,7 @@ class World extends BlObject {
     return true;
   }
 
-  onDraw(target, ox, oy, full){
-    const {startX, startY, endX, endY} = this.getDrawBoundary(target, ox, oy, full);
+  drawRange(target, ox, oy, startX, startY, endX, endY){
     let x = 0, y = 0;
 
     // Seperate loop to perserve shadows
@@ -6214,19 +6202,15 @@ class World extends BlObject {
       const bgrow = this.background[cy]
       const fgrow = this.foreground[cy]
       y = (cy << 4) + oy;
-      for(let cx = startX; cx < endX; cx++){
+      for (let cx = startX; cx < endX; cx++){
         x = (cx << 4) + ox;
 
         if (fgrow[cx] !== 0)
           continue;
 
-        /*
-        TODO: customBgColor
-        if(bgrow[cx] === 0 && customBgColor){
-          //target.copyPixels(ItemManager.bmdBricks[614],rect16x16,point);
-          target.fillRect(new Rectangle(point.x,point.y,16,16), bgColor);
-        }else
-        */
+        if (bgrow[cx] === 0 && this.bgColor)
+          target.fillRect(x, y, 16, 16, this.bgColor);
+        else
           ItemManager.bricks[this.showBackground ? bgrow[cx] : 0].draw(target, x, y);
       }
     }
@@ -6444,45 +6428,27 @@ class World extends BlObject {
             break;
           // Invisible arrow blink
           case ItemId.GRAVITY_LEFT_INVISIBLE:
-            if (!full &&
-              this.drawArrowBlink(target, x, y, cx, cy,
-                ItemManager.sprInvGravityBlink, 0)
-            )
+            if (this.drawArrowBlink(target, x, y, cx, cy, ItemManager.sprInvGravityBlink, 0))
               continue;
             break;
           case ItemId.GRAVITY_UP_INVISIBLE:
-            if (!full &&
-              this.drawArrowBlink(target, x, y, cx, cy,
-                ItemManager.sprInvGravityBlink, 5)
-            )
+            if (this.drawArrowBlink(target, x, y, cx, cy, ItemManager.sprInvGravityBlink, 5))
               continue;
             break;
           case ItemId.GRAVITY_RIGHT_INVISIBLE:
-            if (!full &&
-              this.drawArrowBlink(target, x, y, cx, cy,
-                ItemManager.sprInvGravityBlink, 10)
-            )
+            if (this.drawArrowBlink(target, x, y, cx, cy, ItemManager.sprInvGravityBlink, 10))
               continue;
             break;
           case ItemId.DOT_INVISIBLE:
-            if (!full &&
-              this.drawArrowBlink(target, x, y, cx, cy,
-                ItemManager.sprInvGravityBlink, 15)
-            )
+            if (this.drawArrowBlink(target, x, y, cx, cy, ItemManager.sprInvGravityBlink, 15))
               continue;
             break;
           case ItemId.GRAVITY_DOWN_INVISIBLE:
-            if (!full &&
-              this.drawArrowBlink(target, x, y, cx, cy,
-                ItemManager.sprInvGravityDownBlink, 0)
-            )
+            if (this.drawArrowBlink(target, x, y, cx, cy, ItemManager.sprInvGravityDownBlink, 0))
               continue;
             break;
           case ItemId.SLOW_DOT_INVISIBLE:
-            if (!full &&
-              this.drawArrowBlink(target, x, y, cx, cy,
-                ItemManager.sprInvDotBlink, 0)
-            )
+            if (this.drawArrowBlink(target, x, y, cx, cy, ItemManager.sprInvDotBlink, 0))
               continue;
             break;
           case ItemId.CROWNDOOR:
@@ -6609,7 +6575,7 @@ class World extends BlObject {
             continue;
           }
           case ItemId.PORTAL_INVISIBLE:
-            if (this.player.isFlying || full){
+            if (this.player.isFlying){
               const pInv = this.lookup.getPortal(cx, cy);
               ItemManager.sprPortalInvisible.drawPoint(target, x, y, pInv.rotation);
             }
@@ -6700,17 +6666,17 @@ class World extends BlObject {
 
           // Secret passages!
           case 50:
-            if (this.showAllSecrets || full || this.lookup.getSecret(cx, cy))
+            if (this.player.isFlying || this.lookup.getSecret(cx, cy))
               ItemManager.sprSecret.drawPoint(target, x, y, 0);
             continue;
           case 243:
-            if (this.showAllSecrets || full || this.lookup.getSecret(cx, cy))
+            if (this.player.isFlying || this.lookup.getSecret(cx, cy))
               ItemManager.sprSecret.drawPoint(target, x, y, 1);
             else
               ItemManager.bricks[44].draw(target, x, y);
             continue;
           case 136:
-            if ((/* TODO: Bl.data.canEdit &&*/ this.player.isFlying) || full)
+            if (this.player.isFlying)
               ItemManager.sprSecret.drawPoint(target, x, y, 2);
             continue;
           case ItemId.LABEL:
@@ -6824,29 +6790,31 @@ class World extends BlObject {
     }
   }
 
-  postDraw(target, ox, oy, full){
-    const {startX, startY, endX, endY} = this.getDrawBoundary(target, ox, oy, full);
-    const point = {x: 0, y: 0};
+  postDraw(target, ox, oy){
+    const {startX, startY, endX, endY} = this.getDrawBoundary(target, ox, oy, false);
+    this.postDrawRange(target, ox, oy, startX, startY, endX, endY);
+  }
 
+  postDrawRange(target, ox, oy, startX, startY, endX, endY){
     for (let cy = startY; cy < endY; cy++){
       const row = this.above[cy]
-      point.y = (cy << 4) + oy;
-      for(let cx = startX; cx < endX; cx++){
+      const y = (cy << 4) + oy;
+      for (let cx = startX; cx < endX; cx++){
         const type = row[cx];
-        point.x = (cx << 4) + ox;
+        const x = (cx << 4) + ox;
         switch (type){
           case ItemId.EMPTY:
             break;
           case ItemId.COIN_GOLD:
-            ItemManager.sprCoin.drawPoint(target, point.x, point.y,
+            ItemManager.sprCoin.drawPoint(target, x, y,
               ((this.aniOffset >> 0) + cx + cy) % 12);
             break;
           case ItemId.COIN_BLUE:
-            ItemManager.sprBonusCoin.drawPoint(target, point.x, point.y,
+            ItemManager.sprBonusCoin.drawPoint(target, x, y,
               ((this.aniOffset >> 0) + cx + cy) % 12);
             break;
           case ItemId.WAVE:
-            ItemManager.sprWave.drawPoint(target, point.x, point.y,
+            ItemManager.sprWave.drawPoint(target, x, y,
               ((this.aniOffset / 5 >> 0)) % 8);
             break;
           case ItemId.MUD_BUBBLE:
@@ -6857,11 +6825,11 @@ class World extends BlObject {
             }
             else if (Math.random() < 0.005)
               this.lookup.setNumber(cx, cy, 1 + Math.round(Math.random()) * 10);
-            ItemManager.sprMudBubble.drawPoint(target, point.x, point.y,
+            ItemManager.sprMudBubble.drawPoint(target, x, y,
               (this.lookup.getNumber(cx, cy) >> 0) % 19);
             break;
           case ItemId.FIRE:
-            ItemManager.sprFireHazard.drawPoint(target, point.x, point.y,
+            ItemManager.sprFireHazard.drawPoint(target, x, y,
               ((this.aniOffset / 1.2 >> 0) + (this.width - cx) + cy) % 12);
             break;
           case ItemId.WATER:
@@ -6872,7 +6840,7 @@ class World extends BlObject {
             }
             else if (Math.random() < 0.001)
               this.lookup.setInt(cx, cy, Math.floor(Math.random() * 4) * 25 + 5);
-            ItemManager.sprWater.drawPoint(target, point.x, point.y,
+            ItemManager.sprWater.drawPoint(target, x, y,
               Math.floor(this.lookup.getNumber(cx, cy) / 5));
             break;
           case ItemId.TOXIC_WASTE:
@@ -6883,7 +6851,7 @@ class World extends BlObject {
             }
             else if (Math.random() < 0.005)
               this.lookup.setInt(cx, cy, Math.floor(Math.random() * 4) * 25 + 5);
-            ItemManager.sprToxic.drawPoint(target, point.x, point.y,
+            ItemManager.sprToxic.drawPoint(target, x, y,
               Math.floor(this.lookup.getNumber(cx, cy) / 5));
             break;
           case ItemId.TOXIC_WASTE_SURFACE:
@@ -6894,16 +6862,16 @@ class World extends BlObject {
             }
             else if (Math.random() < 0.01)
               this.lookup.setNumber(cx, cy, 1 + Math.round(Math.random()) * 10);
-            ItemManager.sprToxicBubble.drawPoint(target, point.x, point.y,
+            ItemManager.sprToxicBubble.drawPoint(target, x, y,
               (this.lookup.getNumber(cx, cy) >> 0) % 19);
             break;
           case ItemId.TEXT_SIGN:
-            ItemManager.sprSign.drawPoint(target, point.x, point.y,
+            ItemManager.sprSign.drawPoint(target, x, y,
               this.lookup.getTextSign(cx, cy).type +
                 (ItemId.isSolid(this.getTile(0, cx, cy + 1)) ? 0 : 4))
             break;
           case ItemId.LAVA:
-            ItemManager.sprLava.drawPoint(target, point.x, point.y,
+            ItemManager.sprLava.drawPoint(target, x, y,
               ((this.aniOffset / 5 >> 0)) % 8);
             break;
           /*
@@ -6911,7 +6879,7 @@ class World extends BlObject {
             infront.push({
               d:ItemManager.blocksGoldenEasterEggBMD,
               r:new Rectangle(0, 0, 48, 48),
-              p:new Point(point.x - 16, point.y - 16)
+              p:new Point(x - 16, y - 16)
             });
             break;
           }
@@ -6938,15 +6906,15 @@ class World extends BlObject {
               type != ItemId.DUNGEON_TORCH){
               const rot = this.lookup.getInt(cx, cy);
               const rotSprite = ItemManager.getRotateableSprite(type);
-              rotSprite.drawPoint(target, point.x, point.y, rot);
+              rotSprite.drawPoint(target, x, y, rot);
             }
             else
-              ItemManager.bricks[type].draw(target, point.x, point.y);
+              ItemManager.bricks[type].draw(target, x, y);
             break;
         }
 
         if (this.decoration[cy][cx] === ItemId.CHECKPOINT){
-          ItemManager.sprCheckpoint.drawPoint(target, point.x, point.y,
+          ItemManager.sprCheckpoint.drawPoint(target, x, y,
             (this.player.checkpoint_x === cx && this.player.checkpoint_y === cy) ? 1 : 0);
         }
 
@@ -6991,8 +6959,19 @@ class World extends BlObject {
     if (!drewAnimatedNPC) isAnimatingNPC = false;
     */
 
-    // draw labels
+    /*
+    particlecontainer.draw(target, ox, oy);
+    */
+  }
+
+  labelsDraw(target, ox, oy){
+    this.labelsDrawRange(target, ox, oy, 0, 0, this.width, this.height);
+  }
+
+  labelsDrawRange(target, ox, oy, startX, startY, endX, endY){
     for (const label of this.labels){
+      if (label.x < startX || label.x >= endX || label.y < startY || label.y >= endY)
+        continue;
       target.textWrap(
         label.text,
         ox + label.x * 16,
@@ -7002,10 +6981,6 @@ class World extends BlObject {
         label.wrapLength
       );
     }
-
-    /*
-    particlecontainer.draw(target, ox, oy);
-    */
   }
 
   drawDialogs(target, ox, oy){
@@ -7067,8 +7042,6 @@ class World extends BlObject {
             }
             break;
         }
-
-        // TODO: placer tool
       }
     }
 
@@ -7211,7 +7184,7 @@ class Player extends SynchronizedSprite {
   world;
   name = 'player';
   state;
-  isInGodMode = false;
+  isGod = false;
   spriteRect;
   queue = Array.from({length: Config.physics_queue_length}).map(() => 0);
   lastJump;
@@ -7327,7 +7300,7 @@ class Player extends SynchronizedSprite {
   }
 
   get isFlying(){
-    return this.isInGodMode;
+    return this.state.mode === 'edit' || (this.state.mode === 'play' && this.isGod);
   }
 
   killPlayer(){
@@ -8375,30 +8348,33 @@ class Player extends SynchronizedSprite {
   draw(target, ox, oy){
     const playerX = this.x + ox - 5;
     const playerY = this.y + oy - 5;
+    if (this.state.mode === 'edit')
+      this.drawFace(target, playerX, playerY, false, 0);
+    else{
+      if (this.isDead){
+        this.drawFace(target, playerX, playerY, true, 0);
+        return;
+      }
 
-    if (this.isDead){
-      this.drawFace(target, playerX, playerY, true, 0);
-      return;
-    }
+      this.drawFace(target, playerX, playerY, this.zombie, 0);
 
-    this.drawFace(target, playerX, playerY, this.zombie, 0);
+      if (this.hasGoldCrown)
+        target.copyPixels(ItemManager.goldCrownBMD, 0, 0, 26, 26, playerX, playerY, 26, 26);
+      else if (this.hasSilverCrown)
+        target.copyPixels(ItemManager.silverCrownBMD, 0, 0, 26, 26, playerX, playerY, 26, 26);
 
-    if (this.hasGoldCrown)
-      target.copyPixels(ItemManager.goldCrownBMD, 0, 0, 26, 26, playerX, playerY, 26, 26);
-    else if (this.hasSilverCrown)
-      target.copyPixels(ItemManager.silverCrownBMD, 0, 0, 26, 26, playerX, playerY, 26, 26);
+      // TODO: animate fire
+      if (this.isOnFire)
+        target.copyPixels(ItemManager.auraFireBMD, 0, 0, 26, 26, playerX + 1, playerY, 26, 26);
 
-    // TODO: animate fire
-    if (this.isOnFire)
-      target.copyPixels(ItemManager.auraFireBMD, 0, 0, 26, 26, playerX + 1, playerY, 26, 26);
-
-    if (this.hasLevitation && this.isThrusting){
-      // TODO: playLevitationAnimation(target, ox, oy);
+      if (this.hasLevitation && this.isThrusting){
+        // TODO: playLevitationAnimation(target, ox, oy);
+      }
     }
   }
 
   drawFace(target, pointX, pointY, zombie, deg){
-    if (zombie){
+    if (this.state.mode === 'play' && zombie){
       target.copyPixelsRotated(
         this.bmd,
         26 * 87,
@@ -8415,7 +8391,11 @@ class Player extends SynchronizedSprite {
     else{
       target.copyPixelsRotated(
         this.bmd,
-        this.isFlying
+        this.state.mode === 'edit'
+          ? 106 * 26
+          : this.state.mode === 'tas'
+          ? 9 * 26
+          : this.isGod
           ? 36 * 26
           : this.hasLevitation && this.isThrusting
           ? 61 * 26
@@ -8744,6 +8724,7 @@ class Me extends Player {
 //
 
 class PlayState extends BlObject {
+  mode = 'play';
   player;
   world;
   worldResolver;
@@ -8755,6 +8736,8 @@ class PlayState extends BlObject {
   orangeSwitchQueue = [];
   tickCount = 0;
   effectIcons = [];
+  _mouseOver = false;
+  selection = false;
 
   constructor(world, worldResolver, spawnTarget){
     super();
@@ -8826,6 +8809,106 @@ class PlayState extends BlObject {
     if (this.world.overlaps(this.player)){
       this.world.orangeSwitches[switchId] = !enabled;
       this.orangeSwitchQueue.push({switchId, enabled});
+    }
+  }
+
+  mouseOver(worldX, worldY){
+    this._mouseOver = [worldX, worldY];
+  }
+
+  mouseOut(){
+    this._mouseOver = false;
+  }
+
+  startSelection(worldX, worldY){
+    this._mouseOver = false;
+    const cx = (worldX - this.x) >> 4;
+    const cy = (worldY - this.y) >> 4;
+    this.selection = [cx, cy, cx, cy];
+  }
+
+  dragSelection(worldX, worldY){
+    this._mouseOver = false;
+    if (this.selection){
+      this.selection[2] = (worldX - this.x) >> 4;
+      this.selection[3] = (worldY - this.y) >> 4;
+    }
+  }
+
+  clearSelection(){
+    this.selection = false;
+  }
+
+  dragWorld(dx, dy){
+    this.x += dx;
+    this.y += dy;
+    this.player._speedX = 0;
+    this.player._speedY = 0;
+    this.player.x = Config.bw / 2 - this.x;
+    this.player.y = Config.bh / 2 - this.y;
+    if (this.player.x < 0){
+      this.player.x = 0;
+      this.x = Config.bw / 2;
+    }
+    else if (this.player.x > (this.world.width - 1) * 16){
+      this.player.x = (this.world.width - 1) * 16;
+      this.x = -this.player.x + Config.bw / 2;
+    }
+    if (this.player.y < 0){
+      this.player.y = 0;
+      this.y = Config.bh / 2;
+    }
+    else if (this.player.y > (this.world.height - 1) * 16){
+      this.player.y = (this.world.height - 1) * 16;
+      this.y = -this.player.y + Config.bh / 2;
+    }
+  }
+
+  placeTiles(worldX, worldY){
+    this._mouseOver = [worldX, worldY];
+    if (this.selection){
+      const {targetX, targetY, startX, startY, endX, endY} = this.selectionToTiles();
+
+      const copyTile = (tx, ty, sx, sy) => {
+      };
+
+      if (targetX > startX){
+        // left to right
+        if (targetY > startY){
+          // top to bottom
+          for (let sy = startY; sy < endY; sy++){
+            for (let sx = startX; sx < endX; sx++)
+              copyTile(targetX + sx - startX, targetY + sy - startY, sx, sy);
+          }
+        }
+        else{
+          // bottom to top
+          for (let sy = endY - 1; sy >= startY; sy--){
+            for (let sx = startX; sx < endX; sx++)
+              copyTile(targetX + sx - startX, targetY + sy - startY, sx, sy);
+          }
+        }
+      }
+      else{
+        // right to left
+        if (targetY > startY){
+          // top to bottom
+          for (let sy = startY; sy < endY; sy++){
+            for (let sx = endX - 1; sx >= startX; sx--)
+              copyTile(targetX + sx - startX, targetY + sy - startY, sx, sy);
+          }
+        }
+        else{
+          // bottom to top
+          for (let sy = endY - 1; sy >= startY; sy--){
+            for (let sx = endX - 1; sx >= startX; sx--)
+              copyTile(targetX + sx - startX, targetY + sy - startY, sx, sy);
+          }
+        }
+      }
+    }
+    else{
+      // TODO: single block?
     }
   }
 
@@ -9048,29 +9131,88 @@ class PlayState extends BlObject {
     }
   }
 
-  draw(target, ox, oy){
-    const startX = -this.x - 90;
-    const startY = -this.y - 90;
-    const endX = startX + Config.bw + 180;
-    const endY = startY + Config.bh + 180;
-
-    this.world.draw(target, this.x + ox, this.y + oy);
-    this.player.draw(target, this.x + ox, this.y + oy);
-
-    const ox2 = ox + this.x;
-    const oy2 = oy + this.y;
+  draw(target){
+    this.world.draw(target, this.x, this.y);
+    this.player.draw(target, this.x, this.y);
 
     // Draws the 'above' decoration layer
-    this.world.postDraw(target, ox2, oy2);
+    this.world.postDraw(target, this.x, this.y);
+
+    this.world.labelsDraw(target, this.x, this.y);
 
     // Draws you, if flying
-    this.player.drawGods(target, ox2, oy2);
+    this.player.drawGods(target, this.x, this.y);
+
+    // Draws editor mouse
+    if (this.mode === 'edit'){
+      target.setAlpha(0.25);
+      this.selectionDraw(target);
+      this.mouseDraw(target);
+      target.setAlpha(1);
+    }
 
     // Draws bubbles for signs, world portals, etc.
-    this.world.drawDialogs(target, ox2, oy2);
+    this.world.drawDialogs(target, this.x, this.y);
 
     this.drawCounts(target);
     this.drawEffects(target);
+  }
+
+  selectionDraw(target){
+    if (!this.selection)
+      return;
+    const x1 = (this.selection[0] << 4) + this.x;
+    const y1 = (this.selection[1] << 4) + this.y;
+    const x2 = (this.selection[2] << 4) + this.x;
+    const y2 = (this.selection[3] << 4) + this.y;
+    target.fillRect(
+      Math.min(x1, x2),
+      Math.min(y1, y2),
+      Math.abs(x2 - x1) + 16,
+      Math.abs(y2 - y1) + 16,
+      '#fff',
+      '#000'
+    );
+  }
+
+  selectionToTiles(){
+    let startX = Math.min(this.selection[0], this.selection[2]);
+    let startY = Math.min(this.selection[1], this.selection[3]);
+    let endX = Math.max(this.selection[0], this.selection[2]) + 1;
+    let endY = Math.max(this.selection[1], this.selection[3]) + 1;
+    const halfWidth = (endX - startX - 1) << 3;
+    const halfHeight = (endY - startY - 1) << 3;
+    let cx = (this._mouseOver[0] - this.x - halfWidth) >> 4;
+    let cy = (this._mouseOver[1] - this.y - halfHeight) >> 4;
+    if (cx < 0){
+      startX -= cx;
+      cx = 0;
+    }
+    if (cy < 0){
+      startY -= cy;
+      cy = 0;
+    }
+    if (endX > startX && cx + endX - startX > this.world.width)
+      endX = this.world.width + startX - cx;
+    if (endY > startY && cy + endY - startY > this.world.height)
+      endY = this.world.height + startY - cy;
+    const ox = ((cx - startX) << 4) + this.x;
+    const oy = ((cy - startY) << 4) + this.y;
+    return {startX, startY, endX, endY, cx, cy, ox, oy};
+  }
+
+  mouseDraw(target){
+    if (!this._mouseOver)
+      return;
+    if (this.selection){
+      const {ox, oy, startX, startY, endX, endY} = this.selectionToTiles();
+      this.world.drawRange(target, ox, oy, startX, startY, endX, endY);
+      this.world.postDrawRange(target, ox, oy, startX, startY, endX, endY);
+      this.world.labelsDrawRange(target, ox, oy, startX, startY, endX, endY);
+    }
+    else{
+      // TODO: single block?
+    }
   }
 }
 
@@ -9116,6 +9258,10 @@ class Screen {
     this.ctx.fillRect(0, 0, this.cnv.width, this.cnv.height);
   }
 
+  setAlpha(v){
+    this.ctx.globalAlpha = v;
+  }
+
   drawState(state, paused){
     this.clear();
     this.lastState = state;
@@ -9150,7 +9296,7 @@ class Screen {
 
     //
     // draw the state
-    state.draw(this, 0, 0);
+    state.draw(this);
     //
     //
 
@@ -9197,6 +9343,14 @@ class Screen {
     return Math.round(y * this.scale + this.transY);
   }
 
+  screenToWorldX(x){
+    return Math.round((x - this.transX) / this.scale);
+  }
+
+  screenToWorldY(y){
+    return Math.round((y - this.transY) / this.scale);
+  }
+
   copyPixels(bmd, srcX, srcY, srcW, srcH, dstX, dstY, dstW, dstH){
     this.copyPixelsRotated(bmd, srcX, srcY, srcW, srcH, dstX, dstY, dstW, dstH, 0);
   }
@@ -9232,18 +9386,22 @@ class Screen {
   }
 
   fillRect(x, y, w, h, color, borderColor){
-    this.ctx.fillStyle = color;
     const x1 = this.worldToScreenX(x);
     const y1 = this.worldToScreenY(y);
     const x2 = this.worldToScreenX(x + w);
     const y2 = this.worldToScreenY(y + h);
-    this.ctx.fillRect(x1, y1, x2 - x1, y2 - y1);
     if (borderColor){
       this.ctx.beginPath();
       this.ctx.rect(x1, y1, x2 - x1, y2 - y1);
       this.ctx.lineWidth = this.worldToScreenX(1) - this.worldToScreenX(0);
+      this.ctx.fillStyle = color;
+      this.ctx.fill();
       this.ctx.strokeStyle = borderColor;
       this.ctx.stroke();
+    }
+    else{
+      this.ctx.fillStyle = color;
+      this.ctx.fillRect(x1, y1, x2 - x1, y2 - y1);
     }
   }
 
@@ -9488,8 +9646,9 @@ class FSWorld {
   width;
   height;
   gravity;
+  bgColor;
 
-  constructor(id, name, desc, owner, width, height, gravity){
+  constructor(id, name, desc, owner, width, height, gravity, bgColor){
     this.id = id;
     this.name = name;
     this.desc = desc;
@@ -9497,6 +9656,7 @@ class FSWorld {
     this.width = width;
     this.height = height;
     this.gravity = gravity;
+    this.bgColor = bgColor;
   }
 
   async load(){ throw new Error('Not implemented'); }
@@ -9507,8 +9667,8 @@ class LayerDataWorld extends FSWorld {
   data;
   metadata;
 
-  constructor(id, name, desc, owner, width, height, gravity, data, metadata){
-    super(id, name, desc, owner, width, height, gravity);
+  constructor(id, name, desc, owner, width, height, gravity, bgColor, data, metadata){
+    super(id, name, desc, owner, width, height, gravity, bgColor);
     this.startPosition = data.position;
     this.data = data;
     this.metadata = metadata;
@@ -9517,11 +9677,17 @@ class LayerDataWorld extends FSWorld {
   async load(){
     const world = new World();
     world.worldName = this.name;
-    world.clearWorld(this.width, this.height, this.gravity);
+    world.clearWorld(this.width, this.height, this.gravity, this.bgColor);
     this.data.position = this.startPosition;
     world.loadLayerData(this.data);
     return world;
   }
+}
+
+function bgColorFromInt(background){
+  return (background & 0x00ffffff) === 0
+    ? ''
+    : `#${`00000${(background & 0x00ffffff).toString(16)}`.substr(-6)}`;
 }
 
 class EelvlWorld extends LayerDataWorld {
@@ -9540,8 +9706,8 @@ class EelvlWorld extends LayerDataWorld {
     const crewStatus = data.readInt();
     const minimap = data.readBoolean();
     const ownerID = data.readUTF();
-    super(id, prefix + name, desc, owner, width, height, gravity, data, {
-      background,
+    const bgColor = bgColorFromInt(background);
+    super(id, prefix + name, desc, owner, width, height, gravity, bgColor, data, {
       campaign,
       crewId,
       crewName,
@@ -9928,6 +10094,7 @@ class SqliteGenericSelectFolder extends FSFolder {
       'world.width',
       'world.height',
       'world.gravity',
+      'world.background_color',
       'world.data'
     ];
     if (options.select)
@@ -9957,10 +10124,12 @@ class SqliteGenericSelectFolder extends FSFolder {
     const values = results[0].values;
     const listing = [];
     for (let i = 0; i < Math.min(30, values.length); i++){
-      const [id, name, desc, owner, width, height, gravity, data] = values[i];
+      const [id, name, desc, owner, width, height, gravity, background, data] = values[i];
       const decomp = decompressSqliteLevelData(data);
       if (decomp)
-        listing.push(new LayerDataWorld(id, name, desc, owner, width, height, gravity, decomp, {}));
+        listing.push(new LayerDataWorld(
+          id, name, desc, owner, width, height, gravity, bgColorFromInt(background || 0), decomp, {}
+        ));
     }
     return {more: values.length > 30, listing};
   }

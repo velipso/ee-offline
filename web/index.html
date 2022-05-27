@@ -122,6 +122,24 @@ a:hover, a:active {
   margin-left: 1px;
   margin-top: 9px;
 }
+#menu-bricks {
+  display: block;
+  font-family: ee_visitor;
+  font-size: 20px;
+  line-height: 5px;
+  overflow: hidden;
+  color: #fff;
+  position: absolute;
+  bottom: 20px;
+  width: 400px;
+  left: calc(50% - 200px);
+  height: 32px;
+  border: 2px solid #9b9;
+  border-radius: 2px;
+  background-color: #111;
+  padding: 4px;
+  box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.9);
+}
 button {
   display: inline-block;
   font-family: ee_nokiafc22;
@@ -137,11 +155,16 @@ button div {
   border: 2px solid #2ac;
   border-radius: 5px;
 }
-button:hover div {
+button:not([disabled]):hover div {
   color: #fff;
 }
-button:active div {
+button:not([disabled]):active div {
   transform: translate(0, 2px);
+}
+button.selected div {
+  background-color: transparent;
+  color: #fff;
+  border-color: #fff;
 }
 input[type=text], select {
   border-radius: 5px;
@@ -241,6 +264,9 @@ hr {
   </div>
   <a id="menu-closed" href="#" style="display: none;" onclick="javascript: return menuOpen();">
     <p>-<br />-<br />-</p>
+  </a>
+  <div id="menu-bricks" style="display: none;">
+    hello, world
   </div>
   <script src="jszip.min.js"></script>
   <script src="pako_inflate.min.js"></script>
