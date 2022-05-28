@@ -1,5 +1,6 @@
 let defaultScreen, eeGame, gamepadController, menuBack;
 const rootFolder = new GenericFolder('root');
+const editingAllowed = false; // TODO: allow once the feature is complete
 
 class HelpFolder extends FSFolder {
   sortIndex = 1;
@@ -550,43 +551,52 @@ async function loadResources(){
       switch (e.code){
         case 'F1':
           if (eeGame){
-            eeGame.screenMultiplyZoom(1.1);
+            eeGame.setOptions({
+              zoom: eeGame.screen.clampZoom(eeGame.getOptions().zoom * 1.1)
+            });
             return true;
           }
           break;
         case 'F2':
           if (eeGame){
-            eeGame.screenMultiplyZoom(1 / 1.1);
+            eeGame.setOptions({
+              zoom: eeGame.screen.clampZoom(eeGame.getOptions().zoom / 1.1)
+            });
             return true;
           }
           break;
         case 'F3':
           if (eeGame){
-            eeGame.screenNextResolution();
+            const cur = eeGame.getOptions().screenResolution;
+            eeGame.setOptions({
+              screenResolution: Screen.resolutions[
+                (Screen.resolutions.indexOf(cur) + 1) % Screen.resolutions.length
+              ]
+            });
             return true;
           }
           break;
         case 'F7':
           if (eeGame){
-            eeGame.setOption({showFPS: !eeGame.getOption().showFPS});
+            eeGame.setOptions({showFPS: !eeGame.getOptions().showFPS});
             return true;
           }
           break;
         case 'F8':
           if (eeGame){
-            eeGame.screenToggleFull();
+            eeGame.setOptions({screenFull: !eeGame.getOptions().screenFull});
             return true;
           }
           break;
         case 'F9':
           if (eeGame){
-            eeGame.worldToggleBackground();
+            eeGame.setOptions({worldBackground: !eeGame.getOptions().worldBackground});
             return true;
           }
           break;
         case 'F10':
           if (eeGame){
-            eeGame.screenToggleDebug();
+            eeGame.setOptions({screenDebug: !eeGame.getOptions().screenDebug});
             return true;
           }
           break;
@@ -610,7 +620,8 @@ async function loadResources(){
   const campaignFolder = new CampaignFolder(campaignZip);
   rootFolder.add(campaignFolder);
   rootFolder.add(new HelpFolder());
-  //rootFolder.add(new ModeFolder());
+  if (editingAllowed)
+    rootFolder.add(new ModeFolder());
   rootFolder.add(new OptionsFolder());
   await loadWorld(campaignFolder.listing[0].listing[0], campaignFolder);
   menuOpen();
@@ -789,8 +800,9 @@ function godToggle(){
     eeGame.playerToggleGod();
 }
 
-async function editToggle(){
-  return;
+function editToggle(){
+  if (!editingAllowed)
+    return;
   if (eeGame){
     let newMode = false;
     if (eeGame.mode === 'play')

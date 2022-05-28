@@ -1151,10 +1151,6 @@ class Input {
     this.controllers.splice(0, this.controllers.length);
   }
 
-  setEEOTASBugs(v){
-    this.eeotasBugs = v;
-  }
-
   get horizontal(){
     const h = this.thisFrame & (Input.LEFT | Input.RIGHT);
     return h === Input.LEFT ? -1 : h === Input.RIGHT ? 1 : 0;
@@ -5197,7 +5193,7 @@ class EverybodyEdits {
 
   setOptions(options){
     if ('eeotasBugs' in options)
-      this.input.setEEOTASBugs(options.eeotasBugs);
+      this.input.eeotasBugs = options.eeotasBugs;
     if ('iceBugs' in options)
       this.state.player.iceBugs = options.iceBugs;
     if ('screenDebug' in options)
@@ -5242,34 +5238,6 @@ class EverybodyEdits {
     this.state.player.isOnFire = false;
     if (!this.state.player.completeTime)
       this.state.player.validRun = false;
-  }
-
-  setEEOTASBugs(v){
-    this.input.setEEOTASBugs(v);
-  }
-
-  screenToggleDebug(){
-    this.screen.debug = !this.screen.debug;
-  }
-
-  screenToggleFull(){
-    this.screen.fullScreen = !this.screen.fullScreen;
-  }
-
-  screenMultiplyZoom(v){
-    this.screen.multiplyZoom(v);
-  }
-
-  screenNextResolution(){
-    return this.screen.nextResolution();
-  }
-
-  worldToggleBackground(){
-    this.world.toggleBackground();
-  }
-
-  playerToggleIceBugs(){
-    this.state.player.toggleIceBugs();
   }
 }
 
@@ -5464,10 +5432,6 @@ class World extends BlObject {
   hideTimedoorOffset = 0;
   labels = [];
   unresolvedWorlds = [];
-
-  toggleBackground(){
-    this.showBackground = !this.showBackground;
-  }
 
   clearWorld(width, height, gravity = 1, bgColor = ''){
     this.lookup = new Lookup(width, height);
@@ -7310,10 +7274,6 @@ class Player extends SynchronizedSprite {
     }
   }
 
-  toggleIceBugs(){
-    this.iceBugs = !this.iceBugs;
-  }
-
   get gravityMultiplier(){
     let gm = 1;
     if (this.lowGravity) gm *= 0.15;
@@ -7652,13 +7612,12 @@ class Player extends SynchronizedSprite {
 
     let rotateGravitymo = true;
     let rotateGravitymor = true;
-    const isGod = this.isFlying;
     this.morx = 0;
     this.mory = 0;
     this.mox = 0;
     this.moy = 0;
 
-    if (!isGod){
+    if (!this.isFlying){
       if (ItemId.isClimbable(this.current)){
         this.morx = 0;
         this.mory = 0;
@@ -7898,31 +7857,31 @@ class Player extends SynchronizedSprite {
             (this._speedX < 0 && this.mx > 0) ||
             (this._speedX > 0 && this.mx < 0)
           ) &&
-          (this.slippery <= 0 || isGod)
+          (this.slippery <= 0 || this.isFlying)
         ) || (
-          ItemId.isClimbable(this.current) && !isGod
+          ItemId.isClimbable(this.current) && !this.isFlying
         )
       ){
         this._speedX *= Config.physics_base_drag;
         this._speedX *= Config.physics_no_modifier_drag;
       }
-      else if (this.current == ItemId.WATER && !isGod){
+      else if (this.current == ItemId.WATER && !this.isFlying){
         this._speedX *= Config.physics_base_drag;
         this._speedX *= Config.physics_water_drag;
       }
-      else if (this.current == ItemId.MUD && !isGod){
+      else if (this.current == ItemId.MUD && !this.isFlying){
         this._speedX *= Config.physics_base_drag;
         this._speedX *= Config.physics_mud_drag;
       }
-      else if (this.current == ItemId.LAVA && !isGod){
+      else if (this.current == ItemId.LAVA && !this.isFlying){
         this._speedX *= Config.physics_base_drag;
         this._speedX *= Config.physics_lava_drag;
       }
-      else if (this.current == ItemId.TOXIC_WASTE && !isGod){
+      else if (this.current == ItemId.TOXIC_WASTE && !this.isFlying){
         this._speedX *= Config.physics_base_drag;
         this._speedX *= Config.physics_toxic_drag;
       }
-      else if (this.slippery > 0 && !isGod){
+      else if (this.slippery > 0 && !this.isFlying){
         if (this.mx != 0 && !(
           (this._speedX < 0 && this.mx > 0) ||
           (this._speedX > 0 && this.mx < 0)
@@ -7953,31 +7912,31 @@ class Player extends SynchronizedSprite {
             (this._speedY < 0 && this.my > 0) ||
             (this._speedY > 0 && this.my < 0)
           ) &&
-          (this.slippery <= 0 || isGod)
+          (this.slippery <= 0 || this.isFlying)
         ) || (
-          ItemId.isClimbable(this.current) && !isGod
+          ItemId.isClimbable(this.current) && !this.isFlying
         )
       ){
         this._speedY *= Config.physics_base_drag;
         this._speedY *= Config.physics_no_modifier_drag;
       }
-      else if (this.current == ItemId.WATER && !isGod){
+      else if (this.current == ItemId.WATER && !this.isFlying){
         this._speedY *= Config.physics_base_drag;
         this._speedY *= Config.physics_water_drag;
       }
-      else if (this.current == ItemId.MUD && !isGod){
+      else if (this.current == ItemId.MUD && !this.isFlying){
         this._speedY *= Config.physics_base_drag;
         this._speedY *= Config.physics_mud_drag;
       }
-      else if (this.current == ItemId.LAVA && !isGod){
+      else if (this.current == ItemId.LAVA && !this.isFlying){
         this._speedY *= Config.physics_base_drag;
         this._speedY *= Config.physics_lava_drag;
       }
-      else if (this.current == ItemId.TOXIC_WASTE && !isGod){
+      else if (this.current == ItemId.TOXIC_WASTE && !this.isFlying){
         this._speedY *= Config.physics_base_drag;
         this._speedY *= Config.physics_toxic_drag;
       }
-      else if (this.slippery > 0 && !isGod){
+      else if (this.slippery > 0 && !this.isFlying){
         if (this.my != 0 && !(
           (this._speedY < 0 && this.my > 0) ||
           (this._speedY > 0 && this.my < 0)
@@ -7999,7 +7958,7 @@ class Player extends SynchronizedSprite {
         this._speedY = 0;
     }
 
-    if (!isGod){
+    if (!this.isFlying){
       switch (this.current){
         case ItemId.SPEED_LEFT:
           this._speedX = -Config.physics_boost;
@@ -8110,7 +8069,7 @@ class Player extends SynchronizedSprite {
     const processPortals = () => {
       this.current = this.world.getTile(0, cx, cy);
 
-      if (!isGod && this.current === ItemId.WORLD_PORTAL){
+      if (!this.isFlying && this.current === ItemId.WORLD_PORTAL){
         if (input.risky){
           const wp = this.world.lookup.getWorldPortal(cx, cy);
           if (wp.name){
@@ -8122,7 +8081,7 @@ class Player extends SynchronizedSprite {
         }
       }
 
-      if (isGod ||
+      if (this.isFlying ||
         (this.current !== ItemId.PORTAL && this.current != ItemId.PORTAL_INVISIBLE) ||
         (this.world.lookup.getPortal(cx, cy).target === this.world.lookup.getPortal(cx, cy).id)){
         this.lastPortal = null;
@@ -8276,7 +8235,7 @@ class Player extends SynchronizedSprite {
         }
       }
 
-      this.touchBlock(cx, cy, input, isGod);
+      this.touchBlock(cx, cy, input);
       this.sendMovement(cx, cy);
     }
 
@@ -8298,7 +8257,7 @@ class Player extends SynchronizedSprite {
     const imy = this._speedY << 8;
 
     if (
-      !(imx !== 0 || (ItemId.isLiquid(this.current) && !isGod)) &&
+      !(imx !== 0 || (ItemId.isLiquid(this.current) && !this.isFlying)) &&
       this._modifierX < 0.1 && this._modifierX > -0.1
     ){
       const tx = this.x % 16;
@@ -8319,7 +8278,7 @@ class Player extends SynchronizedSprite {
     }
 
     if (
-      !(imy !== 0 || (ItemId.isLiquid(this.current) && !isGod)) &&
+      !(imy !== 0 || (ItemId.isLiquid(this.current) && !this.isFlying)) &&
       this._modifierY < 0.1 && this._modifierY > -0.1
     ){
       const ty = this.y % 16;
@@ -8412,9 +8371,6 @@ class Player extends SynchronizedSprite {
     }
   }
 
-  drawGods(target, ox, oy){
-  }
-
   set frame(f){
     this.spriteRect.x = f * 26;
   }
@@ -8433,7 +8389,7 @@ class Player extends SynchronizedSprite {
 
   // overridden in Me
   getPlayerInput(input){}
-  touchBlock(cx, cy, input, isGod){}
+  touchBlock(cx, cy, input){}
   sendMovement(cx, cy){}
 }
 
@@ -8461,9 +8417,11 @@ class Me extends Player {
     this.spaceDown = input.jump;
   }
 
-  touchBlock(cx, cy, input, isGod){
-    // TODO: multiJumpEffectDisplay.update();
+  touchBlock(cx, cy, input){
     this.coinCountChanged = false;
+
+    if (this.state.mode === 'edit')
+      return;
 
     switch (this.current){
       case ItemId.COIN_GOLD:
@@ -8486,7 +8444,7 @@ class Me extends Player {
         // spawnCoinPatricle(cx, cy, current == ItemId.COIN_BLUE);
         break;
       case ItemId.RESET_POINT:
-        if (!isGod && input.risky)
+        if (!this.isFlying && input.risky)
           this.resetPlayer();
         break;
     }
@@ -8507,7 +8465,7 @@ class Me extends Player {
           break;
       }
 
-      if (!isGod){
+      if (!this.isFlying){
         switch (this.current){
           case ItemId.CROWN:
             if (!this.hasGoldCrown){
@@ -9133,15 +9091,16 @@ class PlayState extends BlObject {
 
   draw(target){
     this.world.draw(target, this.x, this.y);
-    this.player.draw(target, this.x, this.y);
+    if (!this.player.isFlying)
+      this.player.draw(target, this.x, this.y);
 
     // Draws the 'above' decoration layer
     this.world.postDraw(target, this.x, this.y);
 
     this.world.labelsDraw(target, this.x, this.y);
 
-    // Draws you, if flying
-    this.player.drawGods(target, this.x, this.y);
+    if (this.player.isFlying)
+      this.player.draw(target, this.x, this.y);
 
     // Draws editor mouse
     if (this.mode === 'edit'){
@@ -9590,12 +9549,6 @@ class Screen {
 
   multiplyZoom(m){
     this.setZoom(this.zoom * m);
-  }
-
-  nextResolution(){
-    this.setResolution(Screen.resolutions[
-      (Screen.resolutions.indexOf(this.resolution) + 1) % Screen.resolutions.length
-    ]);
   }
 
   setResolution(resolution){

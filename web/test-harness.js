@@ -521,8 +521,8 @@ async function loadResources(){
     const result = (() => {
       switch (e.code){
         case 'F10':
-          if (eeGame){
-            eeGame.screenToggleDebug();
+          if (window.sim && window.sim.ee){
+            window.sim.ee.setOptions({screenDebug: !window.sim.ee.getOptions().screenDebug});
             return true;
           }
           break;
