@@ -293,6 +293,27 @@ class OptionsFolder extends FSFolder {
 
     addBool('Gamepads', 'gamepads');
     addSelect('Resolution', Screen.resolutions, 'screenResolution');
+    {
+      const options = [
+        ['10%', 0.1],
+        ['25%', 0.25],
+        ['50%', 0.5],
+        ['75%', 0.75],
+        ['100%', 1],
+        ['125%', 1.25],
+        ['150%', 1.5],
+        ['200%', 2]
+      ];
+      addGenericSelect(
+        'Simulation Speed',
+        options.map(o => o[0]),
+        options.find(o => o[1] === opt.simSpeed)[0],
+        index => {
+          opt.simSpeed = options[index][1];
+          setOptions();
+        }
+      );
+    }
     addBool('Cap FPS', 'capFPS');
     addBool('Show FPS', 'showFPS');
     addBool('Full Screen', 'screenFull');

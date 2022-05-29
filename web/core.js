@@ -4943,6 +4943,7 @@ class EverybodyEdits {
   paused = false;
   capFPS = true;
   gamepads = false;
+  simSpeed = 1;
 
   static async init(progressCallback){
     function loadImg(logicalWidth, logicalHeight, src){
@@ -5106,7 +5107,9 @@ class EverybodyEdits {
       this.input.nextPaused();
       return;
     }
-    this.accumulatedTime += dt;
+    if (this.simSpeed !== 1)
+      this.state.validRun = false;
+    this.accumulatedTime += dt * this.simSpeed;
     while (this.accumulatedTime >= Config.physics_ms_per_tick){
       this.input.startTick();
       this.state.tick(this.input);
@@ -5152,6 +5155,8 @@ class EverybodyEdits {
       this.world.showBackground = options.worldBackground;
     if ('gamepads' in options)
       this.gamepads = options.gamepads;
+    if ('simSpeed' in options)
+      this.simSpeed = options.simSpeed;
     this.input.setOptions(options);
   }
 
@@ -5166,7 +5171,8 @@ class EverybodyEdits {
       screenResolution: this.screen.resolution,
       capFPS: this.capFPS,
       worldBackground: this.world.showBackground,
-      gamepads: this.gamepads
+      gamepads: this.gamepads,
+      simSpeed: this.simSpeed
     }, this.input.getOptions());
   }
 
