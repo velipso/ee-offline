@@ -5108,7 +5108,7 @@ class EverybodyEdits {
       return;
     }
     if (this.simSpeed !== 1)
-      this.state.validRun = false;
+      this.state.player.validRun = false;
     this.accumulatedTime += dt * this.simSpeed;
     while (this.accumulatedTime >= Config.physics_ms_per_tick){
       this.input.startTick();
