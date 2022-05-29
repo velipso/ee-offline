@@ -10302,6 +10302,7 @@ class SqliteFolder extends FSFolder {
         world.width,
         world.height,
         world.gravity,
+        world.background_color,
         world.data
       FROM world
       INNER JOIN player ON world.owner = player.rowid
@@ -10309,16 +10310,19 @@ class SqliteFolder extends FSFolder {
       LIMIT 0,1
     `;
     const {results, error} = await this.sqlExec(sql, {'$id': findId});
+    console.log(results);
     if (error)
       console.error(error, '\n', sql);
     if (!results || results.length <= 0 || results[0].values.length <= 0)
       return false;
     const values = results[0].values;
-    const [id, name, desc, owner, width, height, gravity, data] = values[0];
+    const [id, name, desc, owner, width, height, gravity, background, data] = values[0];
     const decomp = decompressSqliteLevelData(data);
     if (!decomp)
       return false;
-    return new LayerDataWorld(id, name, desc, owner, width, height, gravity, decomp, {});
+    return new LayerDataWorld(
+      id, name, desc, owner, width, height, gravity, bgColorFromInt(background || 0), decomp, {}
+    );
   }
 
   search(term){
