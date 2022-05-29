@@ -608,6 +608,7 @@ it('gates stay open if covered', () => {
   const sim = new Simulator(`
     #######
     #Xpgk #
+    #g#####
     #######
   `, tiles({
     'k': {tile:  6}, // red key
