@@ -10310,7 +10310,6 @@ class SqliteFolder extends FSFolder {
       LIMIT 0,1
     `;
     const {results, error} = await this.sqlExec(sql, {'$id': findId});
-    console.log(results);
     if (error)
       console.error(error, '\n', sql);
     if (!results || results.length <= 0 || results[0].values.length <= 0)
