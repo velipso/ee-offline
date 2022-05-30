@@ -5810,9 +5810,9 @@ class World extends BlObject {
     // update blinks
     for (let cy = 0; cy < this.height; cy++){
       const drow = this.decoration[cy];
+      const arow = this.above[cy];
       for (let cx = 0; cx < this.width; cx++){
-        const type = drow[cx];
-        switch (type){
+        switch (drow[cx]){
           case ItemId.GRAVITY_LEFT_INVISIBLE:
           case ItemId.GRAVITY_UP_INVISIBLE:
           case ItemId.GRAVITY_RIGHT_INVISIBLE:
@@ -5842,6 +5842,44 @@ class World extends BlObject {
             }
             else if (this.ice === ((cx + cy) * 4) % this.iceTime || Math.random() < 0.0001)
               this.lookup.setNumber(cx, cy, 11.75);
+            break;
+        }
+        switch (arow[cx]){
+          case ItemId.MUD_BUBBLE:
+            if (this.lookup.getNumber(cx, cy) !== 0){
+              this.lookup.setNumber(cx, cy, this.lookup.getNumber(cx, cy) + 0.125);
+              if (this.lookup.getNumber(cx, cy) % 10 === 0)
+                this.lookup.setNumber(cx, cy, 0);
+            }
+            else if (Math.random() < 0.0025)
+              this.lookup.setNumber(cx, cy, 1 + Math.round(Math.random()) * 10);
+            break;
+          case ItemId.WATER:
+            if (this.lookup.getNumber(cx, cy) !== 0){
+              this.lookup.setNumber(cx, cy, this.lookup.getNumber(cx, cy) + 0.5);
+              if (this.lookup.getNumber(cx, cy) % 25 === 0)
+                this.lookup.setNumber(cx, cy, 0);
+            }
+            else if (Math.random() < 0.0005)
+              this.lookup.setNumber(cx, cy, Math.floor(Math.random() * 4) * 25 + 5);
+            break;
+          case ItemId.TOXIC_WASTE:
+            if (this.lookup.getNumber(cx, cy) !== 0) {
+              this.lookup.setNumber(cx, cy, this.lookup.getNumber(cx, cy) + 0.5);
+              if (this.lookup.getNumber(cx, cy) % 25 === 0)
+                this.lookup.setNumber(cx, cy, 0);
+            }
+            else if (Math.random() < 0.0025)
+              this.lookup.setNumber(cx, cy, Math.floor(Math.random() * 4) * 25 + 5);
+            break;
+          case ItemId.TOXIC_WASTE_SURFACE:
+            if (this.lookup.getNumber(cx, cy) !== 0){
+              this.lookup.setNumber(cx, cy, this.lookup.getNumber(cx, cy) + 0.125);
+              if (this.lookup.getNumber(cx, cy) % 10 === 0)
+                this.lookup.setNumber(cx, cy, 0);
+            }
+            else if (Math.random() < 0.005)
+              this.lookup.setNumber(cx, cy, 1 + Math.round(Math.random()) * 10);
             break;
         }
       }
@@ -6728,13 +6766,6 @@ class World extends BlObject {
               ((this.aniOffset / 5 >> 0)) % 8);
             break;
           case ItemId.MUD_BUBBLE:
-            if (this.lookup.getNumber(cx, cy) != 0){
-              this.lookup.setNumber(cx, cy, this.lookup.getNumber(cx, cy) + 0.25);
-              if (this.lookup.getNumber(cx, cy) >= 10)
-                this.lookup.setNumber(cx, cy, 0);
-            }
-            else if (Math.random() < 0.005)
-              this.lookup.setNumber(cx, cy, 1 + Math.round(Math.random()) * 10);
             ItemManager.sprMudBubble.drawPoint(target, x, y,
               (this.lookup.getNumber(cx, cy) >> 0) % 19);
             break;
@@ -6743,35 +6774,14 @@ class World extends BlObject {
               ((this.aniOffset / 1.2 >> 0) + (this.width - cx) + cy) % 12);
             break;
           case ItemId.WATER:
-            if (this.lookup.getInt(cx, cy) != 0){
-              this.lookup.setInt(cx, cy, this.lookup.getInt(cx, cy) + 1);
-              if (this.lookup.getInt(cx, cy) >= 25)
-                this.lookup.setInt(cx, cy, 0);
-            }
-            else if (Math.random() < 0.001)
-              this.lookup.setInt(cx, cy, Math.floor(Math.random() * 4) * 25 + 5);
             ItemManager.sprWater.drawPoint(target, x, y,
               Math.floor(this.lookup.getNumber(cx, cy) / 5));
             break;
           case ItemId.TOXIC_WASTE:
-            if (this.lookup.getInt(cx, cy) != 0) {
-              this.lookup.setInt(cx, cy, this.lookup.getInt(cx, cy) + 1);
-              if (this.lookup.getInt(cx, cy) >= 25)
-                this.lookup.setInt(cx, cy, 0);
-            }
-            else if (Math.random() < 0.005)
-              this.lookup.setInt(cx, cy, Math.floor(Math.random() * 4) * 25 + 5);
             ItemManager.sprToxic.drawPoint(target, x, y,
               Math.floor(this.lookup.getNumber(cx, cy) / 5));
             break;
           case ItemId.TOXIC_WASTE_SURFACE:
-            if (this.lookup.getNumber(cx, cy) != 0){
-              this.lookup.setNumber(cx, cy, this.lookup.getNumber(cx, cy) + 0.25);
-              if (this.lookup.getNumber(cx, cy) >= 10)
-                this.lookup.setNumber(cx, cy, 0);
-            }
-            else if (Math.random() < 0.01)
-              this.lookup.setNumber(cx, cy, 1 + Math.round(Math.random()) * 10);
             ItemManager.sprToxicBubble.drawPoint(target, x, y,
               (this.lookup.getNumber(cx, cy) >> 0) % 19);
             break;
