@@ -849,6 +849,7 @@ class KeyboardController extends Controller {
   element;
   input;
   onToggleGod;
+  onToggleCP;
   onTogglePause;
   onToggleEdit;
   jumpKey  = 'Space';
@@ -860,13 +861,15 @@ class KeyboardController extends Controller {
   retryKey = 'Shift+KeyR';
   pauseKey = 'Escape';
   godKey   = 'KeyG';
+  cpKey    = 'KeyH';
   editKey  = 'Enter';
 
-  constructor(element, onToggleGod, onTogglePause, onToggleEdit){
+  constructor(element, onToggleGod, onToggleCP, onTogglePause, onToggleEdit){
     super();
     this.element = element;
     this.input = 0;
     this.onToggleGod = onToggleGod;
+    this.onToggleCP = onToggleCP;
     this.onTogglePause = onTogglePause;
     this.onToggleEdit = onToggleEdit;
   }
@@ -890,6 +893,8 @@ class KeyboardController extends Controller {
       this.pauseKey = options.pauseKey;
     if ('godKey' in options)
       this.godKey = options.godKey;
+    if ('cpKey' in options)
+      this.cpKey = options.cpKey;
     if ('editKey' in options)
       this.editKey = options.editKey;
   }
@@ -905,6 +910,7 @@ class KeyboardController extends Controller {
       retryKey: this.retryKey,
       pauseKey: this.pauseKey,
       godKey: this.godKey,
+      cpKey: this.cpKey,
       editKey: this.editKey
     };
   }
@@ -949,6 +955,7 @@ class KeyboardController extends Controller {
     if (check(this.retryKey)) return Input.RETRY;
     if (isDown && check(this.pauseKey)) this.onTogglePause();
     if (isDown && check(this.godKey  )) this.onToggleGod();
+    if (isDown && check(this.cpKey   )) this.onToggleCP();
     if (isDown && check(this.editKey )) this.onToggleEdit();
     return -1;
   }
@@ -986,13 +993,16 @@ class GamepadController extends Controller {
   retryButton = 8;
   pauseButton = 9;
   godButton = 3;
+  cpButton = 5;
   directionAxis = true;
   onToggleGod;
+  onToggleCP;
   onTogglePause;
 
-  constructor(onToggleGod, onTogglePause){
+  constructor(onToggleGod, onToggleCP, onTogglePause){
     super();
     this.onToggleGod = onToggleGod;
+    this.onToggleCP = onToggleCP;
     this.onTogglePause = onTogglePause;
   }
 
@@ -1007,6 +1017,8 @@ class GamepadController extends Controller {
       this.retryButton = options.retryButton;
     if ('godButton' in options)
       this.godButton = options.godButton;
+    if ('cpButton' in options)
+      this.cpButton = options.cpButton;
     if ('upButton' in options)
       this.upButton = options.upButton;
     if ('rightButton' in options)
@@ -1026,6 +1038,7 @@ class GamepadController extends Controller {
       riskyButton: this.riskyButton,
       retryButton: this.retryButton,
       godButton: this.godButton,
+      cpButton: this.cpButton,
       upButton: this.upButton,
       rightButton: this.rightButton,
       downButton: this.downButton,
@@ -1065,6 +1078,7 @@ class GamepadController extends Controller {
       if (this.btn(gp, this.leftButton  )) input |= Input.LEFT;
       if (this.btn(gp, this.riskyButton )) input |= Input.RISKY;
       if (this.btn(gp, this.retryButton )) input |= Input.RETRY;
+      if (this.btn(gp, this.cpButton    )) this.onToggleCP();
       if (this.btn(gp, this.godButton)){
         if (!this.blockGod){
           this.onToggleGod();
@@ -5182,6 +5196,15 @@ class EverybodyEdits {
     this.state.player.isGod = !this.state.player.isGod;
     this.state.player.resetDeath();
     this.state.player.isOnFire = false;
+    if (!this.state.player.completeTime)
+      this.state.player.validRun = false;
+  }
+
+  playerSetCheckpoint(){
+    if (this.mode !== 'play')
+      return;
+    this.state.player.checkpoint_x = (this.state.player.x + 8) >> 4;
+    this.state.player.checkpoint_y = (this.state.player.y + 8) >> 4;
     if (!this.state.player.completeTime)
       this.state.player.validRun = false;
   }

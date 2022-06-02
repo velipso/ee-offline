@@ -332,6 +332,7 @@ class OptionsFolder extends FSFolder {
     addText('Retry Key', 'retryKey');
     addText('Pause Key', 'pauseKey');
     addText('God Key', 'godKey');
+    addText('Checkpoint Key', 'cpKey');
     addText('Edit Key', 'editKey');
 
     if (opt.gamepads){
@@ -346,6 +347,7 @@ class OptionsFolder extends FSFolder {
       addNumberSelect('Retry Button', 0, 16, 'retryButton');
       addNumberSelect('Pause Button', 0, 16, 'pauseButton');
       addNumberSelect('God Button', 0, 16, 'godButton');
+      addNumberSelect('Checkpoint Button', 0, 16, 'cpButton');
     }
 
     {
@@ -821,6 +823,11 @@ function godToggle(){
     eeGame.playerToggleGod();
 }
 
+function cpToggle(){
+  if (eeGame)
+    eeGame.playerSetCheckpoint();
+}
+
 function editToggle(){
   if (!editingAllowed)
     return;
@@ -851,7 +858,8 @@ function loadWorldIntoEE(world, container, spawnId){
     gamepadController = false;
   }
   eeGame = new EverybodyEdits(defaultScreen, world, new EEWorldResolver(world, container), spawnId);
-  eeGame.attachController(new KeyboardController(window, godToggle, menuToggle, editToggle));
+  eeGame.attachController(new KeyboardController(window, godToggle, cpToggle, menuToggle,
+    editToggle));
   restoreOptions();
   rootFolder.listing.find(f => f instanceof ModeFolder)?.setMode(eeGame.mode);
   eeGame.run();
@@ -874,7 +882,7 @@ function restoreOptions(){
   if ('eeOptions' in window){
     eeGame.setOptions(window.eeOptions);
     if (window.eeOptions.gamepads && !gamepadController){
-      gamepadController = new GamepadController(godToggle, menuToggle, editToggle);
+      gamepadController = new GamepadController(godToggle, cpToggle, menuToggle, editToggle);
       eeGame.attachController(gamepadController);
     }
     else if (!window.eeOptions.gamepads && gamepadController){
