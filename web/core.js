@@ -9498,6 +9498,7 @@ class EmptyWorldResolver extends WorldResolver {
 }
 
 class FSFolder {
+  static pageSize = 50;
   kind = 'folder';
   name;
   desc;
@@ -9521,16 +9522,18 @@ class FSWorld {
   id;
   name;
   desc;
+  ownerId;
   owner;
   width;
   height;
   gravity;
   bgColor;
 
-  constructor(id, name, desc, owner, width, height, gravity, bgColor){
+  constructor(id, name, desc, ownerId, owner, width, height, gravity, bgColor){
     this.id = id;
     this.name = name;
     this.desc = desc;
+    this.ownerId = ownerId;
     this.owner = owner;
     this.width = width;
     this.height = height;
@@ -9546,8 +9549,8 @@ class LayerDataWorld extends FSWorld {
   data;
   metadata;
 
-  constructor(id, name, desc, owner, width, height, gravity, bgColor, data, metadata){
-    super(id, name, desc, owner, width, height, gravity, bgColor);
+  constructor(id, name, desc, ownerId, owner, width, height, gravity, bgColor, data, metadata){
+    super(id, name, desc, ownerId, owner, width, height, gravity, bgColor);
     this.startPosition = data.position;
     this.data = data;
     this.metadata = metadata;
@@ -9586,7 +9589,7 @@ class EelvlWorld extends LayerDataWorld {
     const minimap = data.readBoolean();
     const ownerID = data.readUTF();
     const bgColor = bgColorFromInt(background);
-    super(id, prefix + name, desc, owner, width, height, gravity, bgColor, data, {
+    super(id, prefix + name, desc, false, owner, width, height, gravity, bgColor, data, {
       campaign,
       crewId,
       crewName,
@@ -9969,6 +9972,7 @@ class SqliteGenericSelectFolder extends FSFolder {
       'world.id',
       'world.name',
       'world.description',
+      'world.owner',
       'player.name',
       'world.width',
       'world.height',
@@ -9993,7 +9997,7 @@ class SqliteGenericSelectFolder extends FSFolder {
       ${this.innerJoin}
       ${this.where ? `WHERE ${this.where}` : ''}
       ${this.orderBy ? `ORDER BY ${this.orderBy}` : ''}
-      LIMIT ${(page || 0) * 30},31;
+      LIMIT ${(page || 0) * FSFolder.pageSize},${FSFolder.pageSize + 1};
     `;
     const {results, error} = await this.sqlExec(sql, this.params);
     if (error)
@@ -10002,15 +10006,17 @@ class SqliteGenericSelectFolder extends FSFolder {
       return {more: false, listing: []};
     const values = results[0].values;
     const listing = [];
-    for (let i = 0; i < Math.min(30, values.length); i++){
-      const [id, name, desc, owner, width, height, gravity, background, data] = values[i];
+    for (let i = 0; i < Math.min(FSFolder.pageSize, values.length); i++){
+      const [id, name, desc, ownerId, owner, width, height, gravity, background, data] = values[i];
       const decomp = decompressSqliteLevelData(data);
-      if (decomp)
+      if (decomp){
         listing.push(new LayerDataWorld(
-          id, name, desc, owner, width, height, gravity, bgColorFromInt(background || 0), decomp, {}
+          id, name, desc, ownerId, owner, width, height, gravity,
+          bgColorFromInt(background || 0), decomp, {}
         ));
+      }
     }
-    return {more: values.length > 30, listing};
+    return {more: values.length > FSFolder.pageSize, listing};
   }
 }
 
@@ -10308,6 +10314,7 @@ class SqliteFolder extends FSFolder {
         world.id,
         world.name,
         world.description,
+        world.owner,
         player.name,
         world.width,
         world.height,
@@ -10325,13 +10332,18 @@ class SqliteFolder extends FSFolder {
     if (!results || results.length <= 0 || results[0].values.length <= 0)
       return false;
     const values = results[0].values;
-    const [id, name, desc, owner, width, height, gravity, background, data] = values[0];
+    const [id, name, desc, ownerId, owner, width, height, gravity, background, data] = values[0];
     const decomp = decompressSqliteLevelData(data);
     if (!decomp)
       return false;
     return new LayerDataWorld(
-      id, name, desc, owner, width, height, gravity, bgColorFromInt(background || 0), decomp, {}
+      id, name, desc, ownerId, owner, width, height, gravity,
+      bgColorFromInt(background || 0), decomp, {}
     );
+  }
+
+  findByOwner(id){
+    return new SqliteByOneOwnerFolder(id, '', this.sqlExec)
   }
 
   search(term){

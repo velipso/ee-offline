@@ -966,6 +966,20 @@ async function menuAddFolder(folder, page, onHere, rootContainer){
             onHere();
             menuClose();
           }));
+          if (item.owner && item.ownerId && rootContainer && rootContainer.findByOwner){
+            li.appendChild(document.createTextNode(' by '));
+            li.appendChild(createLink(item.owner, () => {
+              function subfolder(){
+                setMenuBack(onHere);
+                menuShowFolder(
+                  rootContainer.findByOwner(item.ownerId),
+                  subfolder,
+                  rootContainer || item
+                );
+              }
+              subfolder();
+            }));
+          }
           if (item.desc){
             const p = document.createElement('p');
             p.appendChild(document.createTextNode(item.desc));
