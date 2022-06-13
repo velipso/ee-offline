@@ -7418,8 +7418,10 @@ class Player extends SynchronizedSprite {
   killPlayer(){
     if (!this.isFlying && !this.isDead){
       this.isDead = true;
-      if (this.state.instantDeath)
+      if (this.state.instantDeath){
         this.deadOffset = 16.3;
+        this.validRun = false;
+      }
       // TODO: deadAnim = AnimationManager.animRandomDeath();
     }
   }
