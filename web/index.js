@@ -319,6 +319,7 @@ class OptionsFolder extends FSFolder {
     addBool('Show FPS', 'showFPS');
     addBool('Full Screen', 'screenFull');
     addBool('Draw Background', 'worldBackground');
+    addBool('Instant Death', 'instantDeath');
     addBool('Debug Mode', 'screenDebug');
     addBool('EEO TAS Bugs', 'eeotasBugs');
     addBool('Ice Bugs', 'iceBugs');

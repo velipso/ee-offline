@@ -5332,6 +5332,8 @@ class EverybodyEdits {
   }
 
   setOptions(options){
+    if ('instantDeath' in options)
+      this.state.instantDeath = options.instantDeath;
     if ('playSound' in options)
       this.state.playSound = options.playSound;
     if ('eeotasBugs' in options)
@@ -5361,6 +5363,7 @@ class EverybodyEdits {
 
   getOptions(){
     return Object.assign({
+      instantDeath: this.state.instantDeath,
       playSound: this.state.playSound,
       eeotasBugs: this.input.eeotasBugs,
       iceBugs: this.state.player.iceBugs,
@@ -7049,6 +7052,17 @@ class World extends BlObject {
       }
     }
 
+    if (
+      this.player.checkpoint_x >= startX &&
+      this.player.checkpoint_x < endX &&
+      this.player.checkpoint_y >= startY &&
+      this.player.checkpoint_y < endY
+    ){
+      const x = (this.player.checkpoint_x << 4) + ox;
+      const y = (this.player.checkpoint_y << 4) + oy;
+      ItemManager.sprCheckpoint.drawPoint(target, x, y, 1);
+    }
+
     /*
     for each (var obj:Object in infront) {
       target.copyPixels(obj.d, obj.r, obj.p);
@@ -7404,6 +7418,8 @@ class Player extends SynchronizedSprite {
   killPlayer(){
     if (!this.isFlying && !this.isDead){
       this.isDead = true;
+      if (this.state.instantDeath)
+        this.deadOffset = 16.3;
       // TODO: deadAnim = AnimationManager.animRandomDeath();
     }
   }
@@ -8832,6 +8848,7 @@ class PlayState extends BlObject {
   _mouseOver = false;
   selection = false;
   playSound = true;
+  instantDeath = false;
 
   constructor(world, worldResolver, spawnTarget){
     super();
