@@ -1055,13 +1055,12 @@ class GamepadController extends Controller {
   detach(){}
   checkPaused(gp){
     if (this.btn(gp, this.pauseButton)){
-      if (!this.blockPause){
+      const now = Date.now();
+      if (now > this.blockPause){
         this.onTogglePause();
-        this.blockPause = 10;
+        this.blockPause = now + 500;
       }
     }
-    else if (this.blockPause > 0)
-      this.blockPause--;
   }
   nextPaused(){
     for (const gp of navigator.getGamepads())
@@ -1080,13 +1079,12 @@ class GamepadController extends Controller {
       if (this.btn(gp, this.retryButton )) input |= Input.RETRY;
       if (this.btn(gp, this.cpButton    )) this.onToggleCP();
       if (this.btn(gp, this.godButton)){
-        if (!this.blockGod){
+        const now = Date.now();
+        if (now > this.blockGod){
           this.onToggleGod();
-          this.blockGod = 10;
+          this.blockGod = now + 500;
         }
       }
-      else if (this.blockGod > 0)
-        this.blockGod--;
       if (this.directionAxis && gp && gp.axes && gp.axes.length >= 2){
         if (gp.axes[0] < -0.5)
           input |= Input.LEFT;
