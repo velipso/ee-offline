@@ -321,7 +321,7 @@ class OptionsFolder extends FSFolder {
     addBool('Draw Background', 'worldBackground');
     addBool('Instant Death', 'instantDeath');
     addBool('Debug Mode', 'screenDebug');
-    addBool('EEO TAS Bugs', 'eeotasBugs');
+    addBool('TAS Jumping', 'tasJumping');
     addBool('Ice Bugs', 'iceBugs');
 
     addHeader('Keyboard Options');

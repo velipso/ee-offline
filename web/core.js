@@ -1113,7 +1113,7 @@ class Input {
   static RISKY = 32;
   static RETRY = 64;
 
-  eeotasBugs = false;
+  tasJumping = false;
   lastFrame = 0;
   thisFrame = 0;
   controllers = [];
@@ -1174,7 +1174,7 @@ class Input {
   }
 
   get jumpJustPressed(){
-    if (this.eeotasBugs)
+    if (this.tasJumping)
       return !!(this.thisFrame & Input.JUMP);
     return (this.thisFrame & Input.JUMP) && !(this.lastFrame & Input.JUMP);
   }
@@ -5336,8 +5336,8 @@ class EverybodyEdits {
       this.state.instantDeath = options.instantDeath;
     if ('playSound' in options)
       this.state.playSound = options.playSound;
-    if ('eeotasBugs' in options)
-      this.input.eeotasBugs = options.eeotasBugs;
+    if ('tasJumping' in options)
+      this.input.tasJumping = options.tasJumping;
     if ('iceBugs' in options)
       this.state.player.iceBugs = options.iceBugs;
     if ('screenDebug' in options)
@@ -5365,7 +5365,7 @@ class EverybodyEdits {
     return Object.assign({
       instantDeath: this.state.instantDeath,
       playSound: this.state.playSound,
-      eeotasBugs: this.input.eeotasBugs,
+      tasJumping: this.input.tasJumping,
       iceBugs: this.state.player.iceBugs,
       screenDebug: this.screen.debug,
       screenFull: this.screen.fullScreen,
