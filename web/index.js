@@ -314,6 +314,7 @@ class OptionsFolder extends FSFolder {
         }
       );
     }
+    addBool('Sound', 'playSound');
     addBool('Cap FPS', 'capFPS');
     addBool('Show FPS', 'showFPS');
     addBool('Full Screen', 'screenFull');

@@ -4944,6 +4944,27 @@ class Lookup {
 }
 
 //
+// SoundManager
+//
+
+class SoundManager {
+  static play(id){
+    const snds = SoundManager[id];
+    if (snds && Array.isArray(snds)){
+      for (const snd of snds){
+        if (snd.paused){
+          snd.play();
+          return;
+        }
+      }
+      console.warn('Failed to play:', id);
+    }
+    else
+      console.warn('Missing sound:', id);
+  }
+}
+
+//
 // EverybodyEdits
 //
 
@@ -4982,12 +5003,26 @@ class EverybodyEdits {
       });
     }
 
-    function loadImgMedia(w, h, src){
-      return loadImg(w, h, '../media/' + src);
+    function loadSnd(src){
+      return new Promise((resolve, reject) => {
+        const snd = new Audio(src);
+        snd.addEventListener('canplay', () => resolve(snd));
+        snd.addEventListener('error', reject);
+      });
     }
 
     function LI(name, w, h, src){
-      return [name, loadImgMedia(w, h, src)];
+      return [
+        res => { ItemManager[name] = res; },
+        loadImg(w, h, `../media/${src}`)
+      ];
+    }
+
+    function LS(name, src){
+      return [
+        res => { SoundManager[name] = res; },
+        Promise.all(Array.from({length: 10}).map(() => loadSnd(`../media/sounds/${src}`)))
+      ];
     }
 
     const loads = [
@@ -5024,6 +5059,165 @@ class EverybodyEdits {
       LI('blockNumbers2BMD'        ,   44,   5, 'block_numbers2.png'         ),
       LI('blocksFireworksBMD'      ,  768, 384, 'blocks_fireworks.png'       ),
       LI('blocksGoldenEasterEggBMD',   48,  48, 'blocks_goldeneasteregg.png' ),
+      // Sounds
+      LS('coin', 'coin.mp3'),
+      LS('piano1' , 'Piano/1.mp3' ),
+      LS('piano2' , 'Piano/2.mp3' ),
+      LS('piano3' , 'Piano/3.mp3' ),
+      LS('piano4' , 'Piano/4.mp3' ),
+      LS('piano5' , 'Piano/5.mp3' ),
+      LS('piano6' , 'Piano/6.mp3' ),
+      LS('piano7' , 'Piano/7.mp3' ),
+      LS('piano8' , 'Piano/8.mp3' ),
+      LS('piano9' , 'Piano/9.mp3' ),
+      LS('piano10', 'Piano/10.mp3'),
+      LS('piano11', 'Piano/11.mp3'),
+      LS('piano12', 'Piano/12.mp3'),
+      LS('piano13', 'Piano/13.mp3'),
+      LS('piano14', 'Piano/14.mp3'),
+      LS('piano15', 'Piano/15.mp3'),
+      LS('piano16', 'Piano/16.mp3'),
+      LS('piano17', 'Piano/17.mp3'),
+      LS('piano18', 'Piano/18.mp3'),
+      LS('piano19', 'Piano/19.mp3'),
+      LS('piano20', 'Piano/20.mp3'),
+      LS('piano21', 'Piano/21.mp3'),
+      LS('piano22', 'Piano/22.mp3'),
+      LS('piano23', 'Piano/23.mp3'),
+      LS('piano24', 'Piano/24.mp3'),
+      LS('piano25', 'Piano/25.mp3'),
+      LS('piano26', 'Piano/26.mp3'),
+      LS('piano27', 'Piano/27.mp3'),
+      LS('piano28', 'Piano/28.mp3'),
+      LS('piano29', 'Piano/29.mp3'),
+      LS('piano30', 'Piano/30.mp3'),
+      LS('piano31', 'Piano/31.mp3'),
+      LS('piano32', 'Piano/32.mp3'),
+      LS('piano33', 'Piano/33.mp3'),
+      LS('piano34', 'Piano/34.mp3'),
+      LS('piano35', 'Piano/35.mp3'),
+      LS('piano36', 'Piano/36.mp3'),
+      LS('piano37', 'Piano/37.mp3'),
+      LS('piano38', 'Piano/38.mp3'),
+      LS('piano39', 'Piano/39.mp3'),
+      LS('piano40', 'Piano/40.mp3'),
+      LS('piano41', 'Piano/41.mp3'),
+      LS('piano42', 'Piano/42.mp3'),
+      LS('piano43', 'Piano/43.mp3'),
+      LS('piano44', 'Piano/44.mp3'),
+      LS('piano45', 'Piano/45.mp3'),
+      LS('piano46', 'Piano/46.mp3'),
+      LS('piano47', 'Piano/47.mp3'),
+      LS('piano48', 'Piano/48.mp3'),
+      LS('piano49', 'Piano/49.mp3'),
+      LS('piano50', 'Piano/50.mp3'),
+      LS('piano51', 'Piano/51.mp3'),
+      LS('piano52', 'Piano/52.mp3'),
+      LS('piano53', 'Piano/53.mp3'),
+      LS('piano54', 'Piano/54.mp3'),
+      LS('piano55', 'Piano/55.mp3'),
+      LS('piano56', 'Piano/56.mp3'),
+      LS('piano57', 'Piano/57.mp3'),
+      LS('piano58', 'Piano/58.mp3'),
+      LS('piano59', 'Piano/59.mp3'),
+      LS('piano60', 'Piano/60.mp3'),
+      LS('piano61', 'Piano/61.mp3'),
+      LS('piano62', 'Piano/62.mp3'),
+      LS('piano63', 'Piano/63.mp3'),
+      LS('piano64', 'Piano/64.mp3'),
+      LS('piano65', 'Piano/65.mp3'),
+      LS('piano66', 'Piano/66.mp3'),
+      LS('piano67', 'Piano/67.mp3'),
+      LS('piano68', 'Piano/68.mp3'),
+      LS('piano69', 'Piano/69.mp3'),
+      LS('piano70', 'Piano/70.mp3'),
+      LS('piano71', 'Piano/71.mp3'),
+      LS('piano72', 'Piano/72.mp3'),
+      LS('piano73', 'Piano/73.mp3'),
+      LS('piano74', 'Piano/74.mp3'),
+      LS('piano75', 'Piano/75.mp3'),
+      LS('piano76', 'Piano/76.mp3'),
+      LS('piano77', 'Piano/77.mp3'),
+      LS('piano78', 'Piano/78.mp3'),
+      LS('piano79', 'Piano/79.mp3'),
+      LS('piano80', 'Piano/80.mp3'),
+      LS('piano81', 'Piano/81.mp3'),
+      LS('piano82', 'Piano/82.mp3'),
+      LS('piano83', 'Piano/83.mp3'),
+      LS('piano84', 'Piano/84.mp3'),
+      LS('piano85', 'Piano/85.mp3'),
+      LS('piano86', 'Piano/86.mp3'),
+      LS('piano87', 'Piano/87.mp3'),
+      LS('piano88', 'Piano/88.mp3'),
+      LS('drums1' , 'Drums/kick.mp3'          ),
+      LS('drums2' , 'Drums/kick_hihat.mp3'    ),
+      LS('drums3' , 'Drums/snare.mp3'         ),
+      LS('drums4' , 'Drums/snare2.mp3'        ),
+      LS('drums5' , 'Drums/hihat1.mp3'        ),
+      LS('drums6' , 'Drums/hihat2.mp3'        ),
+      LS('drums7' , 'Drums/hihat3.mp3'        ),
+      LS('drums8' , 'Drums/clap.mp3'          ),
+      LS('drums9' , 'Drums/crash1.mp3'        ),
+      LS('drums10', 'Drums/shacker.mp3'       ),
+      LS('drums11', 'Drums/tom1.mp3'          ),
+      LS('drums12', 'Drums/tom2.mp3'          ),
+      LS('drums13', 'Drums/tom3.mp3'          ),
+      LS('drums14', 'Drums/tom4.mp3'          ),
+      LS('drums15', 'Drums/hihat4.mp3'        ),
+      LS('drums16', 'Drums/hihatopenclose.mp3'),
+      LS('drums17', 'Drums/crash2.mp3'        ),
+      LS('drums18', 'Drums/ride.mp3'          ),
+      LS('drums19', 'Drums/ridebell.mp3'      ),
+      LS('drums20', 'Drums/cowbell.mp3'       ),
+      LS('guitar1' , 'Guitar/1.mp3' ),
+      LS('guitar2' , 'Guitar/2.mp3' ),
+      LS('guitar3' , 'Guitar/3.mp3' ),
+      LS('guitar4' , 'Guitar/4.mp3' ),
+      LS('guitar5' , 'Guitar/5.mp3' ),
+      LS('guitar6' , 'Guitar/6.mp3' ),
+      LS('guitar7' , 'Guitar/7.mp3' ),
+      LS('guitar8' , 'Guitar/8.mp3' ),
+      LS('guitar9' , 'Guitar/9.mp3' ),
+      LS('guitar10', 'Guitar/10.mp3'),
+      LS('guitar11', 'Guitar/11.mp3'),
+      LS('guitar12', 'Guitar/12.mp3'),
+      LS('guitar13', 'Guitar/13.mp3'),
+      LS('guitar14', 'Guitar/14.mp3'),
+      LS('guitar15', 'Guitar/15.mp3'),
+      LS('guitar16', 'Guitar/16.mp3'),
+      LS('guitar17', 'Guitar/17.mp3'),
+      LS('guitar18', 'Guitar/18.mp3'),
+      LS('guitar19', 'Guitar/19.mp3'),
+      LS('guitar20', 'Guitar/20.mp3'),
+      LS('guitar21', 'Guitar/21.mp3'),
+      LS('guitar22', 'Guitar/22.mp3'),
+      LS('guitar23', 'Guitar/23.mp3'),
+      LS('guitar24', 'Guitar/24.mp3'),
+      LS('guitar25', 'Guitar/25.mp3'),
+      LS('guitar26', 'Guitar/26.mp3'),
+      LS('guitar27', 'Guitar/27.mp3'),
+      LS('guitar28', 'Guitar/28.mp3'),
+      LS('guitar29', 'Guitar/29.mp3'),
+      LS('guitar30', 'Guitar/30.mp3'),
+      LS('guitar31', 'Guitar/31.mp3'),
+      LS('guitar32', 'Guitar/32.mp3'),
+      LS('guitar33', 'Guitar/33.mp3'),
+      LS('guitar34', 'Guitar/34.mp3'),
+      LS('guitar35', 'Guitar/35.mp3'),
+      LS('guitar36', 'Guitar/36.mp3'),
+      LS('guitar37', 'Guitar/37.mp3'),
+      LS('guitar38', 'Guitar/38.mp3'),
+      LS('guitar39', 'Guitar/39.mp3'),
+      LS('guitar40', 'Guitar/40.mp3'),
+      LS('guitar41', 'Guitar/41.mp3'),
+      LS('guitar42', 'Guitar/42.mp3'),
+      LS('guitar43', 'Guitar/43.mp3'),
+      LS('guitar44', 'Guitar/44.mp3'),
+      LS('guitar45', 'Guitar/45.mp3'),
+      LS('guitar46', 'Guitar/46.mp3'),
+      LS('guitar47', 'Guitar/47.mp3'),
+      LS('guitar48', 'Guitar/48.mp3'),
+      LS('guitar49', 'Guitar/49.mp3'),
     ];
     progressCallback(0, loads.length);
     let loadLeft = loads.length;
@@ -5037,7 +5231,7 @@ class EverybodyEdits {
       )
     );
     for (let i = 0; i < loads.length; i++)
-      ItemManager[loads[i][0]] = loadedValues[i];
+      loads[i][0](loadedValues[i]);
 
     ItemManager.init();
   }
@@ -5149,6 +5343,8 @@ class EverybodyEdits {
   }
 
   setOptions(options){
+    if ('playSound' in options)
+      this.state.playSound = options.playSound;
     if ('eeotasBugs' in options)
       this.input.eeotasBugs = options.eeotasBugs;
     if ('iceBugs' in options)
@@ -5176,6 +5372,7 @@ class EverybodyEdits {
 
   getOptions(){
     return Object.assign({
+      playSound: this.state.playSound,
       eeotasBugs: this.input.eeotasBugs,
       iceBugs: this.state.player.iceBugs,
       screenDebug: this.screen.debug,
@@ -8645,6 +8842,7 @@ class PlayState extends BlObject {
   effectIcons = [];
   _mouseOver = false;
   selection = false;
+  playSound = true;
 
   constructor(world, worldResolver, spawnTarget){
     super();
@@ -8671,16 +8869,24 @@ class PlayState extends BlObject {
     return (this.tickCount + 1000) * Config.physics_ms_per_tick;
   }
 
-  playCollectCoinSound(){ // TODO: this
+  playCollectCoinSound(){
+    if (this.playSound)
+      SoundManager.play('coin');
   }
 
-  playPianoSound(note){ // TODO: this
+  playPianoSound(note){
+    if (this.playSound)
+      SoundManager.play(`piano${note + 28}`);
   }
 
-  playDrumSound(note){ // TODO: this
+  playDrumSound(note){
+    if (this.playSound)
+      SoundManager.play(`drums${note + 1}`);
   }
 
-  playGuitarSound(note){ // TODO: this
+  playGuitarSound(note){
+    if (this.playSound)
+      SoundManager.play(`guitar${note + 1}`);
   }
 
   resetQueues(){
