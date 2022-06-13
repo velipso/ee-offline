@@ -4949,16 +4949,9 @@ class Lookup {
 
 class SoundManager {
   static play(id){
-    const snds = SoundManager[id];
-    if (snds && Array.isArray(snds)){
-      for (const snd of snds){
-        if (snd.paused){
-          snd.play();
-          return;
-        }
-      }
-      console.warn('Failed to play:', id);
-    }
+    const snd = SoundManager[id];
+    if (snd)
+      snd.play();
     else
       console.warn('Missing sound:', id);
   }
@@ -5005,9 +4998,7 @@ class EverybodyEdits {
 
     function loadSnd(src){
       return new Promise((resolve, reject) => {
-        const snd = new Audio(src);
-        snd.addEventListener('canplay', () => resolve(snd));
-        snd.addEventListener('error', reject);
+        resolve(new Howl({src: [src]}));
       });
     }
 
@@ -5021,7 +5012,7 @@ class EverybodyEdits {
     function LS(name, src){
       return [
         res => { SoundManager[name] = res; },
-        Promise.all(Array.from({length: 10}).map(() => loadSnd(`../media/sounds/${src}`)))
+        loadSnd(`../media/sounds/${src}`)
       ];
     }
 
@@ -10406,7 +10397,7 @@ class SqliteSearchFolder extends SqliteGenericSelectFolder {
         LOWER(world.name),
         world.id
       `,
-      params: {'$c': `%${term.trim()}%`}
+      params: {'$c': `%${term.trim().replace(/ /g, '%')}%`}
     });
   }
 }
