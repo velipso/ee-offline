@@ -4793,14 +4793,15 @@ class StaticLookupItem {
   static defaultSign        = {text: 'Undefined', type: -1};
 
   num         = 0;
-  portal      = LookupItem.defaultPortal;
-  worldPortal = LookupItem.defaultWorldPortal;
-  label       = LookupItem.defaultLabel;
-  sign        = LookupItem.defaultSign;
+  portal      = StaticLookupItem.defaultPortal;
+  worldPortal = StaticLookupItem.defaultWorldPortal;
+  label       = StaticLookupItem.defaultLabel;
+  sign        = StaticLookupItem.defaultSign;
   npc         = null;
 }
 
 class StaticLookup {
+  frozen = false;
   width;
   height;
   lookup;
@@ -4814,15 +4815,25 @@ class StaticLookup {
       this.lookup.push(new StaticLookupItem());
   }
 
+  freeze(){
+    this.frozen = true;
+  }
+
+  checkUnfrozen(){
+    if (this.frozen)
+      throw new Error('Can\'t edit lookup anymore');
+  }
+
   getInt(x, y){
     return this.lookup[x + y * this.width].num | 0;
   }
 
-  setInt(x, y, value){ // only set at load time, otherwise read-only
+  setInt(x, y, value){
+    this.checkUnfrozen();
     this.lookup[x + y * this.width].num = value | 0;
   }
 
-  getBoolean(x, y){ // value set at load time
+  getBoolean(x, y){
     return this.lookup[x + y * this.width].num !== 0;
   }
 
@@ -4831,6 +4842,7 @@ class StaticLookup {
   }
 
   setTextSign(x, y, value){
+    this.checkUnfrozen();
     this.lookup[x + y * this.width].sign = value;
   }
 
@@ -4839,6 +4851,7 @@ class StaticLookup {
   }
 
   setLabel(x, y, text, color, wrapLength){
+    this.checkUnfrozen();
     this.lookup[x + y * this.width].label = {text, color, wrapLength};
   }
 
@@ -4847,6 +4860,7 @@ class StaticLookup {
   }
 
   setPortal(x, y, value){
+    this.checkUnfrozen();
     this.lookup[x + y * this.width].portal = value;
   }
 
@@ -4855,7 +4869,18 @@ class StaticLookup {
   }
 
   setWorldPortal(x, y, value){
+    this.checkUnfrozen();
     this.lookup[x + y * this.width].worldPortal = value;
+  }
+
+  setWorldPortalName(x, y, name){
+    const wp = this.lookup[x + y * this.width].worldPortal;
+    if (wp.name === name)
+      return;
+    // allow '' => 'something' despite being frozen
+    if (wp.name !== '')
+      this.checkUnfrozen();
+    wp.name = name;
   }
 
   getPortals(portalId){
@@ -4871,163 +4896,6 @@ class StaticLookup {
       }
     }
     return portals;
-  }
-}
-
-//
-// Lookup
-//
-
-class LookupItem {
-  static defaultPortal      = {id: -1, target: -1, rotation: 0, type: ItemId.PORTAL};
-  static defaultWorldPortal = {id: '', name: '', target: 0};
-  static defaultLabel       = {text: ':)', color: '#ffffff', wrapLength: 200};
-  static defaultBlink       = -999;
-  static defaultSign        = {text: 'Undefined', type: -1};
-
-  // layer 2
-  num         = 0; // read only
-  blink       = LookupItem.defaultBlink; // read/write
-  secret      = false; // read/write
-
-  // union{
-  portal      = LookupItem.defaultPortal; // read only
-  worldPortal = LookupItem.defaultWorldPortal; // read only
-  label       = LookupItem.defaultLabel; // read only
-  //}
-
-  // layer 3/0
-  sign        = LookupItem.defaultSign; // read only
-
-  // layer 1
-  npc         = null; // read only
-
-  reset(){
-    this.num         = 0;
-    this.portal      = LookupItem.defaultPortal;
-    this.worldPortal = LookupItem.defaultWorldPortal;
-    this.label       = LookupItem.defaultLabel;
-    this.blink       = LookupItem.defaultBlink;
-    this.sign        = LookupItem.defaultSign;
-    this.npc         = null;
-    this.secret      = false;
-  }
-}
-
-class Lookup {
-  width;
-  height;
-  lookup;
-
-  constructor(width, height){
-    this.width = width;
-    this.height = height;
-    const size = this.width * this.height;
-    this.lookup = [];
-    for (let i = 0; i < size; i++)
-      this.lookup.push(new LookupItem());
-  }
-
-  resetSecrets(){
-    const size = this.width * this.height;
-    for (let i = 0; i < size; i++)
-      this.lookup[i].secret = false;
-  }
-
-  deleteLookup(x, y){
-    this.lookup[x + y * this.width].reset();
-  }
-
-  deleteBlink(x, y){
-    this.lookup[x + y * this.width].blink = LookupItem.defaultBlink;
-  }
-
-  getInt(x, y){
-    return this.lookup[x + y * this.width].num | 0;
-  }
-
-  setInt(x, y, value){ // only set at load time, otherwise read-only
-    this.lookup[x + y * this.width].num = value | 0;
-  }
-
-  getBoolean(x, y){ // value set at load time
-    return this.lookup[x + y * this.width].num !== 0;
-  }
-
-  getTextSign(x, y){
-    return this.lookup[x + y * this.width].sign;
-  }
-
-  setTextSign(x, y, value){
-    this.lookup[x + y * this.width].sign = value;
-  }
-
-  getLabel(x, y){
-    return this.lookup[x + y * this.width].label;
-  }
-
-  setLabel(x, y, text, color, wrapLength){
-    this.lookup[x + y * this.width].label = {text, color, wrapLength};
-  }
-
-  getPortal(x, y){
-    return this.lookup[x + y * this.width].portal;
-  }
-
-  setPortal(x, y, value){
-    this.lookup[x + y * this.width].portal = value;
-  }
-
-  getWorldPortal(x, y){
-    return this.lookup[x + y * this.width].worldPortal;
-  }
-
-  setWorldPortal(x, y, value){
-    this.lookup[x + y * this.width].worldPortal = value;
-  }
-
-  getSecret(x, y){
-    return this.lookup[x + y * this.width].secret;
-  }
-
-  setSecret(x, y, value){
-    this.lookup[x + y * this.width].secret = value;
-  }
-
-  getPortals(portalId){
-    const size = this.width * this.height;
-    const portals = [];
-    for (let i = 0; i < size; i++){
-      const p = this.lookup[i].portal;
-      if (p.id === portalId){
-        portals.push({
-          x: (i % this.width) << 4,
-          y: (Math.floor(i / this.width)) << 4
-        });
-      }
-    }
-    return portals;
-  }
-
-  getBlink(x, y){
-    const v = this.lookup[x + y * this.width].blink;
-    return v === LookupItem.defaultBlink ? 0 : v;
-  }
-
-  setBlink(x, y, value){
-    this.lookup[x + y * this.width].blink = value;
-  }
-
-  isBlink(x, y){
-    return this.lookup[x + y * this.width].blink !== LookupItem.defaultBlink;
-  }
-
-  updateBlink(x, y, add){
-    const k = x + y * this.width;
-    const v1 = this.lookup[k].blink;
-    const v2 = (v1 === LookupItem.defaultBlink ? 0 : v1) + add;
-    this.lookup[k].blink = v2;
-    return v2;
   }
 }
 
@@ -5788,6 +5656,7 @@ class StaticWorld {
         }
       }
     }
+    this.lookup.freeze();
   }
 }
 
@@ -5796,16 +5665,22 @@ class StaticWorld {
 //
 
 class World extends BlObject {
+  // static
+  lookup;
+  spawnPoints = [];
+  gravity;
+  bgColor;
+  name = 'Unknown World';
+  map;
+  //width; // (from BlObject)
+  //height; // (from BlObject)
+
   showBackground = true;
   player;
   state;
-  lookup;
-  spawnPoints = [];
+  blink;
+  secret;
   nextSpawnPos = [];
-  gravity;
-  bgColor;
-  worldName = 'Unknown World';
-  map;
   aniOffset = 0;
   keys = {
     red: false,
@@ -5835,20 +5710,63 @@ class World extends BlObject {
   ice = 0;
   iceTime = 240;
 
+  static defaultBlink = -999;
+
+  getSecret(x, y){
+    return this.secret[x + y * this.width];
+  }
+
+  setSecret(x, y, value){
+    this.secret[x + y * this.width] = value;
+  }
+
+  resetSecrets(){
+    const size = this.width * this.height;
+    for (let i = 0; i < size; i++)
+      this.secret[i] = false;
+  }
+
+  deleteBlink(x, y){
+    this.blink[x + y * this.width] = World.defaultBlink;
+  }
+
+  getBlink(x, y){
+    const v = this.blink[x + y * this.width];
+    return v === World.defaultBlink ? 0 : v;
+  }
+
+  setBlink(x, y, value){
+    this.blink[x + y * this.width] = value;
+  }
+
+  isBlink(x, y){
+    return this.blink[x + y * this.width] !== World.defaultBlink;
+  }
+
+  updateBlink(x, y, add){
+    const k = x + y * this.width;
+    const v1 = this.blink[k];
+    const v2 = (v1 === World.defaultBlink ? 0 : v1) + add;
+    this.blink[k] = v2;
+    return v2;
+  }
+
   clearWorld(width, height, gravity = 1, bgColor = ''){
-    this.lookup = new Lookup(width, height);
+    this.lookup = new StaticLookup(width, height);
     this.width = width;
     this.height = height;
     this.gravity = gravity;
     this.bgColor = bgColor;
     this.unresolvedWorlds = [];
     this.map = Util.emptyArray(2, () => Util.emptyArray(height, () => Util.emptyArray(width, 0)));
+    this.blink = Util.emptyArray(width * height, World.defaultBlink);
+    this.secret = Util.emptyArray(width * height, false);
   }
 
   loadLayerData(data){
     // test StaticWorld to see if it works
     const dataPositionStart = data.position;
-    new StaticWorld(this.width, this.height, this.worldName, this.gravity, this.bgColor, data);
+    new StaticWorld(this.width, this.height, this.name, this.gravity, this.bgColor, data);
     data.position = dataPositionStart;
 
     while (data.position < data.length){
@@ -5973,6 +5891,7 @@ class World extends BlObject {
         }
       }
     }
+    this.lookup.freeze();
   }
 
   getCoinCount(){
@@ -6000,16 +5919,16 @@ class World extends BlObject {
     while (this.unresolvedWorlds.length > 0){
       const {nx, ny, wp} = this.unresolvedWorlds.shift();
       const name = await state.worldResolver.findName(wp.id);
-      if (name){
-        wp.name = name;
-        this.lookup.setWorldPortal(nx, ny, wp);
-      }
+      if (name)
+        this.lookup.setWorldPortalName(nx, ny, name);
     }
   }
 
   setTileComplex(layer, x, y, type, properties){
+    /* TODO: wire to static lookup
     if (layer === 0)
       this.lookup.deleteLookup(x, y);
+    */
 
     if (ItemId.isBlockRotateable(type) || ItemId.isNonRotatableHalfBlock(type)){
       if (properties && properties.rotation != null)
@@ -6085,7 +6004,7 @@ class World extends BlObject {
       case ItemId.PIANO:
       case ItemId.GUITAR:
         this.lookup.setInt(x, y, properties.rotation);
-        this.lookup.setBlink(x, y, 30);
+        this.setBlink(x, y, 30);
         break;
       case ItemId.GRAVITY_LEFT_INVISIBLE:
       case ItemId.GRAVITY_UP_INVISIBLE:
@@ -6094,7 +6013,7 @@ class World extends BlObject {
       case ItemId.SLOW_DOT_INVISIBLE:
       case ItemId.GRAVITY_DOWN_INVISIBLE:
       case ItemId.FIREWORKS:
-        this.lookup.setBlink(x, y, 0);
+        this.setBlink(x, y, 0);
         break;
       case ItemId.LABEL:
         this.lookup.setLabel(x, y, properties.text, properties.text_color, properties.wraplength);
@@ -6225,65 +6144,65 @@ class World extends BlObject {
           case ItemId.DOT_INVISIBLE:
           case ItemId.SLOW_DOT_INVISIBLE:
           case ItemId.GRAVITY_DOWN_INVISIBLE:
-            if (!this.player.isFlying && this.lookup.isBlink(cx, cy)){
-              if (this.lookup.getBlink(cx, cy) >= 0){
-                if (this.lookup.updateBlink(cx, cy, 0.1) >= 5)
-                  this.lookup.deleteBlink(cx, cy);
+            if (!this.player.isFlying && this.isBlink(cx, cy)){
+              if (this.getBlink(cx, cy) >= 0){
+                if (this.updateBlink(cx, cy, 0.1) >= 5)
+                  this.deleteBlink(cx, cy);
               }
               else
-                this.lookup.updateBlink(cx, cy, 1);
+                this.updateBlink(cx, cy, 1);
             }
             break;
           case ItemId.DRUMS:
           case ItemId.PIANO:
           case ItemId.GUITAR:
-            if (this.lookup.isBlink(cx, cy) && this.lookup.updateBlink(cx, cy, -1) <= 0)
-              this.lookup.deleteBlink(cx, cy);
+            if (this.isBlink(cx, cy) && this.updateBlink(cx, cy, -1) <= 0)
+              this.deleteBlink(cx, cy);
             break;
           case ItemId.ICE:
-            if (this.lookup.isBlink(cx, cy)){
-              this.lookup.updateBlink(cx, cy, -0.125);
-              if (this.lookup.getBlink(cx, cy) % 12 === 0)
-                this.lookup.deleteBlink(cx, cy);
+            if (this.isBlink(cx, cy)){
+              this.updateBlink(cx, cy, -0.125);
+              if (this.getBlink(cx, cy) % 12 === 0)
+                this.deleteBlink(cx, cy);
             }
             else if (this.ice === ((cx + cy) * 4) % this.iceTime || Math.random() < 0.0001)
-              this.lookup.setBlink(cx, cy, 11.75);
+              this.setBlink(cx, cy, 11.75);
             break;
           case ItemId.MUD_BUBBLE:
-            if (this.lookup.isBlink(cx, cy)){
-              this.lookup.updateBlink(cx, cy, 0.125);
-              if (this.lookup.getBlink(cx, cy) % 10 === 0)
-                this.lookup.deleteBlink(cx, cy);
+            if (this.isBlink(cx, cy)){
+              this.updateBlink(cx, cy, 0.125);
+              if (this.getBlink(cx, cy) % 10 === 0)
+                this.deleteBlink(cx, cy);
             }
             else if (Math.random() < 0.0025)
-              this.lookup.setBlink(cx, cy, 1 + Math.round(Math.random()) * 10);
+              this.setBlink(cx, cy, 1 + Math.round(Math.random()) * 10);
             break;
           case ItemId.WATER:
-            if (this.lookup.isBlink(cx, cy)){
-              this.lookup.updateBlink(cx, cy, 0.5);
-              if (this.lookup.getBlink(cx, cy) % 25 === 0)
-                this.lookup.deleteBlink(cx, cy);
+            if (this.isBlink(cx, cy)){
+              this.updateBlink(cx, cy, 0.5);
+              if (this.getBlink(cx, cy) % 25 === 0)
+                this.deleteBlink(cx, cy);
             }
             else if (Math.random() < 0.0005)
-              this.lookup.setBlink(cx, cy, Math.floor(Math.random() * 4) * 25 + 5);
+              this.setBlink(cx, cy, Math.floor(Math.random() * 4) * 25 + 5);
             break;
           case ItemId.TOXIC_WASTE:
-            if (this.lookup.isBlink(cx, cy)) {
-              this.lookup.updateBlink(cx, cy, 0.5);
-              if (this.lookup.getBlink(cx, cy) % 25 === 0)
-                this.lookup.deleteBlink(cx, cy);
+            if (this.isBlink(cx, cy)) {
+              this.updateBlink(cx, cy, 0.5);
+              if (this.getBlink(cx, cy) % 25 === 0)
+                this.deleteBlink(cx, cy);
             }
             else if (Math.random() < 0.0025)
-              this.lookup.setBlink(cx, cy, Math.floor(Math.random() * 4) * 25 + 5);
+              this.setBlink(cx, cy, Math.floor(Math.random() * 4) * 25 + 5);
             break;
           case ItemId.TOXIC_WASTE_SURFACE:
-            if (this.lookup.isBlink(cx, cy)){
-              this.lookup.updateBlink(cx, cy, 0.125);
-              if (this.lookup.getBlink(cx, cy) % 10 === 0)
-                this.lookup.deleteBlink(cx, cy);
+            if (this.isBlink(cx, cy)){
+              this.updateBlink(cx, cy, 0.125);
+              if (this.getBlink(cx, cy) % 10 === 0)
+                this.deleteBlink(cx, cy);
             }
             else if (Math.random() < 0.005)
-              this.lookup.setBlink(cx, cy, 1 + Math.round(Math.random()) * 10);
+              this.setBlink(cx, cy, 1 + Math.round(Math.random()) * 10);
             break;
         }
       }
@@ -6316,7 +6235,7 @@ class World extends BlObject {
         const val = map[cx];
         if (!ItemId.isSolid(val)) {
           if (val === 243)
-            this.lookup.setSecret(cx, cy, true);
+            this.setSecret(cx, cy, true);
           continue;
         }
         if (!Util.rectIntersects(rect, cx * 16, cy * 16, 16, 16))
@@ -6511,7 +6430,7 @@ class World extends BlObject {
               continue;
             break;
           case 50:
-            this.lookup.setSecret(cx, cy, true);
+            this.setSecret(cx, cy, true);
             break;
         }
 
@@ -6549,8 +6468,8 @@ class World extends BlObject {
   drawArrowBlink(target, x, y, cx, cy, sprite, startFrame){
     if (this.player.isFlying)
       return false;
-    if (this.lookup.isBlink(cx, cy)){
-      const frame = this.lookup.getBlink(cx, cy) >> 0;
+    if (this.isBlink(cx, cy)){
+      const frame = this.getBlink(cx, cy) >> 0;
       if (frame >= 0)
         sprite.drawPoint(target, x, y, startFrame + frame);
       else
@@ -6878,23 +6797,23 @@ class World extends BlObject {
             ItemManager.sprDoors.drawPoint(target, x, y, this.player.zombie ? 13 : 12);
             continue;
           case ItemId.DRUMS:
-            if (this.lookup.isBlink(cx, cy)){
+            if (this.isBlink(cx, cy)){
               ItemManager.sprDrumsBlink.drawPoint(target, x, y,
-                (this.lookup.getBlink(cx, cy) / 6) << 0);
+                (this.getBlink(cx, cy) / 6) << 0);
               continue;
             }
             break;
           case ItemId.PIANO:
-            if (this.lookup.isBlink(cx, cy)){
+            if (this.isBlink(cx, cy)){
               ItemManager.sprPianoBlink.drawPoint(target, x, y,
-                (this.lookup.getBlink(cx, cy) / 6) << 0);
+                (this.getBlink(cx, cy) / 6) << 0);
               continue;
             }
             break;
           case ItemId.GUITAR:
-            if (this.lookup.isBlink(cx, cy)){
+            if (this.isBlink(cx, cy)){
               ItemManager.sprGuitarBlink.drawPoint(target, x, y,
-                (this.lookup.getBlink(cx, cy) / 6) << 0);
+                (this.getBlink(cx, cy) / 6) << 0);
               continue;
             }
             break;
@@ -7026,11 +6945,11 @@ class World extends BlObject {
 
           // Secret passages!
           case 50:
-            if (this.player.isFlying || this.lookup.getSecret(cx, cy))
+            if (this.player.isFlying || this.getSecret(cx, cy))
               ItemManager.sprSecret.drawPoint(target, x, y, 0);
             continue;
           case 243:
-            if (this.player.isFlying || this.lookup.getSecret(cx, cy))
+            if (this.player.isFlying || this.getSecret(cx, cy))
               ItemManager.sprSecret.drawPoint(target, x, y, 1);
             else
               ItemManager.bricks[44].draw(target, x, y);
@@ -7043,7 +6962,7 @@ class World extends BlObject {
             continue;
           case ItemId.ICE:
             ItemManager.sprIce.drawPoint(target, x, y,
-              11 - (this.lookup.getBlink(cx, cy) >> 0) % 12);
+              11 - (this.getBlink(cx, cy) >> 0) % 12);
             continue;
           case ItemId.CAVE_TORCH:
             ItemManager.sprCaveTorch.drawPoint(target, x, y,
@@ -7068,13 +6987,13 @@ class World extends BlObject {
               continue;
             }
 
-            if (lookup.isBlink(cx, cy)) {
+            if (this.isBlink(cx, cy)) {
               if (cx == startX || cx == endX-1 || cy == startY || cy == endY-1)
               {
-                lookup.deleteBlink(cx, cy);
+                this.deleteBlink(cx, cy);
                 continue;
               }
-              var blink:int = lookup.getBlink(cx, cy);
+              var blink:int = this.getBlink(cx, cy);
               if (blink >= 6)
               {
                 blink -= 6;
@@ -7085,23 +7004,23 @@ class World extends BlObject {
                 blink = 5-blink;
               }
               ItemManager.sprHalloweenEyes.drawPoint(target, point, blink+(lookup.getInt(cx, cy)*6));
-              if ((lookup.getBlink(cx, cy) != 5 && Math.random()<.25) || (lookup.getBlink(cx, cy) == 5 && Math.random() <= 0.01)){
-                if (lookup.updateBlink(cx, cy, -1) <= 0) {
-                  lookup.deleteBlink(cx, cy);
+              if ((this.getBlink(cx, cy) != 5 && Math.random()<.25) || (this.getBlink(cx, cy) == 5 && Math.random() <= 0.01)){
+                if (this.updateBlink(cx, cy, -1) <= 0) {
+                  this.deleteBlink(cx, cy);
                 }
               }
             }
             else
             {
               if (Math.random() < 0.05 && MathUtil.inRange(cx*16, cy*16, player.x, player.y, 120))
-                lookup.setBlink(cx,cy, 11);
+                this.setBlink(cx,cy, 11);
             }
             continue;
           }
           case ItemId.FIREWORKS: {
-            if (lookup.isBlink(cx, cy)) {
+            if (this.isBlink(cx, cy)) {
               var speed:Number = 1 / 3;
-              var b:int = lookup.getBlink(cx, cy);
+              var b:int = this.getBlink(cx, cy);
               var frames:int = ItemManager.blocksFireworksBMD.width / 64 / speed;
               if (b >= 0 && b <= frames) {
                 infront.push({
@@ -7110,11 +7029,11 @@ class World extends BlObject {
                   p:new Point(x - 24, y - 24)
                 });
               }
-              if (lookup.updateBlink(cx, cy, 1) >= frames + 60 * 3) {
-                lookup.deleteBlink(cx, cy);
+              if (this.updateBlink(cx, cy, 1) >= frames + 60 * 3) {
+                this.deleteBlink(cx, cy);
               }
             } else if (Math.random() < 0.01 && MathUtil.inRange(cx * 16, cy * 16, player.x, player.y, 12 * 16)) {
-              lookup.setBlink(cx, cy, 0);
+              this.setBlink(cx, cy, 0);
             }
             if (player.isFlying) {
               ItemManager.sprFireworks.drawPoint(target, point, lookup.getInt(cx, cy));
@@ -7161,36 +7080,30 @@ class World extends BlObject {
               (this.player.checkpoint_x === cx && this.player.checkpoint_y === cy) ? 1 : 0);
             break;
           case ItemId.COIN_GOLD:
-            ItemManager.sprCoin.drawPoint(target, x, y,
-              ((this.aniOffset >> 0) + cx + cy) % 12);
+            ItemManager.sprCoin.drawPoint(target, x, y, ((this.aniOffset >> 0) + cx + cy) % 12);
             break;
           case ItemId.COIN_BLUE:
             ItemManager.sprBonusCoin.drawPoint(target, x, y,
               ((this.aniOffset >> 0) + cx + cy) % 12);
             break;
           case ItemId.WAVE:
-            ItemManager.sprWave.drawPoint(target, x, y,
-              ((this.aniOffset / 5 >> 0)) % 8);
+            ItemManager.sprWave.drawPoint(target, x, y, ((this.aniOffset / 5 >> 0)) % 8);
             break;
           case ItemId.MUD_BUBBLE:
-            ItemManager.sprMudBubble.drawPoint(target, x, y,
-              (this.lookup.getBlink(cx, cy) >> 0) % 19);
+            ItemManager.sprMudBubble.drawPoint(target, x, y, (this.getBlink(cx, cy) >> 0) % 19);
             break;
           case ItemId.FIRE:
             ItemManager.sprFireHazard.drawPoint(target, x, y,
               ((this.aniOffset / 1.2 >> 0) + (this.width - cx) + cy) % 12);
             break;
           case ItemId.WATER:
-            ItemManager.sprWater.drawPoint(target, x, y,
-              Math.floor(this.lookup.getBlink(cx, cy) / 5));
+            ItemManager.sprWater.drawPoint(target, x, y, Math.floor(this.getBlink(cx, cy) / 5));
             break;
           case ItemId.TOXIC_WASTE:
-            ItemManager.sprToxic.drawPoint(target, x, y,
-              Math.floor(this.lookup.getBlink(cx, cy) / 5));
+            ItemManager.sprToxic.drawPoint(target, x, y, Math.floor(this.getBlink(cx, cy) / 5));
             break;
           case ItemId.TOXIC_WASTE_SURFACE:
-            ItemManager.sprToxicBubble.drawPoint(target, x, y,
-              (this.lookup.getBlink(cx, cy) >> 0) % 19);
+            ItemManager.sprToxicBubble.drawPoint(target, x, y, (this.getBlink(cx, cy) >> 0) % 19);
             break;
           case ItemId.TEXT_SIGN:
             ItemManager.sprSign.drawPoint(target, x, y,
@@ -7198,8 +7111,7 @@ class World extends BlObject {
                 (ItemId.isSolid(this.getTile(0, cx, cy + 1)) ? 0 : 4))
             break;
           case ItemId.LAVA:
-            ItemManager.sprLava.drawPoint(target, x, y,
-              ((this.aniOffset / 5 >> 0)) % 8);
+            ItemManager.sprLava.drawPoint(target, x, y, ((this.aniOffset / 5 >> 0)) % 8);
             break;
           /*
           case ItemId.GOLDEN_EASTER_EGG: {
@@ -7228,9 +7140,11 @@ class World extends BlObject {
               } else npc.drawTo(target, point, 0);
               */
             }
-            else if (ItemId.isBlockRotateable(type) && !ItemId.isNonRotatableHalfBlock(type) &&
+            else if (
+              ItemId.isBlockRotateable(type) && !ItemId.isNonRotatableHalfBlock(type) &&
               type !== ItemId.HALLOWEEN_2016_EYES && type !== ItemId.FIREWORKS &&
-              type !== ItemId.DUNGEON_TORCH){
+              type !== ItemId.DUNGEON_TORCH
+            ){
               const rot = this.lookup.getInt(cx, cy);
               const rotSprite = ItemManager.getRotateableSprite(type);
               rotSprite.drawPoint(target, x, y, rot);
@@ -7352,7 +7266,7 @@ class World extends BlObject {
           .replace(/%coins%/g, this.player.coins)
           .replace(/%bcoins%/g, this.player.bcoins)
           .replace(/%deaths%/g, this.player.deaths)
-          .replace(/%levelname%/g, this.worldName)
+          .replace(/%levelname%/g, this.name)
           .replace(/%username%/g, this.player.name)
           .replace(/%Username%/g,
               this.player.name.substr(0, 1).toUpperCase() + this.player.name.substr(1))
@@ -7743,7 +7657,7 @@ class Player extends SynchronizedSprite {
     this.gy = [];
     this.bx = [];
     this.by = [];
-    this.world.lookup.resetSecrets();
+    this.world.resetSecrets();
     if(!this.isFlying && !clear)
       this.respawn();
   }
@@ -8793,15 +8707,15 @@ class Me extends Player {
       switch (this.current){ // blocks that don't care about godmode
         case ItemId.PIANO:
           this.state.playPianoSound(this.world.lookup.getInt(cx, cy));
-          this.world.lookup.setBlink(cx, cy, 30);
+          this.world.setBlink(cx, cy, 30);
           break;
         case ItemId.DRUMS:
           this.state.playDrumSound(this.world.lookup.getInt(cx, cy));
-          this.world.lookup.setBlink(cx, cy, 30);
+          this.world.setBlink(cx, cy, 30);
           break;
         case ItemId.GUITAR:
           this.state.playGuitarSound(this.world.lookup.getInt(cx, cy));
-          this.world.lookup.setBlink(cx, cy, 30);
+          this.world.setBlink(cx, cy, 30);
           break;
       }
 
@@ -8841,7 +8755,7 @@ class Me extends Player {
           case ItemId.DOT_INVISIBLE:
           case ItemId.SLOW_DOT_INVISIBLE:
           case ItemId.GRAVITY_DOWN_INVISIBLE:
-            this.world.lookup.setBlink(cx, cy, -100);
+            this.world.setBlink(cx, cy, -100);
             break;
           case ItemId.DIAMOND:
             this.frame = 31;
@@ -9983,7 +9897,7 @@ class LayerDataWorld extends FSWorld {
 
   async load(){
     const world = new World();
-    world.worldName = this.name;
+    world.name = this.name;
     world.clearWorld(this.width, this.height, this.gravity, this.bgColor);
     this.data.position = this.startPosition;
     world.loadLayerData(this.data);

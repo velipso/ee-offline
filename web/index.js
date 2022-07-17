@@ -423,7 +423,7 @@ class EEWorldResolver extends WorldResolver {
 
   async findName(id){
     if (id === 'Current')
-      return this.currentWorld.worldName;
+      return this.currentWorld.name;
     const worldItem = await this.findFromContainer(id);
     return worldItem ? worldItem.name : false;
   }
