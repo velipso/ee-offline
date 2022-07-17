@@ -83,6 +83,7 @@ class Simulator {
     }
 
     this.ee = new EverybodyEdits(new FakeScreen(), this.world, new EmptyWorldResolver());
+    this.ee.setOptions({playSound: false});
     this.ee.attachController(this.controller);
     this.player = new FakePlayer(this.ee.state.player);
   }

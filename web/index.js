@@ -1,6 +1,7 @@
 let defaultScreen, eeGame, gamepadController, menuBack;
 const rootFolder = new GenericFolder('root');
-const editingAllowed = false; // TODO: allow once the feature is complete
+const editModeAllowed = false; // TODO: allow once the feature is complete
+const tasModeAllowed = false; // TODO: allow once the feature is complete
 
 class HelpFolder extends FSFolder {
   sortIndex = 1;
@@ -114,8 +115,8 @@ class ModeFolder extends FSFolder {
     };
 
     const btnPlay = addMode('Play', 'play', 'Play through levels and have fun');
-    const btnEdit = addMode('Edit', 'edit', 'Edit and download new levels');
-    const btnTAS  = addMode('TAS' , 'tas' , 'Go frame by frame for speedruns');
+    const btnEdit = editModeAllowed && addMode('Edit', 'edit', 'Edit and download new levels');
+    const btnTAS  = tasModeAllowed && addMode('TAS' , 'tas' , 'Go frame by frame for speedruns');
 
     this.refresh = () => {
       switch (this.mode){
@@ -135,12 +136,16 @@ class ModeFolder extends FSFolder {
       btnPlay.disabled = this.mode === 'play';
       btnPlay.className = this.mode === 'play' ? 'selected' : '';
       btnPlay.blur();
-      btnEdit.disabled = this.mode === 'edit';
-      btnEdit.className = this.mode === 'edit' ? 'selected' : '';
-      btnEdit.blur();
-      btnTAS.disabled = this.mode === 'tas';
-      btnTAS.className = this.mode === 'tas' ? 'selected' : '';
-      btnTAS.blur();
+      if (editModeAllowed){
+        btnEdit.disabled = this.mode === 'edit';
+        btnEdit.className = this.mode === 'edit' ? 'selected' : '';
+        btnEdit.blur();
+      }
+      if (tasModeAllowed){
+        btnTAS.disabled = this.mode === 'tas';
+        btnTAS.className = this.mode === 'tas' ? 'selected' : '';
+        btnTAS.blur();
+      }
       setMenuTitle(this.name);
     };
 
@@ -645,7 +650,7 @@ async function loadResources(){
   const campaignFolder = new CampaignFolder(campaignZip);
   rootFolder.add(campaignFolder);
   rootFolder.add(new HelpFolder());
-  if (editingAllowed)
+  if (editModeAllowed || tasModeAllowed)
     rootFolder.add(new ModeFolder());
   rootFolder.add(new OptionsFolder());
   await loadWorld(campaignFolder.listing[0].listing[0], campaignFolder);
@@ -831,7 +836,7 @@ function cpToggle(){
 }
 
 function editToggle(){
-  if (!editingAllowed)
+  if (!editModeAllowed)
     return;
   if (eeGame){
     let newMode = false;
