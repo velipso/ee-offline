@@ -4824,6 +4824,11 @@ class StaticLookup {
       throw new Error('Can\'t edit lookup anymore');
   }
 
+  deleteLookup(x, y){
+    this.checkUnfrozen();
+    this.lookup[x + y * this.width] = new StaticLookupItem();
+  }
+
   getInt(x, y){
     return this.lookup[x + y * this.width].num | 0;
   }
@@ -5925,10 +5930,11 @@ class World extends BlObject {
   }
 
   setTileComplex(layer, x, y, type, properties){
-    /* TODO: wire to static lookup
-    if (layer === 0)
+    if (layer === 0){
       this.lookup.deleteLookup(x, y);
-    */
+      this.blink[x + y * this.width] = World.defaultBlink;
+      this.secret[x + y * this.width] = false;
+    }
 
     if (ItemId.isBlockRotateable(type) || ItemId.isNonRotatableHalfBlock(type)){
       if (properties && properties.rotation != null)
@@ -6027,21 +6033,8 @@ class World extends BlObject {
         break;
     }
 
-    /*
-    if (ItemId.isNPC(type) && properties.name != null && properties.messages) {
-      if (player.currentNpc && lookup.getNpc(x, y).equals(player.currentNpc)) {
-        lookup.setNpc(x, y, properties.name, properties.messages, ItemManager.getNpcById(type));
-        player.currentNpc = lookup.getNpc(x, y);
-        player.currentNpc.reset();
-      } else  lookup.setNpc(x, y, properties.name, properties.messages, ItemManager.getNpcById(type));
-    }
-    */
-
-    // Making sure labels get updated when a block with id 1000 is set to 0.
-    if (type !== ItemId.LABEL && layer === 0)
-      this.removeLabels(x, y);
-
-    this.setTile(layer, x, y, type);
+    if (this.map[layer] && this.map[layer][y])
+      this.map[layer][y][x] = type;
   }
 
   removeLabels(x, y){
@@ -6050,40 +6043,6 @@ class World extends BlObject {
       if (label.x === x && label.y === y){
         this.labels.splice(i, 1);
         i--;
-      }
-    }
-  }
-
-  setTile(layer, x, y, type){
-    const old = this.map[layer][y][x];
-
-    if (old === ItemId.LABEL)
-      this.removeLabels(x, y);
-
-    if (this.map[layer] && this.map[layer][y])
-      this.map[layer][y][x] = type;
-
-    // now collected
-    if (type == ItemId.COLLECTEDCOIN && old == ItemId.COIN_GOLD)
-      return;
-    if (type == ItemId.COLLECTEDBLUECOIN && old == ItemId.COIN_BLUE)
-      return;
-    // was collected
-    if (type == ItemId.COIN_GOLD && old == ItemId.COLLECTEDCOIN)
-      return;
-    if (type == ItemId.COIN_BLUE && old == ItemId.COLLECTEDBLUECOIN)
-      return;
-
-    // TODO: (Global.base.state as PlayState).unsavedChanges = true;
-  }
-
-  resetCoins(){
-    for (let y = 0; y < this.height; y++){
-      for (let x = 0; x < this.width; x++){
-        if (this.map[0][y][x] === 110)
-          this.setTile(0, x, y, 100);
-        if (this.map[0][y][x] === 111)
-          this.setTile(0, x, y, 101);
       }
     }
   }
@@ -7059,12 +7018,12 @@ class World extends BlObject {
     }
   }
 
-  postDraw(target, ox, oy){
+  postDraw(pl, target, ox, oy){
     const {startX, startY, endX, endY} = this.getDrawBoundary(target, ox, oy, false);
-    this.postDrawRange(target, ox, oy, startX, startY, endX, endY);
+    this.postDrawRange(pl, target, ox, oy, startX, startY, endX, endY);
   }
 
-  postDrawRange(target, ox, oy, startX, startY, endX, endY){
+  postDrawRange(pl, target, ox, oy, startX, startY, endX, endY){
     for (let cy = startY; cy < endY; cy++){
       const row = this.map[ItemLayer.FOREGROUND][cy];
       const y = (cy << 4) + oy;
@@ -7080,9 +7039,13 @@ class World extends BlObject {
               (this.player.checkpoint_x === cx && this.player.checkpoint_y === cy) ? 1 : 0);
             break;
           case ItemId.COIN_GOLD:
+            if (pl && pl.didCollectCoin(cx, cy))
+              break;
             ItemManager.sprCoin.drawPoint(target, x, y, ((this.aniOffset >> 0) + cx + cy) % 12);
             break;
           case ItemId.COIN_BLUE:
+            if (pl && pl.didCollectCoin(cx, cy))
+              break;
             ItemManager.sprBonusCoin.drawPoint(target, x, y,
               ((this.aniOffset >> 0) + cx + cy) % 12);
             break;
@@ -7415,6 +7378,7 @@ class Player extends SynchronizedSprite {
   worldSpawn = 0;
 
   // coins
+  collectedCoin;
   coins = 0;
   gx = []; // collected coin locations
   gy = [];
@@ -7503,6 +7467,7 @@ class Player extends SynchronizedSprite {
     super(ItemManager.smileysBMD);
     this.spriteRect = {x: 0, y: 0, w: 26, h: 26};
     this.world = world;
+    this.collectedCoin = Util.emptyArray(this.world.width * this.world.height, false);
     this.name = name;
     this.state = state;
     this.x = 16;
@@ -7511,6 +7476,19 @@ class Player extends SynchronizedSprite {
     this.width = 16;
     this.height = 16;
     this.lastJump = -this.state.now();
+  }
+
+  didCollectCoin(x, y){
+    return this.collectedCoin[x + y * this.width];
+  }
+
+  setCollectedCoin(x, y){
+    this.collectedCoin[x + y * this.width] = true;
+  }
+
+  resetCollectedCoin(){
+    for (let i = 0; i < this.collectedCoin.length; i++)
+      this.collectedCoin[i] = false;
   }
 
   get isFlying(){
@@ -7650,9 +7628,9 @@ class Player extends SynchronizedSprite {
     this.resetDeath();
     this.resetEffects();
     this.resetCheckpoint();
+    this.resetCollectedCoin();
     this.switches = Util.emptyArray(1000, false);
     this.team = 0;
-    this.world.resetCoins();
     this.gx = [];
     this.gy = [];
     this.bx = [];
@@ -8680,8 +8658,10 @@ class Me extends Player {
     switch (this.current){
       case ItemId.COIN_GOLD:
       case ItemId.COIN_BLUE:
+        if (this.didCollectCoin(cx, cy))
+          break;
         this.state.playCollectCoinSound();
-        this.world.setTileComplex(0, cx, cy, this.current + 10, null); // 100 -> 110; 101 -> 111
+        this.setCollectedCoin(cx, cy);
         if (this.current == ItemId.COIN_GOLD) {
           this.coins++;
           this.gx.push(cx);
@@ -9360,7 +9340,7 @@ class PlayState extends BlObject {
       this.player.draw(target, this.x, this.y);
 
     // Draws the 'above' decoration layer
-    this.world.postDraw(target, this.x, this.y);
+    this.world.postDraw(this.player, target, this.x, this.y);
 
     this.world.labelsDraw(target, this.x, this.y);
 
@@ -9431,7 +9411,7 @@ class PlayState extends BlObject {
     if (this.selection){
       const {ox, oy, startX, startY, endX, endY} = this.selectionToTiles();
       this.world.drawRange(target, ox, oy, startX, startY, endX, endY);
-      this.world.postDrawRange(target, ox, oy, startX, startY, endX, endY);
+      this.world.postDrawRange(null, target, ox, oy, startX, startY, endX, endY);
       this.world.labelsDrawRange(target, ox, oy, startX, startY, endX, endY);
     }
     else{
