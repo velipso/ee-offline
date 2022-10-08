@@ -7859,26 +7859,26 @@ class Player extends SynchronizedSprite {
         switch (this.current){
           case ItemId.GRAVITY_LEFT:
           case ItemId.GRAVITY_LEFT_INVISIBLE:
-            this.morx = -Config.physics_gravity;
+            this.morx = -Config.physics_gravity | 0;
             this.mory = 0;
             rotateGravitymor = false;
             break;
           case ItemId.GRAVITY_UP:
           case ItemId.GRAVITY_UP_INVISIBLE:
             this.morx = 0;
-            this.mory = -Config.physics_gravity;
+            this.mory = -Config.physics_gravity | 0;
             rotateGravitymor = false;
             break;
           case ItemId.GRAVITY_RIGHT:
           case ItemId.GRAVITY_RIGHT_INVISIBLE:
-            this.morx = Config.physics_gravity;
+            this.morx = Config.physics_gravity | 0;
             this.mory = 0;
             rotateGravitymor = false;
             break;
           case ItemId.GRAVITY_DOWN:
           case ItemId.GRAVITY_DOWN_INVISIBLE:
             this.morx = 0;
-            this.mory = Config.physics_gravity;
+            this.mory = Config.physics_gravity | 0;
             rotateGravitymor = false;
             break;
           case ItemId.SPEED_LEFT:
@@ -7892,19 +7892,19 @@ class Player extends SynchronizedSprite {
             break;
           case ItemId.WATER:
             this.morx = 0;
-            this.mory = Config.physics_water_buoyancy;
+            this.mory = Config.physics_water_buoyancy | 0;
             break;
           case ItemId.MUD:
             this.morx = 0;
-            this.mory = Config.physics_mud_buoyancy;
+            this.mory = Config.physics_mud_buoyancy | 0;
             break;
           case ItemId.LAVA:
             this.morx = 0;
-            this.mory = Config.physics_lava_buoyancy;
+            this.mory = Config.physics_lava_buoyancy | 0;
             break;
           case ItemId.TOXIC_WASTE:
             this.morx = 0;
-            this.mory = Config.physics_toxic_buoyancy;
+            this.mory = Config.physics_toxic_buoyancy | 0;
             if (!this.isDead && !this.isInvulnerable) this.killPlayer();
             break;
           case ItemId.FIRE:
@@ -7923,12 +7923,12 @@ class Player extends SynchronizedSprite {
           case ItemId.SPIKE_BLUE:
           case ItemId.SPIKE_BLUE_CENTER:
             this.morx = 0;
-            this.mory = Config.physics_gravity;
+            this.mory = Config.physics_gravity | 0;
             if (!this.isDead && !this.isInvulnerable) this.killPlayer();
             break;
           default:
             this.morx = 0;
-            this.mory = Config.physics_gravity;
+            this.mory = Config.physics_gravity | 0;
             break;
         }
       }

@@ -1181,4 +1181,26 @@ it('afk minigame rotates player around', () => {
   expect(sim.player.worldPosition).toEqual(sim.goal);
 });
 
+it('can\'t jump off ceiling in water', () => {
+  const sim = new Simulator(`
+    ####
+    #wX#
+    # ##
+    #p #
+    ####
+  `, tiles({
+    'w': {tile:  119}, // water
+  }))
+  .jump()
+  .wait(50)
+  .noJump()
+  .wait(500)
+  .jump()
+  .wait(50)
+  .noJump()
+  .right()
+  .wait(1000);
+  expect(sim.player.worldPosition).toEqual(sim.goal);
+});
+
 } // loadTests
