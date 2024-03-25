@@ -6068,7 +6068,7 @@ class World extends BlObject {
     if (
       layer < 0 || layer >= this.map.length ||
       x < 0 || x >= this.width ||
-      y < 0 || y >= this.height
+      y < 0 || y >= this.height
     )
       return 0;
     return this.map[layer][y][x]
