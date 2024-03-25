@@ -6210,7 +6210,7 @@ class World extends BlObject {
                 (pl.speedY === 0 && pl.speedX === 0 && pl.oy + 15 > cy * 16)
               ) && rot === 1
             ){
-              if (cy !== oy || pl.overlapa === -1)
+              if (cy !== oy || pl.overlapa === -1)
                 pl.overlapa = cy;
               skipa = true;
               continue;
@@ -6222,7 +6222,7 @@ class World extends BlObject {
                 (cx <= pl.overlapb && pl.speedX <= 0 && pl.ox < cx * 16 + 16)
               ) && rot === 2
             ){
-              if (cx !== ox || pl.overlapb === -1)
+              if (cx !== ox || pl.overlapb === -1)
                 pl.overlapb = cx;
               skipb = true;
               continue;
@@ -6234,7 +6234,7 @@ class World extends BlObject {
                 (cy <= pl.overlapc && pl.speedY <= 0 && pl.oy < cy * 16 + 16)
               ) && rot === 3
             ){
-              if (cy !== oy || pl.overlapc === -1)
+              if (cy !== oy || pl.overlapc === -1)
                 pl.overlapc = cy;
               skipc = true;
               continue;
@@ -6247,7 +6247,7 @@ class World extends BlObject {
                 (pl.speedY === 0 && pl.speedX < 0 && (pl.ox - 15) < cx * 16)
               ) && rot === 0
             ){
-              if (cx !== ox || pl.overlapd === -1)
+              if (cx !== ox || pl.overlapd === -1)
                 pl.overlapd = cx;
               skipd = true;
               continue;
@@ -6278,7 +6278,7 @@ class World extends BlObject {
             cy <= pl.overlapa ||
             (pl.speedY === 0 && pl.speedX === 0 && pl.oy + 15 > cy * 16)
           ){
-            if (cy !== oy || pl.overlapa === -1)
+            if (cy !== oy || pl.overlapa === -1)
               pl.overlapa = cy;
             skipa = true;
             continue;
@@ -9328,7 +9328,7 @@ class PlayState extends BlObject {
 
     let y = target.boundary.y + 7;
     for (const effect of effects){
-      target.fillRect(target.boundary.x + 4, y - 3, 22, 22, '#444', '#aaa');
+      target.fillRect(target.boundary.x + 4, y - 3, 22, 22, '#444', '#aaa');
       effect.draw(target.boundary.x + 7, y);
       y += 25;
     }
