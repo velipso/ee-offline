@@ -4987,7 +4987,7 @@ class EverybodyEdits {
       LI('aurasBubbleBMD'          ,  512,  64, 'auras_bubble.png'           ),
       LI('aurasGalaxyBMD'          ,  768,  64, 'auras_galaxy.png'           ),
       LI('auraFireBMD'             ,  156,  26, 'fireaura.png'               ),
-      LI('shopBMD'                 , 4850,  73, 'shop.png'                   ),
+      LI('shopBMD'                 , 4850,  73, 'shop.png'                   ),
       LI('shopWorldsBMD'           , 2130,  68, 'shop_worlds.png'            ),
       LI('shopAurasBMD'            , 2716,  92, 'shop_auras.png'             ),
       LI('favoriteBMD'             ,   15,  15, 'favorite.png'               ),
